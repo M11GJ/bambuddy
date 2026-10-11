@@ -1,0 +1,200 @@
+2026-10-11 17:14:55,057 INFO [backend.app.main] [-] Current _active_prints: [(1, 'Vacuum_nozzle_2.gcode.3mf'), (1, 'Vacuum_nozzle_2.3mf')]
+2026-10-11 17:14:55,057 INFO [backend.app.main] [-] Found archive 29 with key (1, 'Vacuum_nozzle_2.3mf')
+2026-10-11 17:14:55,073 INFO [backend.app.main] [-] [PLATE-RESTORE] printer 1: print height unknown — capturing without restore
+2026-10-11 17:14:55,073 INFO [backend.app.main] [-] [FINISH-PHOTO-MOMENT] used buffered RTSP frame (88511 bytes)
+2026-10-11 17:14:55,847 INFO [backend.app.services.bambu_ftp] [-] FTP connected successfully to [IP] (model=P1S, prot_c=False)
+2026-10-11 17:14:55,893 INFO [backend.app.main] [-] Deleted /Vacuum_nozzle_2.3mf from printer [PRINTER] SD card
+2026-10-11 17:14:56,664 INFO [backend.app.services.bambu_ftp] [-] FTP connected successfully to [IP] (model=P1S, prot_c=False)
+2026-10-11 17:14:56,683 INFO [backend.app.main] [-] [TIMING] SD card cleanup: 1.637s elapsed
+2026-10-11 17:14:56,689 INFO [backend.app.main] [-] Updated queue item 4 status to completed
+2026-10-11 17:14:56,693 INFO [backend.app.main] [-] [TIMING] Queue item update: 1.647s elapsed
+2026-10-11 17:14:56,703 INFO [backend.app.services.usage_tracker] [-] [UsageTracker] on_print_complete: printer=1, archive=29, session=yes, ams_mapping=[2]
+2026-10-11 17:14:56,703 INFO [backend.app.services.usage_tracker] [-] [UsageTracker] PRINT COMPLETE printer 1: mapping=None, tray_now=255, last_loaded_tray=2
+2026-10-11 17:14:56,705 INFO [backend.app.services.usage_tracker] [-] [UsageTracker] 3MF: archive 29, plate_id=1, filament_usage=[{'slot_id': 1, 'used_g': 1.92, 'type': 'PLA', 'color': '#FFFFFF'}]
+2026-10-11 17:14:56,705 INFO [backend.app.services.usage_tracker] [-] [UsageTracker] 3MF: slot_to_tray=[2] (source: print_cmd)
+2026-10-11 17:14:56,705 INFO [backend.app.services.usage_tracker] [-] [UsageTracker] 3MF: slot_id=1 -> global_tray=2 -> AMS0-T2 (used_g=1.9, tray_now_override=None)
+2026-10-11 17:14:56,706 WARNING [backend.app.services.usage_tracker] [-] [UsageTracker] 3MF: no spool assignment at printer 1 AMS0-T2 — 1.9g not deducted
+2026-10-11 17:14:56,708 INFO [backend.app.services.usage_tracker] [-] [UsageTracker] AMS0-T2: no valid remain% at print start, nothing to charge for printer 1
+2026-10-11 17:14:56,708 INFO [backend.app.services.usage_tracker] [-] [UsageTracker] VT254: not in print mapping/tray_change_log — skipping fallback for printer 1
+2026-10-11 17:14:56,712 INFO [backend.app.services.spoolman_tracking] [-] [SPOOLMAN] No tracking data for print (printer=1, archive=29)
+2026-10-11 17:14:56,712 INFO [backend.app.main] [-] [TIMING] Spoolman usage report: 1.666s elapsed
+2026-10-11 17:14:56,712 INFO [backend.app.main] [-] [TIMING] Filament usage tracking: 1.666s elapsed
+2026-10-11 17:14:56,712 INFO [backend.app.main] [-] [TIMING] Archive lookup: 1.666s elapsed
+2026-10-11 17:14:56,712 INFO [backend.app.main] [-] [ARCHIVE] Updating archive 29 status...
+2026-10-11 17:14:56,715 INFO [backend.app.main] [-] [ARCHIVE] Archive 29 status updated to completed, failure_reason=None
+2026-10-11 17:14:56,716 INFO [backend.app.main] [-] [ARCHIVE] WebSocket notification sent for archive 29
+2026-10-11 17:14:56,716 INFO [backend.app.main] [-] [TIMING] Archive status update: 1.670s elapsed
+2026-10-11 17:14:56,719 INFO [backend.app.services.finance_billing] [-] Billing is disabled; skipping print charge for archive ID 29.
+2026-10-11 17:14:56,719 INFO [backend.app.main] [-] [TIMING] Finance charge update: 1.673s elapsed
+2026-10-11 17:14:56,723 INFO [backend.app.main] [-] [PRINT_LOG] Log entry written for archive 29
+2026-10-11 17:14:56,723 INFO [backend.app.main] [-] [TIMING] Print log entry: 1.676s elapsed
+2026-10-11 17:14:56,723 INFO [backend.app.main] [-] [TIMING] Background tasks scheduled (energy, photo): 1.677s elapsed
+2026-10-11 17:14:56,723 INFO [backend.app.main] [-] [TIMING] All background tasks scheduled: 1.677s elapsed
+2026-10-11 17:14:56,723 INFO [backend.app.main] [-] [CALLBACK] on_print_complete finished for printer 1, archive 29
+2026-10-11 17:14:56,723 INFO [backend.app.main] [-] [ENERGY-BG] Starting energy calculation for archive 29
+2026-10-11 17:14:56,723 INFO [backend.app.main] [-] [PHOTO-BG] Starting finish photo capture for archive 29
+2026-10-11 17:14:56,724 INFO [backend.app.main] [-] [AUTO-OFF-BG] Starting smart plug automation for printer 1
+2026-10-11 17:14:56,724 INFO [backend.app.main] [-] [MAINT-BG] Starting maintenance check for printer 1
+2026-10-11 17:14:56,725 INFO [backend.app.main] [-] [LAYER-TL] Stitching layer timelapse for printer 1
+2026-10-11 17:14:56,726 INFO [backend.app.main] [-] [ENERGY-BG] No start kWh recorded for archive 29
+2026-10-11 17:14:56,728 INFO [backend.app.services.smart_plug_manager] [-] Print completed successfully on printer 1, scheduling turn-off for plug 'Printer Plug'
+2026-10-11 17:14:56,728 INFO [backend.app.services.smart_plug_manager] [-] Scheduling turn-off for plug 'Printer Plug' in 300 seconds
+2026-10-11 17:14:56,728 INFO [backend.app.main] [-] [AUTO-OFF-BG] Completed
+2026-10-11 17:14:56,734 INFO [backend.app.main] [-] [PHOTO-BG] Saved stage-22 pre-captured frame: finish_20261011_171456_83027531.jpg (88511 bytes)
+2026-10-11 17:14:56,739 INFO [backend.app.main] [-] [PHOTO-BG] Saved: finish_20261011_171456_83027531.jpg
+2026-10-11 17:14:56,739 INFO [backend.app.main] [-] [PHOTO-NOTIFY] Photo task returned: finish_20261011_171456_83027531.jpg
+2026-10-11 17:14:56,739 INFO [backend.app.main] [-] [NOTIFY-BG] Starting notifications for printer 1, photo=finish_20261011_171456_83027531.jpg
+2026-10-11 17:14:56,745 INFO [backend.app.services.notification_service] [-] Found 1 providers for maintenance_due: ['home assistant notifications']
+2026-10-11 17:14:56,746 INFO [backend.app.main] [-] [NOTIFY-BG] Loaded finish photo bytes: 88511 bytes
+2026-10-11 17:14:56,746 INFO [backend.app.services.notification_service] [-] on_print_complete called for printer 1 ([PRINTER]), status=completed
+2026-10-11 17:14:56,748 INFO [backend.app.services.notification_service] [-] No notification providers configured for on_print_complete event on printer 1
+2026-10-11 17:14:56,750 INFO [backend.app.main] [-] [NOTIFY-BG] Completed
+2026-10-11 17:14:56,756 INFO [backend.app.services.notification_service] [-] Sent notification via home assistant notifications
+2026-10-11 17:14:56,756 INFO [backend.app.main] [-] [MAINT-BG] Sent notification: 1 items need attention
+2026-10-11 17:15:16,831 INFO [backend.app.services.print_scheduler] [-] Queue check: found 1 pending items: [(2, 1, None, 3)]
+2026-10-11 17:15:16,836 INFO [backend.app.services.print_scheduler] [-] Queue skip summary: {'scheduled_future': 1}
+2026-10-11 17:15:46,857 INFO [backend.app.services.print_scheduler] [-] Queue check: found 1 pending items: [(2, 1, None, 3)]
+2026-10-11 17:15:46,861 INFO [backend.app.services.print_scheduler] [-] Queue skip summary: {'scheduled_future': 1}
+2026-10-11 17:16:16,882 INFO [backend.app.services.print_scheduler] [-] Queue check: found 1 pending items: [(2, 1, None, 3)]
+2026-10-11 17:16:16,886 INFO [backend.app.services.print_scheduler] [-] Queue skip summary: {'scheduled_future': 1}
+2026-10-11 17:16:46,909 INFO [backend.app.services.print_scheduler] [-] Queue check: found 1 pending items: [(2, 1, None, 3)]
+2026-10-11 17:16:46,913 INFO [backend.app.services.print_scheduler] [-] Queue skip summary: {'scheduled_future': 1}
+2026-10-11 17:17:16,936 INFO [backend.app.services.print_scheduler] [-] Queue check: found 1 pending items: [(2, 1, None, 3)]
+2026-10-11 17:17:16,939 INFO [backend.app.services.print_scheduler] [-] Queue skip summary: {'scheduled_future': 1}
+2026-10-11 17:17:26,787 INFO [uvicorn.access] [-] [IP]:59470 - "POST /api/v1/printers/camera/stream-token HTTP/1.1" 200
+2026-10-11 17:17:26,797 INFO [uvicorn.access] [-] [IP]:57505 - "POST /api/v1/auth/media-token HTTP/1.1" 200
+2026-10-11 17:17:26,857 INFO [backend.app.api.routes.cloud] [9a1bfcd8] get_filament_info called with 3 IDs: ['GFL99', 'GFA00', 'GFG99']
+2026-10-11 17:17:27,498 INFO [uvicorn.access] [-] [IP]:59470 - "POST /api/v1/cloud/filament-info HTTP/1.1" 200
+2026-10-11 17:17:36,489 INFO [uvicorn.access] [-] [IP]:58688 - "POST /api/v1/library/files?generate_stl_thumbnails=true HTTP/1.1" 200
+2026-10-11 17:17:36,560 INFO [uvicorn.access] [-] [IP]:59033 - "POST /api/v1/library/files?generate_stl_thumbnails=true HTTP/1.1" 200
+2026-10-11 17:17:44,323 INFO [backend.app.api.routes.print_queue] [fb7781a2] Added library file 9 to queue for 1
+2026-10-11 17:17:44,324 INFO [uvicorn.access] [-] [IP]:65180 - "POST /api/v1/queue/ HTTP/1.1" 200
+2026-10-11 17:17:46,962 INFO [backend.app.services.print_scheduler] [-] Queue check: found 2 pending items: [(5, 1, None, 9), (2, 1, None, 3)]
+2026-10-11 17:17:46,973 INFO [backend.app.services.print_scheduler] [-] Queue skip summary: {'scheduled_future': 1}
+2026-10-11 17:17:46,973 INFO [backend.app.services.print_scheduler] [-] Queue: printer 1 reserved — selected for dispatch in this pass
+2026-10-11 17:17:46,975 INFO [backend.app.services.print_scheduler] [-] Launching 1 upload(s) (pool 0/4 in flight)
+2026-10-11 17:17:46,980 INFO [backend.app.services.print_scheduler] [-] Starting queue item 5
+2026-10-11 17:17:47,022 INFO [backend.app.services.print_scheduler] [-] Queue item 5: Created archive 30 from library file 9
+2026-10-11 17:17:47,027 INFO [backend.app.services.print_scheduler] [-] Queue item 5: FTP upload starting - printer=[PRINTER] (P1S), ip=[IP], file=Vacuum_nozzle_3.3mf, local_path=/app/data/archive/1/20261011_171746_Vacuum_nozzle_3/2eda8b44e202473ca10356e3d7accc31.3mf, retry_enabled=True, retry_count=3, timeout=30.0
+2026-10-11 17:17:47,826 INFO [backend.app.services.bambu_ftp] [-] FTP connected successfully to [IP] (model=P1S, prot_c=False)
+2026-10-11 17:17:47,847 INFO [backend.app.services.bambu_ftp] [-] FTP connecting to [IP] for upload (model=P1S, mode=prot_p, socket_timeout=30.0s, deadline=600s)...
+2026-10-11 17:17:48,611 INFO [backend.app.services.bambu_ftp] [-] FTP connected successfully to [IP] (model=P1S, prot_c=False)
+2026-10-11 17:17:48,611 INFO [backend.app.services.bambu_ftp] [-] FTP connected to [IP]
+2026-10-11 17:17:48,611 INFO [backend.app.services.bambu_ftp] [-] FTP uploading /app/data/archive/1/20261011_171746_Vacuum_nozzle_3/2eda8b44e202473ca10356e3d7accc31.3mf (3790359 bytes) to /Vacuum_nozzle_3.3mf
+2026-10-11 17:17:48,660 INFO [backend.app.services.bambu_ftp] [-] FTP data channel ready in 0.0s (PASV + TLS handshake)
+2026-10-11 17:17:50,001 INFO [backend.app.services.print_scheduler] [-] Queue check: found 1 pending items: [(2, 1, None, 3)]
+2026-10-11 17:17:50,006 INFO [backend.app.services.print_scheduler] [-] Queue skip summary: {'scheduled_future': 1}
+2026-10-11 17:17:50,006 INFO [backend.app.services.print_scheduler] [-] Queue: printer 1 unavailable — an upload to it is still in flight (now: connected=True, state=FINISH, awaiting_plate_clear=True)
+2026-10-11 17:17:53,023 INFO [backend.app.services.print_scheduler] [-] Queue check: found 1 pending items: [(2, 1, None, 3)]
+2026-10-11 17:17:53,028 INFO [backend.app.services.print_scheduler] [-] Queue skip summary: {'scheduled_future': 1}
+2026-10-11 17:17:53,028 INFO [backend.app.services.print_scheduler] [-] Queue: printer 1 unavailable — an upload to it is still in flight (now: connected=True, state=FINISH, awaiting_plate_clear=True)
+2026-10-11 17:17:56,047 INFO [backend.app.services.print_scheduler] [-] Queue check: found 1 pending items: [(2, 1, None, 3)]
+2026-10-11 17:17:56,051 INFO [backend.app.services.print_scheduler] [-] Queue skip summary: {'scheduled_future': 1}
+2026-10-11 17:17:56,051 INFO [backend.app.services.print_scheduler] [-] Queue: printer 1 unavailable — an upload to it is still in flight (now: connected=True, state=FINISH, awaiting_plate_clear=True)
+2026-10-11 17:17:59,071 INFO [backend.app.services.print_scheduler] [-] Queue check: found 1 pending items: [(2, 1, None, 3)]
+2026-10-11 17:17:59,074 INFO [backend.app.services.print_scheduler] [-] Queue skip summary: {'scheduled_future': 1}
+2026-10-11 17:17:59,075 INFO [backend.app.services.print_scheduler] [-] Queue: printer 1 unavailable — an upload to it is still in flight (now: connected=True, state=FINISH, awaiting_plate_clear=True)
+2026-10-11 17:18:02,092 INFO [backend.app.services.print_scheduler] [-] Queue check: found 1 pending items: [(2, 1, None, 3)]
+2026-10-11 17:18:02,097 INFO [backend.app.services.print_scheduler] [-] Queue skip summary: {'scheduled_future': 1}
+2026-10-11 17:18:02,097 INFO [backend.app.services.print_scheduler] [-] Queue: printer 1 unavailable — an upload to it is still in flight (now: connected=True, state=FINISH, awaiting_plate_clear=True)
+2026-10-11 17:18:05,114 INFO [backend.app.services.print_scheduler] [-] Queue check: found 1 pending items: [(2, 1, None, 3)]
+2026-10-11 17:18:05,118 INFO [backend.app.services.print_scheduler] [-] Queue skip summary: {'scheduled_future': 1}
+2026-10-11 17:18:05,119 INFO [backend.app.services.print_scheduler] [-] Queue: printer 1 unavailable — an upload to it is still in flight (now: connected=True, state=FINISH, awaiting_plate_clear=True)
+2026-10-11 17:18:06,309 INFO [uvicorn.access] [-] [IP]:63083 - "PATCH /api/v1/printers/1 HTTP/1.1" 200
+2026-10-11 17:18:08,138 INFO [backend.app.services.print_scheduler] [-] Queue check: found 1 pending items: [(2, 1, None, 3)]
+2026-10-11 17:18:08,144 INFO [backend.app.services.print_scheduler] [-] Queue skip summary: {'scheduled_future': 1}
+2026-10-11 17:18:08,144 INFO [backend.app.services.print_scheduler] [-] Queue: printer 1 unavailable — an upload to it is still in flight (now: connected=True, state=FINISH, awaiting_plate_clear=True)
+2026-10-11 17:18:10,786 INFO [backend.app.services.bambu_ftp] [-] FTP STOR confirmed for /Vacuum_nozzle_3.3mf: 226
+2026-10-11 17:18:10,787 INFO [backend.app.services.bambu_ftp] [-] FTP upload complete: /Vacuum_nozzle_3.3mf (3790359 bytes in 22.2s, 167 KB/s)
+2026-10-11 17:18:10,787 INFO [backend.app.services.bambu_ftp] [-] FTP mode cached for [IP]: prot_p
+2026-10-11 17:18:10,805 INFO [backend.app.main] [-] Registered expected print: printer=1, file=Vacuum_nozzle_3.3mf, archive=30, ams_mapping=[2], plate_id=1
+2026-10-11 17:18:10,817 INFO [backend.app.services.print_scheduler] [-] Queue item 5: Status set to 'printing', sending print command...
+2026-10-11 17:18:10,821 INFO [backend.app.services.printer_manager] [-] PRINT COMMAND: printer=1, file=Vacuum_nozzle_3.3mf, caller=print_scheduler.py:2431:_dispatch_one
+2026-10-11 17:18:10,822 INFO [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Sending print command: {"print": {"sequence_id": "20000", "command": "project_file", "param": "Metadata/plate_1.gcode", "url": "ftp://Vacuum_nozzle_3.3mf", "file": "Vacuum_nozzle_3.3mf", "md5": "", "bed_type": "auto", "timelapse": false, "bed_leveling": false, "auto_bed_leveling": 0, "flow_cali": false, "vibration_cali": true, "layer_inspect": false, "use_ams": true, "extrude_cali_flag": 0, "extrude_cali_manual_mode": 0, "nozzle_offset_cali": 0, "subtask_name": "Vacuum_nozzle_3", "profile_id": "0", "project_id": "730529224", "subtask_id": "730529224", "task_id": "730529224", "ams_mapping": [2], "ams_mapping2": [{"ams_id": 0, "slot_id": 2}]}}
+2026-10-11 17:18:10,822 INFO [backend.app.services.print_scheduler] [-] Queue item 5: Print started successfully - Vacuum_nozzle_3.gcode.3mf
+2026-10-11 17:18:11,162 INFO [backend.app.services.print_scheduler] [-] Queue check: found 1 pending items: [(2, 1, None, 3)]
+2026-10-11 17:18:11,168 INFO [backend.app.services.print_scheduler] [-] Queue skip summary: {'scheduled_future': 1}
+2026-10-11 17:18:11,168 INFO [backend.app.services.print_scheduler] [-] Queue: printer 1 unavailable — an item is already printing on it (now: connected=True, state=FINISH, awaiting_plate_clear=False)
+2026-10-11 17:18:19,907 INFO [backend.app.services.bambu_mqtt] [-] [[SERIAL]] PRINT START detected - file: Vacuum_nozzle_3.3mf, subtask: Vacuum_nozzle_3, is_new: True, is_file_change: False
+2026-10-11 17:18:19,908 INFO [backend.app.main] [-] [CALLBACK] on_print_start called for printer 1, data keys: ['filename', 'subtask_name', 'remaining_time', 'raw_data', 'ams_mapping']
+2026-10-11 17:18:19,911 INFO [backend.app.services.usage_tracker] [-] [UsageTracker] Skipped trays with invalid remain% for printer 1: AMS0-T0(remain=-1), AMS0-T1(remain=-1), AMS0-T2(remain=-1), AMS0-T3(remain=-1)
+2026-10-11 17:18:19,911 INFO [backend.app.services.usage_tracker] [-] [UsageTracker] PRINT START printer 1: mapping=None, tray_now=255, last_loaded_tray=2
+2026-10-11 17:18:19,911 INFO [backend.app.services.usage_tracker] [-] [UsageTracker] PRINT START printer 1: mapping-related keys: {'ams_extruder_map': {'0': 0}}
+2026-10-11 17:18:19,911 INFO [backend.app.services.usage_tracker] [-] [UsageTracker] PRINT START printer 1 AMS 0: T0(type=PLA, color=000000FF, now=?, tar=?), T1(type=PLA, color=0ACC38FF, now=?, tar=?), T2(type=PLA, color=FF80C0FF, now=?, tar=?), T3(type=PLA, color=80FF80FF, now=?, tar=?)
+2026-10-11 17:18:19,921 INFO [backend.app.services.usage_tracker] [-] [UsageTracker] Captured start remain% for printer 1 (1 trays): {'255-0': 0}
+2026-10-11 17:18:19,924 INFO [backend.app.services.smart_plug_manager] [-] Print started on printer 1, turning on plug 'Printer Plug'
+2026-10-11 17:18:19,944 INFO [backend.app.api.routes.printers] [ccf5b8a1] Cover: resolved plate 1 before download (subtask=Vacuum_nozzle_3)
+2026-10-11 17:18:19,948 INFO [backend.app.api.routes.printers] [ccf5b8a1] Cover using cached 3MF from /app/data/archive/1/20261011_171746_Vacuum_nozzle_3/2eda8b44e202473ca10356e3d7accc31.3mf (avoided duplicate FTP)
+2026-10-11 17:18:19,948 INFO [backend.app.api.routes.printers] [ccf5b8a1] Downloaded file size: 3790359 bytes
+2026-10-11 17:18:20,027 INFO [backend.app.services.homeassistant] [-] Turned ON HA entity 'Printer Plug' (switch.printer_plug)
+2026-10-11 17:18:20,031 INFO [backend.app.main] [-] [PLATE CHECK] printer_id=1, plate_detection_enabled=False
+2026-10-11 17:18:20,031 INFO [backend.app.main] [-] [CALLBACK] Print start detected - filename: Vacuum_nozzle_3.3mf, subtask: Vacuum_nozzle_3
+2026-10-11 17:18:20,031 INFO [backend.app.main] [-] Using expected archive 30 for print (skipping duplicate)
+2026-10-11 17:18:20,034 INFO [backend.app.main] [-] [CALLBACK] Injected ams_mapping into usage tracker session: [2]
+2026-10-11 17:18:20,048 WARNING [backend.app.main] [-] [ENERGY] No plug on printer 1 reports a lifetime energy counter for archive 30 (tried: Printer Plug)
+2026-10-11 17:18:20,051 INFO [backend.app.main] [-] [SNAPSHOT] Using buffered frame for printer 1: 87961 bytes
+2026-10-11 17:18:20,051 INFO [backend.app.services.notification_service] [-] on_print_start called for printer 1 ([PRINTER])
+2026-10-11 17:18:20,052 INFO [backend.app.services.notification_service] [-] No notification providers configured for print_start event on printer 1
+2026-10-11 17:18:20,054 INFO [backend.app.main] [-] Loaded 1 printable objects for printer 1
+2026-10-11 17:18:20,901 INFO [backend.app.services.bambu_ftp] [-] FTP connected successfully to [IP] (model=P1S, prot_c=False)
+2026-10-11 17:18:21,051 INFO [backend.app.main] [-] [TIMELAPSE] Baseline at print start: 4 video files for printer 1
+2026-10-11 17:18:41,188 INFO [backend.app.services.print_scheduler] [-] Queue check: found 1 pending items: [(2, 1, None, 3)]
+2026-10-11 17:18:41,192 INFO [backend.app.services.print_scheduler] [-] Queue skip summary: {'scheduled_future': 1}
+2026-10-11 17:18:41,192 INFO [backend.app.services.print_scheduler] [-] Queue: printer 1 unavailable — an item is already printing on it (now: connected=True, state=RUNNING, awaiting_plate_clear=False)
+2026-10-11 17:18:49,503 INFO [backend.app.main] [-] Recorded 1 AMS sensor history entries
+2026-10-11 17:19:11,212 INFO [backend.app.services.print_scheduler] [-] Queue check: found 1 pending items: [(2, 1, None, 3)]
+2026-10-11 17:19:11,215 INFO [backend.app.services.print_scheduler] [-] Queue skip summary: {'scheduled_future': 1}
+2026-10-11 17:19:11,216 INFO [backend.app.services.print_scheduler] [-] Queue: printer 1 unavailable — an item is already printing on it (now: connected=True, state=RUNNING, awaiting_plate_clear=False)
+2026-10-11 17:19:41,237 INFO [backend.app.services.print_scheduler] [-] Queue check: found 1 pending items: [(2, 1, None, 3)]
+2026-10-11 17:19:41,242 INFO [backend.app.services.print_scheduler] [-] Queue skip summary: {'scheduled_future': 1}
+2026-10-11 17:19:41,242 INFO [backend.app.services.print_scheduler] [-] Queue: printer 1 unavailable — an item is already printing on it (now: connected=True, state=RUNNING, awaiting_plate_clear=False)
+2026-10-11 17:20:11,263 INFO [backend.app.services.print_scheduler] [-] Queue check: found 1 pending items: [(2, 1, None, 3)]
+2026-10-11 17:20:11,268 INFO [backend.app.services.print_scheduler] [-] Queue skip summary: {'scheduled_future': 1}
+2026-10-11 17:20:11,269 INFO [backend.app.services.print_scheduler] [-] Queue: printer 1 unavailable — an item is already printing on it (now: connected=True, state=RUNNING, awaiting_plate_clear=False)
+2026-10-11 17:20:41,288 INFO [backend.app.services.print_scheduler] [-] Queue check: found 1 pending items: [(2, 1, None, 3)]
+2026-10-11 17:20:41,292 INFO [backend.app.services.print_scheduler] [-] Queue skip summary: {'scheduled_future': 1}
+2026-10-11 17:20:41,292 INFO [backend.app.services.print_scheduler] [-] Queue: printer 1 unavailable — an item is already printing on it (now: connected=True, state=RUNNING, awaiting_plate_clear=False)
+2026-10-11 17:20:45,553 INFO [backend.app.main] [-] [SNAPSHOT] Using buffered frame for printer 1: 91460 bytes
+2026-10-11 17:21:11,314 INFO [backend.app.services.print_scheduler] [-] Queue check: found 1 pending items: [(2, 1, None, 3)]
+2026-10-11 17:21:11,317 INFO [backend.app.services.print_scheduler] [-] Queue skip summary: {'scheduled_future': 1}
+2026-10-11 17:21:11,318 INFO [backend.app.services.print_scheduler] [-] Queue: printer 1 unavailable — an item is already printing on it (now: connected=True, state=RUNNING, awaiting_plate_clear=False)
+2026-10-11 17:21:26,287 INFO [backend.app.main] [-] [SNAPSHOT] Using buffered frame for printer 1: 91372 bytes
+2026-10-11 17:21:41,341 INFO [backend.app.services.print_scheduler] [-] Queue check: found 1 pending items: [(2, 1, None, 3)]
+2026-10-11 17:21:41,345 INFO [backend.app.services.print_scheduler] [-] Queue skip summary: {'scheduled_future': 1}
+2026-10-11 17:21:41,345 INFO [backend.app.services.print_scheduler] [-] Queue: printer 1 unavailable — an item is already printing on it (now: connected=True, state=RUNNING, awaiting_plate_clear=False)
+2026-10-11 17:22:11,369 INFO [backend.app.services.print_scheduler] [-] Queue check: found 1 pending items: [(2, 1, None, 3)]
+2026-10-11 17:22:11,373 INFO [backend.app.services.print_scheduler] [-] Queue skip summary: {'scheduled_future': 1}
+2026-10-11 17:22:11,373 INFO [backend.app.services.print_scheduler] [-] Queue: printer 1 unavailable — an item is already printing on it (now: connected=True, state=RUNNING, awaiting_plate_clear=False)
+2026-10-11 17:22:41,396 INFO [backend.app.services.print_scheduler] [-] Queue check: found 1 pending items: [(2, 1, None, 3)]
+2026-10-11 17:22:41,400 INFO [backend.app.services.print_scheduler] [-] Queue skip summary: {'scheduled_future': 1}
+2026-10-11 17:22:41,400 INFO [backend.app.services.print_scheduler] [-] Queue: printer 1 unavailable — an item is already printing on it (now: connected=True, state=RUNNING, awaiting_plate_clear=False)
+2026-10-11 17:23:11,422 INFO [backend.app.services.print_scheduler] [-] Queue check: found 1 pending items: [(2, 1, None, 3)]
+2026-10-11 17:23:11,427 INFO [backend.app.services.print_scheduler] [-] Queue skip summary: {'scheduled_future': 1}
+2026-10-11 17:23:11,427 INFO [backend.app.services.print_scheduler] [-] Queue: printer 1 unavailable — an item is already printing on it (now: connected=True, state=RUNNING, awaiting_plate_clear=False)
+2026-10-11 17:23:14,086 INFO [backend.app.api.routes.support] [0aa99837] Log level changed to DEBUG
+2026-10-11 17:23:14,086 INFO [backend.app.api.routes.bug_report] [0aa99837] Bug report: enabled debug logging
+2026-10-11 17:23:14,087 DEBUG [backend.app.services.bambu_mqtt] [0aa99837] [[SERIAL]] Requesting status update (pushall)
+2026-10-11 17:23:14,087 INFO [uvicorn.access] [-] [IP]:53017 - "POST /api/v1/bug-report/start-logging HTTP/1.1" 200
+2026-10-11 17:23:14,819 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Received gcode_state: RUNNING, gcode_file: Vacuum_nozzle_3.3mf, subtask_name: Vacuum_nozzle_3
+2026-10-11 17:23:14,819 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] AMS dict fields: {'ams_exist_bits': '1', 'tray_exist_bits': 'f', 'tray_is_bbl_bits': 'f', 'tray_tar': '2', 'tray_now': '2', 'tray_pre': '2', 'tray_read_done_bits': 'f', 'tray_reading_bits': '0', 'version': 13, 'insert_flag': True, 'power_on_flag': False}
+2026-10-11 17:23:14,820 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] tray_now updated: 2
+2026-10-11 17:23:14,820 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Merged AMS data: 1 new units, 1 total
+2026-10-11 17:23:14,820 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] AMS 0 info=0x1001 -> extruder 0
+2026-10-11 17:23:14,820 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] ams_extruder_map: {'0': 0}
+2026-10-11 17:23:14,820 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] ams_status: 768 (main=3, sub=0)
+2026-10-11 17:23:14,820 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Received command response: push_status
+2026-10-11 17:23:14,820 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] chamber_temper raw value: 5.0
+2026-10-11 17:23:14,820 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] chamber_temper direct value: 5.0°C (heater OFF)
+2026-10-11 17:23:14,821 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Chamber heating calculated: target=0.0, current=5.0, heating=False, respect_local=False
+2026-10-11 17:23:14,821 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Chamber temp updated to: 5.0, target: 0.0, heating: False
+2026-10-11 17:23:14,821 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] HMS data received: []
+2026-10-11 17:23:14,821 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] ipcam field: {'ipcam_dev': '1', 'ipcam_record': 'enable', 'timelapse': 'disable', 'resolution': '', 'tutk_server': 'disable', 'mode_bits': 3}
+2026-10-11 17:23:14,821 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] wifi_signal received: -43dBm
+2026-10-11 17:23:14,821 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] lights_report: [{'node': 'chamber_light', 'mode': 'on'}]
+2026-10-11 17:23:14,821 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] gcode_state: RUNNING -> RUNNING, file: Vacuum_nozzle_3.3mf, subtask: Vacuum_nozzle_3
+2026-10-11 17:23:18,869 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Received command response: push_status
+2026-10-11 17:23:18,869 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] wifi_signal received: -42dBm
+2026-10-11 17:23:20,901 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Received command response: push_status
+2026-10-11 17:23:20,902 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] wifi_signal received: -40dBm
+2026-10-11 17:23:22,926 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Received command response: push_status
+2026-10-11 17:23:22,926 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] wifi_signal received: -41dBm
