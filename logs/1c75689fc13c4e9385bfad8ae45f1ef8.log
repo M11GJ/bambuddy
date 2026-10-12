@@ -1,0 +1,200 @@
+2026-10-11 21:18:42,251 INFO [backend.app.main] [-] [SNAPSHOT] Capturing fresh frame for printer 1
+2026-10-11 21:18:42,251 INFO [backend.app.services.camera] [-] Capturing camera frame bytes from [IP] using chamber image protocol (model: [PRINTER])
+2026-10-11 21:18:43,733 INFO [backend.app.main] [-] [SNAPSHOT] Fresh camera frame: 48607 bytes
+2026-10-11 21:18:48,322 INFO [backend.app.main] [-] [Printer 1] Broadcasting AMS change via WebSocket
+2026-10-11 21:18:48,407 INFO [backend.app.services.spoolman] [-] Updating existing spool 33 for tag DC20700095CA4394...
+2026-10-11 21:18:48,498 INFO [backend.app.services.spoolman] [-] Updating existing spool 59 for tag D026D8BF7ED04CD0...
+2026-10-11 21:18:48,578 INFO [backend.app.services.spoolman] [-] Updating existing spool 31 for tag A732603D27434785...
+2026-10-11 21:18:48,666 INFO [backend.app.services.spoolman] [-] Updating existing spool 67 for tag F14039DE97CE4B59...
+2026-10-11 21:18:48,756 INFO [backend.app.main] [-] Auto-synced 4 AMS trays to Spoolman for printer 1
+2026-10-11 21:19:10,641 INFO [backend.app.main] [-] [SNAPSHOT] Capturing fresh frame for printer 1
+2026-10-11 21:19:10,641 INFO [backend.app.services.camera] [-] Capturing camera frame bytes from [IP] using chamber image protocol (model: [PRINTER])
+2026-10-11 21:19:12,826 INFO [backend.app.main] [-] [SNAPSHOT] Fresh camera frame: 45197 bytes
+2026-10-11 21:20:01,418 INFO [backend.app.main] [-] [SNAPSHOT] Capturing fresh frame for printer 1
+2026-10-11 21:20:01,418 INFO [backend.app.services.camera] [-] Capturing camera frame bytes from [IP] using chamber image protocol (model: [PRINTER])
+2026-10-11 21:20:02,577 INFO [backend.app.main] [-] [SNAPSHOT] Fresh camera frame: 47303 bytes
+2026-10-11 21:20:31,818 INFO [backend.app.main] [-] [SNAPSHOT] Capturing fresh frame for printer 1
+2026-10-11 21:20:31,819 INFO [backend.app.services.camera] [-] Capturing camera frame bytes from [IP] using chamber image protocol (model: [PRINTER])
+2026-10-11 21:20:33,733 INFO [backend.app.main] [-] [SNAPSHOT] Fresh camera frame: 46142 bytes
+2026-10-11 21:20:58,029 INFO [backend.app.main] [-] [SNAPSHOT] Capturing fresh frame for printer 1
+2026-10-11 21:20:58,029 INFO [backend.app.services.camera] [-] Capturing camera frame bytes from [IP] using chamber image protocol (model: [PRINTER])
+2026-10-11 21:20:59,614 INFO [backend.app.main] [-] [SNAPSHOT] Fresh camera frame: 45694 bytes
+2026-10-11 21:21:24,410 INFO [backend.app.main] [-] [SNAPSHOT] Capturing fresh frame for printer 1
+2026-10-11 21:21:24,410 INFO [backend.app.services.camera] [-] Capturing camera frame bytes from [IP] using chamber image protocol (model: [PRINTER])
+2026-10-11 21:21:26,005 INFO [backend.app.main] [-] [SNAPSHOT] Fresh camera frame: 45870 bytes
+2026-10-11 21:22:15,117 INFO [backend.app.main] [-] [Printer 1] Broadcasting AMS change via WebSocket
+2026-10-11 21:22:15,123 INFO [backend.app.main] [-] [SNAPSHOT] Capturing fresh frame for printer 1
+2026-10-11 21:22:15,123 INFO [backend.app.services.camera] [-] Capturing camera frame bytes from [IP] using chamber image protocol (model: [PRINTER])
+2026-10-11 21:22:15,222 INFO [backend.app.services.spoolman] [-] Updating existing spool 33 for tag DC20700095CA4394...
+2026-10-11 21:22:15,303 INFO [backend.app.services.spoolman] [-] Updating existing spool 59 for tag D026D8BF7ED04CD0...
+2026-10-11 21:22:15,416 INFO [backend.app.services.spoolman] [-] Updating existing spool 31 for tag A732603D27434785...
+2026-10-11 21:22:15,491 INFO [backend.app.services.spoolman] [-] Updating existing spool 67 for tag F14039DE97CE4B59...
+2026-10-11 21:22:15,572 INFO [backend.app.main] [-] Auto-synced 4 AMS trays to Spoolman for printer 1
+2026-10-11 21:22:16,597 INFO [backend.app.main] [-] [SNAPSHOT] Fresh camera frame: 45823 bytes
+2026-10-11 21:22:45,505 INFO [backend.app.main] [-] [SNAPSHOT] Capturing fresh frame for printer 1
+2026-10-11 21:22:45,505 INFO [backend.app.services.camera] [-] Capturing camera frame bytes from [IP] using chamber image protocol (model: [PRINTER])
+2026-10-11 21:22:46,754 INFO [backend.app.main] [-] [SNAPSHOT] Fresh camera frame: 45921 bytes
+2026-10-11 21:23:12,211 INFO [backend.app.main] [-] [SNAPSHOT] Capturing fresh frame for printer 1
+2026-10-11 21:23:12,212 INFO [backend.app.services.camera] [-] Capturing camera frame bytes from [IP] using chamber image protocol (model: [PRINTER])
+2026-10-11 21:23:13,704 INFO [backend.app.main] [-] [SNAPSHOT] Fresh camera frame: 46337 bytes
+2026-10-11 21:23:36,649 INFO [backend.app.main] [-] Recorded 1 AMS sensor history entries
+2026-10-11 21:23:52,765 INFO [backend.app.main] [-] [SNAPSHOT] Capturing fresh frame for printer 1
+2026-10-11 21:23:52,766 INFO [backend.app.services.camera] [-] Capturing camera frame bytes from [IP] using chamber image protocol (model: [PRINTER])
+2026-10-11 21:23:54,068 INFO [backend.app.main] [-] [SNAPSHOT] Fresh camera frame: 45968 bytes
+2026-10-11 21:24:25,192 INFO [backend.app.main] [-] [SNAPSHOT] Capturing fresh frame for printer 1
+2026-10-11 21:24:25,192 INFO [backend.app.services.camera] [-] Capturing camera frame bytes from [IP] using chamber image protocol (model: [PRINTER])
+2026-10-11 21:24:26,981 INFO [backend.app.main] [-] [SNAPSHOT] Fresh camera frame: 47172 bytes
+2026-10-11 21:25:36,181 INFO [backend.app.services.bambu_mqtt] [-] [[SERIAL]] PRINT COMPLETE detected - state: FINISH, status: completed, file: COOL_FIDGET.3mf, subtask: COOL_FIDGET, was_running: True, timelapse_during_print: False
+2026-10-11 21:25:36,181 INFO [backend.app.services.bambu_mqtt] [-] [[SERIAL]] FINISH PHOTO MOMENT (FINISH fallback) — stage-22 never fired; capturing at FINISH-state transition
+2026-10-11 21:25:36,182 INFO [backend.app.main] [-] [FINISH-PHOTO-MOMENT] printer=1 trigger=finish_state timelapse_active=False
+2026-10-11 21:25:36,182 INFO [backend.app.main] [-] [CALLBACK] on_print_complete started for printer 1
+2026-10-11 21:25:36,194 INFO [backend.app.main] [-] [TIMING] WebSocket send_print_complete: 0.012s elapsed
+2026-10-11 21:25:36,194 INFO [backend.app.main] [-] Print complete - filename: COOL_FIDGET.3mf, subtask: COOL_FIDGET, status: completed
+2026-10-11 21:25:36,194 INFO [backend.app.main] [-] Looking for archive in _active_prints, keys to try: [(1, 'COOL_FIDGET.3mf'), (1, 'COOL_FIDGET.gcode.3mf'), (1, 'COOL_FIDGET'), (1, 'COOL_FIDGET.3mf'), (1, 'COOL_FIDGET.3mf')]...
+2026-10-11 21:25:36,195 INFO [backend.app.main] [-] Current _active_prints: [(1, 'COOL_FIDGET.gcode.3mf'), (1, 'COOL_FIDGET.3mf')]
+2026-10-11 21:25:36,195 INFO [backend.app.main] [-] Found archive 383 with key (1, 'COOL_FIDGET.3mf')
+2026-10-11 21:25:36,212 INFO [backend.app.main] [-] [PLATE-RESTORE] printer 1: print height unknown — capturing without restore
+2026-10-11 21:25:36,212 INFO [backend.app.services.camera] [-] Capturing camera frame bytes from [IP] using chamber image protocol (model: [PRINTER])
+2026-10-11 21:25:37,342 INFO [backend.app.services.bambu_ftp] [-] FTP connected successfully to [IP] (model=[PRINTER], prot_c=False)
+2026-10-11 21:25:37,409 INFO [backend.app.main] [-] Deleted /COOL_FIDGET.3mf from printer [PRINTER] SD card
+2026-10-11 21:25:38,244 INFO [backend.app.services.bambu_ftp] [-] FTP connected successfully to [IP] (model=[PRINTER], prot_c=False)
+2026-10-11 21:25:38,347 INFO [backend.app.main] [-] [TIMING] SD card cleanup: 2.165s elapsed
+2026-10-11 21:25:38,351 INFO [backend.app.main] [-] Updated queue item 7 status to completed
+2026-10-11 21:25:38,356 INFO [backend.app.main] [-] [TIMING] Queue item update: 2.174s elapsed
+2026-10-11 21:25:38,412 INFO [backend.app.services.spoolman_tracking] [-] [SPOOLMAN] Archive 383: slot_to_tray=[-1, 1] (source: stored)
+2026-10-11 21:25:38,412 INFO [backend.app.services.spoolman_tracking] [-] [SPOOLMAN] Reporting per-filament usage for archive 383
+2026-10-11 21:25:38,515 INFO [backend.app.services.spoolman_tracking] [-] [SPOOLMAN] Archive 383: slot 2: 66.54g -> spool 59 (via tag)
+2026-10-11 21:25:38,515 INFO [backend.app.services.spoolman_tracking] [-] [SPOOLMAN] Archive 383: slots not part of this print, left alone: AMS0-T0, AMS0-T2, AMS0-T3, AMS255-T0
+2026-10-11 21:25:38,515 INFO [backend.app.services.spoolman_tracking] [-] [SPOOLMAN] Archive 383: updated 1 spool(s)
+2026-10-11 21:25:38,517 INFO [backend.app.services.spoolman_tracking] [-] [SPOOLMAN] Archive 383 filament_color '#C12E1F' -> '#00AE42' (from Spoolman spools)
+2026-10-11 21:25:38,521 INFO [backend.app.services.spoolman_tracking] [-] [SPOOLMAN] Archive 383 filament_type 'PLA Basic' -> 'PLA' (from Spoolman spools)
+2026-10-11 21:25:38,523 INFO [backend.app.services.spoolman_tracking] [-] [SPOOLMAN] Archive 383: 1 charged spool(s) carry no price -- leaving the cost as recorded at archive time
+2026-10-11 21:25:38,524 INFO [backend.app.main] [-] [TIMING] Spoolman usage report: 2.341s elapsed
+2026-10-11 21:25:38,524 INFO [backend.app.main] [-] [TIMING] Filament usage tracking: 2.342s elapsed
+2026-10-11 21:25:38,524 INFO [backend.app.main] [-] [TIMING] Archive lookup: 2.342s elapsed
+2026-10-11 21:25:38,524 INFO [backend.app.main] [-] [ARCHIVE] Updating archive 383 status...
+2026-10-11 21:25:38,529 INFO [backend.app.main] [-] [ARCHIVE] Archive 383 status updated to completed, failure_reason=None
+2026-10-11 21:25:38,529 INFO [backend.app.main] [-] [ARCHIVE] WebSocket notification sent for archive 383
+2026-10-11 21:25:38,529 INFO [backend.app.main] [-] [TIMING] Archive status update: 2.347s elapsed
+2026-10-11 21:25:38,535 INFO [backend.app.services.finance_billing] [-] Billing is disabled; skipping print charge for archive ID 383.
+2026-10-11 21:25:38,536 INFO [backend.app.main] [-] [TIMING] Finance charge update: 2.354s elapsed
+2026-10-11 21:25:38,541 INFO [backend.app.main] [-] [PRINT_LOG] Log entry written for archive 383
+2026-10-11 21:25:38,541 INFO [backend.app.main] [-] [TIMING] Print log entry: 2.359s elapsed
+2026-10-11 21:25:38,541 INFO [backend.app.main] [-] [TIMING] Background tasks scheduled (energy, photo): 2.359s elapsed
+2026-10-11 21:25:38,542 INFO [backend.app.main] [-] [TIMING] All background tasks scheduled: 2.360s elapsed
+2026-10-11 21:25:38,542 INFO [backend.app.main] [-] [CALLBACK] on_print_complete finished for printer 1, archive 383
+2026-10-11 21:25:38,542 INFO [backend.app.main] [-] [ENERGY-BG] Starting energy calculation for archive 383
+2026-10-11 21:25:38,542 INFO [backend.app.main] [-] [PHOTO-BG] Starting finish photo capture for archive 383
+2026-10-11 21:25:38,543 INFO [backend.app.main] [-] [AUTO-OFF-BG] Starting smart plug automation for printer 1
+2026-10-11 21:25:38,543 INFO [backend.app.main] [-] [MAINT-BG] Starting maintenance check for printer 1
+2026-10-11 21:25:38,543 INFO [backend.app.main] [-] [LAYER-TL] Stitching layer timelapse for printer 1
+2026-10-11 21:25:38,545 INFO [backend.app.main] [-] [AUTO-OFF-BG] Completed
+2026-10-11 21:25:38,548 INFO [backend.app.main] [-] [ENERGY-BG] No start kWh recorded for archive 383
+2026-10-11 21:25:38,559 INFO [backend.app.main] [-] [MAINT-BG] Completed (no items need attention)
+2026-10-11 21:25:42,349 INFO [backend.app.main] [-] [FINISH-PHOTO-MOMENT] captured RTSP frame (58726 bytes)
+2026-10-11 21:25:42,349 INFO [backend.app.main] [-] [PHOTO-BG] Saved stage-22 pre-captured frame: finish_20261011_212542_79bead2c.jpg (58726 bytes)
+2026-10-11 21:25:42,352 INFO [backend.app.main] [-] [PHOTO-BG] Saved: finish_20261011_212542_79bead2c.jpg
+2026-10-11 21:25:42,352 INFO [backend.app.main] [-] [PHOTO-NOTIFY] Photo task returned: finish_20261011_212542_79bead2c.jpg
+2026-10-11 21:25:42,352 INFO [backend.app.main] [-] [NOTIFY-BG] Starting notifications for printer 1, photo=finish_20261011_212542_79bead2c.jpg
+2026-10-11 21:25:42,356 INFO [backend.app.main] [-] [NOTIFY-BG] Loaded finish photo bytes: 58726 bytes
+2026-10-11 21:25:42,356 INFO [backend.app.services.notification_service] [-] on_print_complete called for printer 1 ([PRINTER]), status=completed
+2026-10-11 21:25:42,358 INFO [backend.app.services.notification_service] [-] No notification providers configured for on_print_complete event on printer 1
+2026-10-11 21:25:42,359 INFO [backend.app.main] [-] [NOTIFY-BG] Completed
+2026-10-11 21:28:36,657 INFO [backend.app.main] [-] Recorded 1 AMS sensor history entries
+2026-10-11 21:33:36,667 INFO [backend.app.main] [-] Recorded 1 AMS sensor history entries
+2026-10-11 21:35:53,213 INFO [backend.app.services.announcements] [-] Announcements feed #12: 2 for this install
+2026-10-11 21:38:36,675 INFO [backend.app.main] [-] Recorded 1 AMS sensor history entries
+2026-10-11 21:40:19,916 INFO [uvicorn.access] [-] [IP]:51394 - "POST /api/v1/auth/media-token HTTP/1.1" 200
+2026-10-11 21:40:19,934 INFO [uvicorn.access] [-] [IP]:51416 - "POST /api/v1/printers/camera/stream-token HTTP/1.1" 200
+2026-10-11 21:40:19,958 INFO [uvicorn.access] [-] [IP]:51418 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:40:23,011 INFO [uvicorn.access] [-] [IP]:51592 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:40:26,054 INFO [uvicorn.access] [-] [IP]:51638 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:40:29,103 INFO [uvicorn.access] [-] [IP]:51670 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:40:32,157 INFO [uvicorn.access] [-] [IP]:34710 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:40:35,197 INFO [uvicorn.access] [-] [IP]:34758 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:40:38,265 INFO [uvicorn.access] [-] [IP]:34796 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:40:41,317 INFO [uvicorn.access] [-] [IP]:45064 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:40:44,370 INFO [uvicorn.access] [-] [IP]:45092 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:40:47,426 INFO [uvicorn.access] [-] [IP]:45150 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:40:50,515 INFO [uvicorn.access] [-] [IP]:55070 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:40:53,632 INFO [uvicorn.access] [-] [IP]:55090 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:40:56,769 INFO [uvicorn.access] [-] [IP]:55134 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:41:00,128 INFO [uvicorn.access] [-] [IP]:58152 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:41:03,644 INFO [uvicorn.access] [-] [IP]:58198 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:41:07,376 INFO [uvicorn.access] [-] [IP]:58258 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:41:12,576 INFO [uvicorn.access] [-] [IP]:56094 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:41:19,777 INFO [uvicorn.access] [-] [IP]:34606 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:41:24,786 INFO [uvicorn.access] [-] [IP]:34654 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:41:31,341 INFO [uvicorn.access] [-] [IP]:47308 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:41:37,293 INFO [uvicorn.access] [-] [IP]:47312 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:41:42,304 INFO [uvicorn.access] [-] [IP]:33094 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:41:49,305 INFO [uvicorn.access] [-] [IP]:60518 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:41:56,303 INFO [uvicorn.access] [-] [IP]:60528 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:42:02,304 INFO [uvicorn.access] [-] [IP]:58232 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:42:08,299 INFO [uvicorn.access] [-] [IP]:58246 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:42:13,297 INFO [uvicorn.access] [-] [IP]:57972 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:42:19,649 INFO [uvicorn.access] [-] [IP]:43516 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:42:20,148 INFO [backend.app.api.routes.cloud] [33bd0b25] get_filament_info called with 1 IDs: ['GFA00']
+2026-10-11 21:42:20,259 INFO [uvicorn.access] [-] [IP]:43588 - "POST /api/v1/cloud/filament-info HTTP/1.1" 200
+2026-10-11 21:42:22,701 INFO [uvicorn.access] [-] [IP]:43762 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:42:25,741 INFO [uvicorn.access] [-] [IP]:43804 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:42:28,779 INFO [uvicorn.access] [-] [IP]:43846 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:42:31,824 INFO [uvicorn.access] [-] [IP]:60262 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:42:35,303 INFO [uvicorn.access] [-] [IP]:60310 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:42:39,305 INFO [uvicorn.access] [-] [IP]:45106 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:42:43,303 INFO [uvicorn.access] [-] [IP]:45126 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:42:47,296 INFO [uvicorn.access] [-] [IP]:45130 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:42:51,298 INFO [uvicorn.access] [-] [IP]:41650 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:42:55,304 INFO [uvicorn.access] [-] [IP]:41682 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:42:59,324 INFO [uvicorn.access] [-] [IP]:56022 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:43:03,300 INFO [uvicorn.access] [-] [IP]:56034 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:43:07,303 INFO [uvicorn.access] [-] [IP]:56050 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:43:11,294 INFO [uvicorn.access] [-] [IP]:55410 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:43:12,608 WARNING [backend.app.services.bambu_mqtt] [f0f850ac] [[SERIAL]] Connection stale - no message for 65.0s, forcing reconnect
+2026-10-11 21:43:12,617 INFO [backend.app.main] [f0f850ac] [#1752] Printer 1 connected→disconnected edge; scheduling offline notification in 60s
+2026-10-11 21:43:13,409 INFO [backend.app.main] [-] [#1752] Printer 1 reconnected before debounce; cancelling pending offline notification
+2026-10-11 21:43:13,409 INFO [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Requesting K-profiles for nozzle_diameter=0.4 (attempt 1/2, seq_id=26)
+2026-10-11 21:43:14,953 INFO [uvicorn.access] [-] [IP]:55464 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:43:18,410 WARNING [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Timeout on K-profiles request attempt 1/2
+2026-10-11 21:43:18,911 INFO [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Requesting K-profiles for nozzle_diameter=0.4 (attempt 2/2, seq_id=27)
+2026-10-11 21:43:19,354 INFO [uvicorn.access] [-] [IP]:44556 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:43:23,912 WARNING [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Timeout on K-profiles request attempt 2/2
+2026-10-11 21:43:23,912 ERROR [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Failed to get K-profiles after 2 attempts
+2026-10-11 21:43:23,912 INFO [backend.app.main] [-] [Printer 1] Primed K-profile table for nozzle 0.4: 0 profiles
+2026-10-11 21:43:23,994 INFO [uvicorn.access] [-] [IP]:44624 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:43:29,002 INFO [uvicorn.access] [-] [IP]:44658 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:43:34,143 INFO [uvicorn.access] [-] [IP]:40570 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:43:36,684 INFO [backend.app.main] [-] Recorded 1 AMS sensor history entries
+2026-10-11 21:43:39,458 INFO [uvicorn.access] [-] [IP]:54098 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:43:42,650 WARNING [backend.app.services.bambu_mqtt] [5a776a93] [[SERIAL]] Connection stale - no message for 95.0s, forcing reconnect
+2026-10-11 21:43:42,665 INFO [backend.app.main] [5a776a93] [#1752] Printer 1 connected→disconnected edge; scheduling offline notification in 60s
+2026-10-11 21:43:43,407 INFO [backend.app.main] [-] [#1752] Printer 1 reconnected before debounce; cancelling pending offline notification
+2026-10-11 21:43:43,407 INFO [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Requesting K-profiles for nozzle_diameter=0.4 (attempt 1/2, seq_id=30)
+2026-10-11 21:43:47,220 INFO [uvicorn.access] [-] [IP]:54150 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:43:48,408 WARNING [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Timeout on K-profiles request attempt 1/2
+2026-10-11 21:43:48,910 INFO [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Requesting K-profiles for nozzle_diameter=0.4 (attempt 2/2, seq_id=31)
+2026-10-11 21:43:53,911 WARNING [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Timeout on K-profiles request attempt 2/2
+2026-10-11 21:43:53,911 ERROR [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Failed to get K-profiles after 2 attempts
+2026-10-11 21:43:53,911 INFO [backend.app.main] [-] [Printer 1] Primed K-profile table for nozzle 0.4: 0 profiles
+2026-10-11 21:43:54,489 INFO [uvicorn.access] [-] [IP]:57120 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:43:59,332 INFO [uvicorn.access] [-] [IP]:56272 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:44:05,494 INFO [uvicorn.access] [-] [IP]:56332 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:44:09,681 INFO [backend.app.services.bambu_mqtt] [-] [[SERIAL]] PRINT START detected - file: COOL_FIDGET.gcode.3mf, subtask: COOL_FIDGET, is_new: True, is_file_change: True
+2026-10-11 21:44:09,681 INFO [backend.app.main] [-] [CALLBACK] on_print_start called for printer 1, data keys: ['filename', 'subtask_name', 'remaining_time', 'raw_data', 'ams_mapping']
+2026-10-11 21:44:09,684 INFO [backend.app.services.usage_tracker] [-] [UsageTracker] PRINT START printer 1: mapping=None, tray_now=0, last_loaded_tray=0
+2026-10-11 21:44:09,684 INFO [backend.app.services.usage_tracker] [-] [UsageTracker] PRINT START printer 1 AMS 0: T0(type=PLA, color=F4EE2AFF, now=?, tar=?), T1(type=PLA, color=00AE42FF, now=?, tar=?), T2(type=PLA, color=C12E1FFF, now=?, tar=?), T3(type=PLA, color=482960FF, now=?, tar=?)
+2026-10-11 21:44:09,689 INFO [backend.app.services.usage_tracker] [-] [UsageTracker] Captured start remain% for printer 1 (5 trays): {'0-0': 76, '0-1': 45, '0-2': 56, '0-3': 43, '255-0': 0}
+2026-10-11 21:44:09,691 INFO [backend.app.main] [-] [PLATE CHECK] printer_id=1, plate_detection_enabled=False
+2026-10-11 21:44:09,692 INFO [backend.app.main] [-] [CALLBACK] Print start detected - filename: COOL_FIDGET.gcode.3mf, subtask: COOL_FIDGET
+2026-10-11 21:44:09,694 INFO [backend.app.main] [-] Trying filenames: ['COOL_FIDGET.gcode.3mf', 'COOL_FIDGET.3mf']
+2026-10-11 21:44:10,611 INFO [backend.app.services.bambu_ftp] [-] FTP connected successfully to [IP] (model=[PRINTER], prot_c=False)
+2026-10-11 21:44:16,378 INFO [uvicorn.access] [-] [IP]:36036 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:44:24,154 INFO [uvicorn.access] [-] [IP]:48924 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:44:32,011 INFO [uvicorn.access] [-] [IP]:38122 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:44:37,196 INFO [uvicorn.access] [-] [IP]:38154 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-11 21:44:39,698 INFO [backend.app.services.bambu_ftp] [-] FTP download of /COOL_FIDGET.gcode.3mf passed its 30.0s deadline but the printer reports 11858944 bytes — allowing 270s more rather than declaring a slow transfer dead (#2957)
+2026-10-11 21:44:44,700 INFO [backend.app.api.routes.support] [1257020b] Log level changed to DEBUG
+2026-10-11 21:44:44,700 INFO [backend.app.api.routes.bug_report] [1257020b] Bug report: enabled debug logging
+2026-10-11 21:44:44,700 DEBUG [backend.app.services.bambu_mqtt] [1257020b] [[SERIAL]] Requesting status update (pushall)
+2026-10-11 21:44:44,701 INFO [uvicorn.access] [-] [IP]:42350 - "POST /api/v1/bug-report/start-logging HTTP/1.1" 200
+2026-10-11 21:44:44,832 INFO [uvicorn.access] [-] [IP]:42366 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
