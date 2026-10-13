@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, Float, String, func
+from sqlalchemy import Boolean, DateTime, Float, Integer, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.app.core.database import Base
@@ -46,6 +46,17 @@ class Printer(Base):
     # Queue: True after a print finishes/fails, until user acknowledges the plate is cleared.
     # Persisted so the gate survives crashes and power cycles (issue #961).
     awaiting_plate_clear: Mapped[bool] = mapped_column(Boolean, default=False)
+    # Build-plate swap (SwapMod-style) operation. Off by default; see
+    # services/swap_config.py and printer_manager.is_swap_blocked.
+    swap_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
+    # Unused spare plates waiting in the swapper's holder (the plate on the bed
+    # is not counted). None means "not entered yet" and blocks dispatch.
+    swap_plates_remaining: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    # Translation key of the reason the queue is stopped for this printer; None = not stopped.
+    swap_hold_reason: Mapped[str | None] = mapped_column(Text, nullable=True)
+    swap_hold_detail: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # JSON overrides parsed by swap_config.parse_swap_config; None = all defaults.
+    swap_config: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
 

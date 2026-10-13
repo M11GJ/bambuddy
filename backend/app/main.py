@@ -9686,6 +9686,11 @@ async def lifespan(app: FastAPI):
     # Rehydrate persisted awaiting-plate-clear gate (#961) so prompts survive restarts
     await printer_manager.load_awaiting_plate_clear_from_db()
 
+    # Swap (SwapMod) dispatch gate. Dispatch stays blocked for every printer
+    # until this succeeds, so keep retrying in the background on failure.
+    if not await printer_manager.load_swap_state_from_db():
+        printer_manager.start_swap_state_reload()
+
     # Layer change callback for external camera timelapse
     async def on_layer_change(printer_id: int, layer_num: int):
         """Capture timelapse frame on layer change + first layer notification."""

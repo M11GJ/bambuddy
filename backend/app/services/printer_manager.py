@@ -4,7 +4,7 @@ import re
 import traceback
 from collections.abc import Callable
 
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.app.models.printer import Printer
@@ -373,6 +373,16 @@ def supports_drying_while_printing(model: str | None, firmware: str | None) -> b
     return bool(firmware and firmware >= _DRY_WHILE_PRINTING_MIN_FIRMWARE[model_upper])
 
 
+# Plain-English text for swap hold reasons, used for external notifications
+# (the UI translates the key itself).
+_SWAP_HOLD_TEXT = {
+    "swap.hold.stateUnavailable": "swap state could not be read from the database",
+    "swap.hold.outOfPlates": "no spare build plates left in the holder",
+    "swap.hold.printNotConfirmed": "the last print did not finish as a confirmed swap job",
+    "swap.hold.platesUnknown": "the number of spare build plates has not been entered",
+}
+
+
 class PrinterInfo:
     """Basic printer info for callbacks."""
 
@@ -415,6 +425,14 @@ class PrinterManager:
         # Persisted to DB (printers.awaiting_plate_clear) so the gate survives restarts/power
         # cycles — see issue #961. Loaded into this set at startup via load_awaiting_plate_clear_from_db().
         self._awaiting_plate_clear: set[int] = set()
+        # Build-plate swap state mirrored from the printers table:
+        # {printer_id: (swap_enabled, swap_plates_remaining, swap_hold_reason)}.
+        # The DB is the source of truth; this mirror only serves the synchronous
+        # scheduler checks. Until it has been loaded every printer is blocked
+        # (fail closed), because we cannot tell which printers run a swapper.
+        self._swap_state: dict[int, tuple[bool, int | None, str | None]] = {}
+        self._swap_state_loaded = False
+        self._swap_reload_task: asyncio.Task | None = None
 
     def get_printer(self, printer_id: int) -> PrinterInfo | None:
         """Get printer info by ID."""
@@ -602,6 +620,158 @@ class PrinterManager:
                     logger.info("Loaded %d printer(s) awaiting plate-clear acknowledgment: %s", len(ids), sorted(ids))
         except Exception as e:
             logger.warning("Failed to load awaiting_plate_clear from DB: %s", e)
+
+    def is_swap_blocked(self, printer_id: int) -> str | None:
+        """Why the queue must not dispatch to this printer (translation key), or None.
+
+        Fail closed: before the swap state has been read from the DB we do not
+        know which printers run a swapper, so nothing is dispatched.
+        """
+        if not self._swap_state_loaded:
+            return "swap.hold.stateUnavailable"
+        enabled, remaining, hold = self._swap_state.get(printer_id, (False, None, None))
+        if not enabled:
+            return None
+        if hold:
+            return hold
+        if remaining is None:
+            return "swap.hold.platesUnknown"
+        return None
+
+    async def load_swap_state_from_db(self) -> bool:
+        """Read every printer's swap state. On failure, block all dispatch and return False."""
+        from backend.app.core.database import async_session
+
+        try:
+            async with async_session() as db:
+                rows = (
+                    await db.execute(
+                        select(
+                            Printer.id, Printer.swap_enabled, Printer.swap_plates_remaining, Printer.swap_hold_reason
+                        )
+                    )
+                ).all()
+        except Exception as e:
+            logger.error("Failed to load swap state from DB; blocking dispatch to all printers: %s", e)
+            self._swap_state_loaded = False
+            return False
+        self._swap_state = {r[0]: (bool(r[1]), r[2], r[3]) for r in rows}
+        self._swap_state_loaded = True
+        return True
+
+    def start_swap_state_reload(self) -> None:
+        """Retry the full swap-state load every 60 s until it succeeds (dispatch stays blocked meanwhile).
+
+        Must be called from the event loop. A second call while a retry loop is
+        already running is a no-op.
+        """
+        if self._swap_reload_task and not self._swap_reload_task.done():
+            return
+
+        async def _retry():
+            while not await self.load_swap_state_from_db():
+                await asyncio.sleep(60)
+            logger.info("Swap state loaded after retry; dispatch gate restored")
+
+        # Keep a reference so the task is not garbage-collected mid-retry.
+        self._swap_reload_task = asyncio.get_running_loop().create_task(_retry())
+
+    async def _refresh_swap_state(self, printer_id: int) -> None:
+        """Mirror one printer's committed swap state, broadcast it, and notify on a new hold."""
+        from backend.app.core.database import async_session
+
+        previous_hold = self._swap_state.get(printer_id, (False, None, None))[2]
+        try:
+            async with async_session() as db:
+                row = (
+                    await db.execute(
+                        select(
+                            Printer.swap_enabled,
+                            Printer.swap_plates_remaining,
+                            Printer.swap_hold_reason,
+                            Printer.swap_hold_detail,
+                        ).where(Printer.id == printer_id)
+                    )
+                ).one_or_none()
+        except Exception as e:
+            # The mirror may now disagree with the DB; block everything until a
+            # full reload succeeds rather than dispatch on a stale "not held".
+            logger.error("Failed to refresh swap state for printer %d; blocking dispatch: %s", printer_id, e)
+            self._swap_state_loaded = False
+            self.start_swap_state_reload()
+            return
+        if row is None:
+            self._swap_state.pop(printer_id, None)
+            return
+        enabled, remaining, hold, detail = row
+        self._swap_state[printer_id] = (bool(enabled), remaining, hold)
+        await self._broadcast_status_change(printer_id)
+        # Edge-triggered like _emit_plate_clear_change: notify only when a hold
+        # appears or changes, not on every refresh that re-reads the same hold.
+        if hold and hold != previous_hold:
+            await self._emit_swap_hold(printer_id, hold, detail)
+
+    def apply_swap_state_after_commit(self, printer_id: int) -> None:
+        """Re-read one printer's swap state after the caller committed.
+
+        Callers write through set_swap_hold / clear_swap_hold / set_swap_plates /
+        consume_swap_plate in their own session, commit, then call this. Memory,
+        UI and notifications therefore never show a state the DB rolled back.
+        """
+        # Only create the coroutine when there is a loop to run it on (avoids
+        # "coroutine was never awaited" in sync callers and tests).
+        if self._loop and self._loop.is_running():
+            self._schedule_async(self._refresh_swap_state(printer_id))
+
+    async def set_swap_hold(self, db: AsyncSession, printer_id: int, reason_key: str, detail: str | None) -> None:
+        """Stop the queue for this printer (written in the caller's transaction)."""
+        await db.execute(
+            update(Printer).where(Printer.id == printer_id).values(swap_hold_reason=reason_key, swap_hold_detail=detail)
+        )
+
+    async def clear_swap_hold(self, db: AsyncSession, printer_id: int) -> None:
+        await db.execute(
+            update(Printer).where(Printer.id == printer_id).values(swap_hold_reason=None, swap_hold_detail=None)
+        )
+
+    async def set_swap_plates(self, db: AsyncSession, printer_id: int, remaining: int) -> None:
+        await db.execute(update(Printer).where(Printer.id == printer_id).values(swap_plates_remaining=remaining))
+
+    async def consume_swap_plate(self, db: AsyncSession, printer_id: int) -> int | None:
+        """Atomically take one spare plate. None when the holder was already empty (or unknown)."""
+        # A single conditional UPDATE so two completions can never both take the last plate.
+        result = await db.execute(
+            update(Printer)
+            .where(Printer.id == printer_id, Printer.swap_plates_remaining > 0)
+            .values(swap_plates_remaining=Printer.swap_plates_remaining - 1)
+            .returning(Printer.swap_plates_remaining)
+        )
+        row = result.first()
+        return row[0] if row else None
+
+    async def _emit_swap_hold(self, printer_id: int, reason_key: str, detail: str | None) -> None:
+        """Tell external channels, once, that the queue stopped for a swap reason."""
+        from backend.app.services.swap_config import strip_error_key
+
+        printer = self.get_printer(printer_id) or await self._printer_info_from_db(printer_id)
+        name = printer.name if printer else f"printer {printer_id}"
+        # External channels get plain English, never a translation key (spec D9).
+        reason = f"Plate swapper stopped the queue on {name}: {_SWAP_HOLD_TEXT.get(reason_key, 'needs attention')}"
+        if detail:
+            reason = f"{reason} ({strip_error_key(detail)})"
+        try:
+            from backend.app.core.database import async_session
+            from backend.app.services.notification_service import notification_service
+
+            async with async_session() as db:
+                await notification_service.on_queue_job_waiting(
+                    job_name="Plate swapper",
+                    target_model=self.get_model(printer_id) or "",
+                    waiting_reason=reason,
+                    db=db,
+                )
+        except Exception as e:
+            logger.warning("Failed to send swap-hold notification for printer %d: %s", printer_id, e)
 
     def set_event_loop(self, loop: asyncio.AbstractEventLoop):
         """Set the event loop for async callbacks."""
@@ -1685,6 +1855,16 @@ def printer_state_to_dict(
         # "Clear Plate" button only appears when the 30 s REST fallback poll runs.
         "awaiting_plate_clear": printer_manager.is_awaiting_plate_clear(printer_id) if printer_id else False,
     }
+    if printer_id:
+        # Build-plate swap state, pushed over the WebSocket for the same reason as
+        # awaiting_plate_clear above. Before the first successful load the card
+        # must show why everything is stopped.
+        enabled, remaining, hold = printer_manager._swap_state.get(printer_id, (False, None, None))
+        result["swap"] = {
+            "enabled": enabled,
+            "plates_remaining": remaining,
+            "hold_reason": hold if printer_manager._swap_state_loaded else "swap.hold.stateUnavailable",
+        }
     # Add cover URL if there's an active print and printer_id is provided
     # Include PAUSE state so skip objects modal can show cover
     if printer_id and state.state in ("RUNNING", "PAUSE") and state.gcode_file:

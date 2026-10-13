@@ -3514,6 +3514,13 @@ async def run_migrations(conn):
     # Migration: Add awaiting_plate_clear column to printers (#961)
     await _safe_execute(conn, "ALTER TABLE printers ADD COLUMN awaiting_plate_clear BOOLEAN DEFAULT FALSE NOT NULL")
 
+    # Migration: build-plate swap (SwapMod) columns
+    await _safe_execute(conn, "ALTER TABLE printers ADD COLUMN swap_enabled BOOLEAN DEFAULT FALSE NOT NULL")
+    await _safe_execute(conn, "ALTER TABLE printers ADD COLUMN swap_plates_remaining INTEGER")
+    await _safe_execute(conn, "ALTER TABLE printers ADD COLUMN swap_hold_reason TEXT")
+    await _safe_execute(conn, "ALTER TABLE printers ADD COLUMN swap_hold_detail TEXT")
+    await _safe_execute(conn, "ALTER TABLE printers ADD COLUMN swap_config TEXT")
+
     # Migration: Add REST/Webhook smart plug fields
     await _safe_execute(conn, "ALTER TABLE smart_plugs ADD COLUMN rest_on_url VARCHAR(500)")
     await _safe_execute(conn, "ALTER TABLE smart_plugs ADD COLUMN rest_on_body TEXT")
