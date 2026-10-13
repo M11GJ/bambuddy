@@ -6,6 +6,7 @@ geometry may sit in the zones the swapper's clips and hooks occupy.
 """
 
 import json
+import math
 import zipfile
 from dataclasses import dataclass
 from pathlib import Path
@@ -40,7 +41,7 @@ def check_swap_job(threemf_path: Path, plate_id: int, config: SwapConfig) -> Swa
             if json_name not in names:
                 return _fail("swap.guard.unreadable", f"{json_name} not found")
             plate_meta = json.loads(z.read(json_name))
-    except (zipfile.BadZipFile, OSError, KeyError, json.JSONDecodeError, UnicodeDecodeError) as e:
+    except Exception as e:  # fail closed: encrypted members, zlib.error, EOFError etc. must not escape
         return _fail("swap.guard.unreadable", str(e))
 
     # Count only the executed part: the marker also appears inside the echoed
@@ -54,21 +55,35 @@ def check_swap_job(threemf_path: Path, plate_id: int, config: SwapConfig) -> Swa
     if count > 1:
         return _fail("swap.guard.multipleMarkers", f"{count} swap blocks")
 
+    if not isinstance(plate_meta, dict):
+        return _fail("swap.guard.unreadable", "plate metadata is not an object")
+    # Without bbox_all we cannot vouch for the plate's real extent.
+    if "bbox_all" not in plate_meta:
+        return _fail("swap.guard.unreadable", "plate metadata has no bbox_all")
+
     front = config.exclude_front_mm
     back_limit = config.bed_depth_mm - config.exclude_back_mm
     # bbox_all is checked as well as each object: it is the plate's real extent,
     # so a stale or incomplete per-object list cannot hide geometry in a zone.
-    boxes: list[tuple[str, list]] = []
-    if "bbox_all" in plate_meta:
-        boxes.append(("(all)", plate_meta["bbox_all"]))
-    for obj in plate_meta.get("bbox_objects", []) or []:
+    boxes: list[tuple[str, object]] = [("(all)", plate_meta["bbox_all"])]
+    objects = plate_meta.get("bbox_objects") or []
+    if not isinstance(objects, list):
+        return _fail("swap.guard.unreadable", "bbox_objects is not a list")
+    for obj in objects:
+        if not isinstance(obj, dict):
+            return _fail("swap.guard.unreadable", "bbox_objects entry is not an object")
         boxes.append((str(obj.get("name", "?")), obj.get("bbox")))
-    if not boxes:
-        return _fail("swap.guard.unreadable", "plate has no bounding boxes")
     for name, bbox in boxes:
         if not isinstance(bbox, list) or len(bbox) != 4:
             return _fail("swap.guard.unreadable", f"bad bbox for {name}")
-        y0, y1 = float(bbox[1]), float(bbox[3])
+        try:
+            vals = [float(v) for v in bbox]
+        except (TypeError, ValueError):
+            return _fail("swap.guard.unreadable", f"non-numeric bbox for {name}")
+        # NaN compares false against every limit and would otherwise pass.
+        if not all(math.isfinite(v) for v in vals):
+            return _fail("swap.guard.unreadable", f"non-finite bbox for {name}")
+        y0, y1 = vals[1], vals[3]
         if y0 < front or y1 > back_limit:
             return _fail(
                 "swap.guard.excludedArea", f"{name}: Y {y0:.1f}-{y1:.1f} mm (allowed {front:g}-{back_limit:g})"

@@ -84,3 +84,33 @@ def test_corrupt_zip(tmp_path):
 def test_uses_requested_plate(tmp_path):
     p = _make(tmp_path, gcode=GOOD, plate=2)
     assert check_swap_job(p, 2, DEFAULT_SWAP_CONFIG).ok
+
+
+def _raw(tmp_path: Path, plate_json: str, gcode: str = GOOD) -> Path:
+    p = tmp_path / "raw.gcode.3mf"
+    with zipfile.ZipFile(p, "w") as z:
+        z.writestr("Metadata/plate_1.gcode", gcode)
+        z.writestr("Metadata/plate_1.json", plate_json)
+    return p
+
+
+@pytest.mark.parametrize(
+    "plate_json",
+    [
+        '{"bbox_all": [10, NaN, 50, 100], "bbox_objects": []}',
+        '{"bbox_all": [10, 30, 50, 100], "bbox_objects": [{"name": "a", "bbox": [1, NaN, 2, 3]}]}',
+        '{"bbox_all": [10, null, 50, 100]}',
+        '{"bbox_all": [10, "abc", 50, 100]}',
+        "[1, 2, 3]",
+        '{"bbox_all": [10, 30, 50, 100], "bbox_objects": [5]}',
+        '{"bbox_objects": []}',
+    ],
+)
+def test_malformed_metadata_is_unreadable(tmp_path, plate_json):
+    r = check_swap_job(_raw(tmp_path, plate_json), 1, DEFAULT_SWAP_CONFIG)
+    assert (r.ok, r.reason_key) == (False, "swap.guard.unreadable")
+
+
+def test_no_executable_block_end_counts_whole_file(tmp_path):
+    ok_json = '{"bbox_all": [10, 30, 50, 100], "bbox_objects": []}'
+    assert check_swap_job(_raw(tmp_path, ok_json, gcode=f"G28\n{MARK}\nG1\n"), 1, DEFAULT_SWAP_CONFIG).ok
