@@ -2501,6 +2501,9 @@ async def start_calibration(
     printer = result.scalar_one_or_none()
     if not printer:
         raise HTTPException(404, "Printer not found")
+    if printer.swap_enabled:
+        # Calibration homes the printer and snags the spare plates in the holder.
+        raise HTTPException(409, SWAP_MOTION_BLOCKED)
 
     client = printer_manager.get_client(printer_id)
     if not client or not client.state.connected:

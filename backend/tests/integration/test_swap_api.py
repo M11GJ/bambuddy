@@ -208,7 +208,12 @@ async def test_enable_resets_plate_count_and_blocks(async_client, db_session, pr
 @pytest.mark.integration
 @pytest.mark.parametrize(
     ("method", "path"),
-    [("post", "home-axes?axes=all"), ("post", "bed-jog?distance=5"), ("post", "xy-jog?y=10")],
+    [
+        ("post", "home-axes?axes=all"),
+        ("post", "bed-jog?distance=5"),
+        ("post", "xy-jog?y=10"),
+        ("post", "calibration?bed_leveling=true"),
+    ],
 )
 async def test_motion_refused_on_swap_printer(async_client, printer_factory, auth, method, path):
     from unittest.mock import MagicMock, patch
@@ -220,6 +225,7 @@ async def test_motion_refused_on_swap_printer(async_client, printer_factory, aut
     assert r.status_code == 409
     assert r.json()["detail"].startswith("[swap.control.motionBlocked]")
     client.send_gcode.assert_not_called()
+    client.start_calibration.assert_not_called()
 
 
 @pytest.mark.asyncio
