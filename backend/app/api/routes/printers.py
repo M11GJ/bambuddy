@@ -7,7 +7,7 @@ from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import FileResponse, Response
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.background import BackgroundTask
 
@@ -47,6 +47,9 @@ from backend.app.schemas.printer import (
     PrinterStatus,
     PrinterUpdate,
     PrintOptionsResponse,
+    SwapPlates,
+    SwapStatus,
+    SwapUpdate,
     hms_error_responses,
 )
 from backend.app.services import drying_preflight, kprofile_drift
@@ -3597,6 +3600,105 @@ async def stop_print(
         logger.warning("Failed to mark printer %s as user-stopped: %s", printer_id, _mark_err)
 
     return {"success": True, "message": "Print stop command sent"}
+
+
+async def _swap_status(db: AsyncSession, printer_id: int) -> SwapStatus:
+    """Fresh DB read of one printer's swap state (404 if unknown)."""
+    import dataclasses
+    import json
+
+    from backend.app.services.swap_config import parse_swap_config
+
+    db.expire_all()
+    p = (await db.execute(select(Printer).where(Printer.id == printer_id))).scalar_one_or_none()
+    if not p:
+        raise HTTPException(404, "Printer not found")
+    try:
+        config = dataclasses.asdict(parse_swap_config(p.swap_config))
+        config["clip_roi"] = list(config["clip_roi"])
+    except ValueError:
+        config = {}
+    return SwapStatus(
+        enabled=bool(p.swap_enabled),
+        plates_remaining=p.swap_plates_remaining,
+        hold_reason=p.swap_hold_reason,
+        hold_detail=p.swap_hold_detail,
+        config=json.loads(json.dumps(config)),
+    )
+
+
+@router.get("/{printer_id}/swap", response_model=SwapStatus)
+async def get_swap(
+    printer_id: int,
+    _=RequirePermissionIfAuthEnabled(Permission.PRINTERS_READ),
+    db: AsyncSession = Depends(get_db),
+):
+    return await _swap_status(db, printer_id)
+
+
+@router.put("/{printer_id}/swap", response_model=SwapStatus)
+async def update_swap(
+    printer_id: int,
+    body: SwapUpdate,
+    _=RequirePermissionIfAuthEnabled(Permission.PRINTERS_UPDATE),
+    db: AsyncSession = Depends(get_db),
+):
+    import json
+
+    from backend.app.services.swap_config import parse_swap_config
+
+    await _swap_status(db, printer_id)  # 404 check
+    values = {}
+    if "config" in body.model_fields_set:
+        if body.config is None:
+            values["swap_config"] = None
+        else:
+            raw = json.dumps(body.config)
+            try:
+                parse_swap_config(raw)
+            except ValueError as e:
+                raise HTTPException(422, str(e)) from e
+            values["swap_config"] = raw
+    if body.enabled is not None:
+        values["swap_enabled"] = body.enabled
+        if not body.enabled:
+            # A disabled printer must not keep a stale hold.
+            values["swap_hold_reason"] = None
+            values["swap_hold_detail"] = None
+    if values:
+        await db.execute(update(Printer).where(Printer.id == printer_id).values(**values))
+        await db.commit()
+        printer_manager.apply_swap_state_after_commit(printer_id)
+    return await _swap_status(db, printer_id)
+
+
+@router.post("/{printer_id}/swap/plates", response_model=SwapStatus)
+async def set_swap_plates(
+    printer_id: int,
+    body: SwapPlates,
+    _=RequirePermissionIfAuthEnabled(Permission.PRINTERS_CLEAR_PLATE),
+    db: AsyncSession = Depends(get_db),
+):
+    current = await _swap_status(db, printer_id)
+    await printer_manager.set_swap_plates(db, printer_id, body.remaining)
+    if current.hold_reason in ("swap.hold.outOfPlates", "swap.hold.platesUnknown"):
+        await printer_manager.clear_swap_hold(db, printer_id)
+    await db.commit()
+    printer_manager.apply_swap_state_after_commit(printer_id)
+    return await _swap_status(db, printer_id)
+
+
+@router.post("/{printer_id}/swap/resume", response_model=SwapStatus)
+async def resume_swap(
+    printer_id: int,
+    _=RequirePermissionIfAuthEnabled(Permission.PRINTERS_CLEAR_PLATE),
+    db: AsyncSession = Depends(get_db),
+):
+    await _swap_status(db, printer_id)  # 404 check
+    await printer_manager.clear_swap_hold(db, printer_id)
+    await db.commit()
+    printer_manager.apply_swap_state_after_commit(printer_id)
+    return await _swap_status(db, printer_id)
 
 
 @router.post("/{printer_id}/clear-plate")

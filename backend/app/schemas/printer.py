@@ -530,3 +530,21 @@ class PrinterFilesJobRequest(PrinterFilesDownloadRequest):
 
     filename: str = Field(default="printer-files.zip", min_length=1, max_length=255)
     as_zip: bool = True
+
+
+class SwapStatus(BaseModel):
+    enabled: bool
+    plates_remaining: int | None
+    hold_reason: str | None
+    hold_detail: str | None
+    config: dict  # effective config (defaults merged); {} if the stored config is invalid
+
+
+class SwapUpdate(BaseModel):
+    enabled: bool | None = None
+    # Absent = unchanged; explicit null = reset to defaults.
+    config: dict | None = None
+
+
+class SwapPlates(BaseModel):
+    remaining: int = Field(..., ge=0, le=99)
