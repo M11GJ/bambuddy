@@ -135,6 +135,15 @@ def get_buffered_frame(printer_id: int) -> bytes | None:
     return _last_frames.get(printer_id)
 
 
+def get_buffered_frame_with_time(printer_id: int) -> tuple[bytes, float] | None:
+    """Last buffered stream frame and its capture time (``time.time()``), if any."""
+    frame = _last_frames.get(printer_id)
+    taken = _last_frame_times.get(printer_id)
+    if frame is None or taken is None:
+        return None
+    return frame, taken
+
+
 def is_stream_active(printer_id: int) -> bool:
     """Return True iff a fan-out camera stream is currently registered for this printer.
 
@@ -1034,6 +1043,10 @@ async def camera_stream(
             generator yields, because that is what those consumers expect.
             """
             _last_frames[printer_id] = frame
+            # Stamp the frame where it is written so frame and time always
+            # pair up; the swap camera gate trusts this time to know the frame
+            # was taken after the chamber light settled.
+            _last_frame_times[printer_id] = time.time()
 
         async def external_stream_wrapper():
             """Wrap external stream to track start/stop and update frame times."""
