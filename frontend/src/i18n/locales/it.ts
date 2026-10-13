@@ -7960,4 +7960,35 @@ export default {
     noReadAccess: 'Non hai il permesso di visualizzare le previsioni di inventario.',
     noWriteAccess: 'Non hai il permesso di modificare le impostazioni di previsione.',
   },
+  // Build-plate swapper (SwapMod fork)
+  swap: {
+    title: "Cambiapiatti",
+    platesRemaining: "Piatti di scorta: {{count}}",
+    platesUnknownLabel: "Piatti di scorta: non inseriti",
+    enterPlates: "Inserisci numero di piatti",
+    resume: "Controllato — riprendi",
+    settings: "Impostazioni cambiapiatti",
+    enabled: "Abilita cambiapiatti",
+    hold: {
+      stateUnavailable: "Impossibile caricare lo stato del cambiapiatti — coda ferma",
+      outOfPlates: "Piatti di scorta esauriti — ricarica e inserisci il numero",
+      platesUnknown: "Inserisci il numero di piatti di scorta",
+      printNotConfirmed: "L'ultima stampa non è terminata normalmente — controlla il piatto, poi riprendi",
+      configInvalid: "Le impostazioni del cambiapiatti non sono valide",
+    },
+    gate: {
+      noPlate: "Nessun piatto rilevato sul letto",
+      objectOnPlate: "È rimasto qualcosa sul piatto",
+      cameraUnavailable: "Controllo con fotocamera non riuscito — coda ferma",
+      notCalibrated: "Il rilevamento del piatto non è calibrato",
+      cameraBusy: "In attesa che la fotocamera si liberi",
+    },
+    guard: {
+      unreadable: "Impossibile leggere il file di stampa",
+      noMarker: "Non sezionato per il cambiapiatti (manca il blocco di cambio) — seziona con la pipeline del cambiapiatti",
+      multipleMarkers: "Il blocco di cambio compare più di una volta",
+      excludedArea: "Parte della stampa è nella zona vietata del cambiapiatti",
+      injectionNotAllowed: "L'iniezione di G-code non può essere usata con il cambiapiatti",
+    },
+  },
 };

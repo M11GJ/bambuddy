@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { translateErrorMessage } from '../utils/translateErrorMessage';
 import { useQuery, useQueries, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import {
@@ -1053,7 +1054,10 @@ function SortableQueueItem({
           {item.error_message && (
             <p className="text-[10px] sm:text-xs text-red-700 dark:text-red-400 mt-1.5 sm:mt-2 flex items-center gap-1">
               <AlertCircle className="w-3 h-3" />
-              {item.error_message}
+              <span>{(() => {
+                const e = translateErrorMessage(item.error_message, t);
+                return <>{e.text}{e.original && <span className="ml-1 opacity-70 text-[0.9em]">({e.original})</span>}</>;
+              })()}</span>
             </p>
           )}
         </div>

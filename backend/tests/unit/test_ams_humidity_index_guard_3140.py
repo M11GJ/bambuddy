@@ -109,6 +109,7 @@ async def test_the_rest_serializer_reports_no_humidity_for_an_index_only_unit(db
     with patch("backend.app.api.routes.printers.printer_manager") as mock_pm:
         mock_pm.get_status.return_value = state
         mock_pm.get_drying_targets.return_value = {}
+        mock_pm.swap_live_state.return_value = None
         status = await get_printer_status(printer.id, db=db_session)
 
     assert status.ams[0].humidity is None
@@ -128,6 +129,7 @@ async def test_the_rest_serializer_still_reports_a_percentage(db_session):
     with patch("backend.app.api.routes.printers.printer_manager") as mock_pm:
         mock_pm.get_status.return_value = state
         mock_pm.get_drying_targets.return_value = {}
+        mock_pm.swap_live_state.return_value = None
         status = await get_printer_status(printer.id, db=db_session)
 
     assert status.ams[0].humidity == 38

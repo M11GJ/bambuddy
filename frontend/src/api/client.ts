@@ -602,6 +602,28 @@ export interface ExtruderSlot {
 // Which FTS inlet an AMS is plumbed into: 'A' | 'B'.
 export type FtsInlet = 'A' | 'B';
 
+// Build-plate swapper state pushed with the printer status (WebSocket only).
+export interface SwapLiveState {
+  enabled: boolean;
+  plates_remaining: number | null;
+  hold_reason: string | null;
+}
+
+export interface SwapConfig {
+  marker: string;
+  exclude_front_mm: number;
+  exclude_back_mm: number;
+  bed_depth_mm: number;
+  clip_roi: [number, number, number, number];
+  clip_min_percent: number;
+}
+
+export interface SwapStatus extends SwapLiveState {
+  hold_detail: string | null;
+  // Effective config (defaults merged); {} when the stored config is invalid.
+  config: Partial<SwapConfig>;
+}
+
 export interface PrinterStatus {
   id: number;
   name: string;
@@ -717,6 +739,7 @@ export interface PrinterStatus {
   // Queue: printer is awaiting user ack that the build plate was cleared after a
   // finished/failed print. Persisted across restarts (#961).
   awaiting_plate_clear: boolean;
+  swap?: SwapLiveState;
   // AMS drying support
   supports_drying: boolean;
   // The AMS can dry, but only from the printer's own screen (P1 series, #2533).
@@ -4916,6 +4939,21 @@ export const api = {
     }),
   clearPlate: (printerId: number) =>
     request<{ success: boolean; message: string }>(`/printers/${printerId}/clear-plate`, {
+      method: 'POST',
+    }),
+  getSwap: (printerId: number) => request<SwapStatus>(`/printers/${printerId}/swap`),
+  updateSwap: (printerId: number, data: { enabled?: boolean; config?: Partial<SwapConfig> | null }) =>
+    request<SwapStatus>(`/printers/${printerId}/swap`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+  setSwapPlates: (printerId: number, remaining: number) =>
+    request<SwapStatus>(`/printers/${printerId}/swap/plates`, {
+      method: 'POST',
+      body: JSON.stringify({ remaining }),
+    }),
+  resumeSwap: (printerId: number) =>
+    request<SwapStatus>(`/printers/${printerId}/swap/resume`, {
       method: 'POST',
     }),
 

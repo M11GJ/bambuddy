@@ -7983,4 +7983,35 @@ export default {
     noReadAccess: 'No tiene permiso para ver las previsiones de inventario.',
     noWriteAccess: 'No tiene permiso para modificar los ajustes de previsión.',
   },
+  // Build-plate swapper (SwapMod fork)
+  swap: {
+    title: "Cambiador de placas",
+    platesRemaining: "Placas de repuesto: {{count}}",
+    platesUnknownLabel: "Placas de repuesto: sin indicar",
+    enterPlates: "Introducir número de placas",
+    resume: "Revisado — reanudar",
+    settings: "Ajustes del cambiador de placas",
+    enabled: "Activar cambiador de placas",
+    hold: {
+      stateUnavailable: "No se pudo cargar el estado del cambiador — cola detenida",
+      outOfPlates: "Sin placas de repuesto — repón e introduce la cantidad",
+      platesUnknown: "Introduce el número de placas de repuesto",
+      printNotConfirmed: "La última impresión no terminó con normalidad — revisa la placa y reanuda",
+      configInvalid: "La configuración del cambiador de placas no es válida",
+    },
+    gate: {
+      noPlate: "No se detecta ninguna placa en la cama",
+      objectOnPlate: "Queda algo sobre la placa",
+      cameraUnavailable: "Falló la comprobación con la cámara — cola detenida",
+      notCalibrated: "La detección de placa no está calibrada",
+      cameraBusy: "Esperando a que la cámara quede libre",
+    },
+    guard: {
+      unreadable: "No se pudo leer el archivo de impresión",
+      noMarker: "No está laminado para el cambiador de placas (sin bloque de cambio) — lamina con la canalización del cambiador",
+      multipleMarkers: "El bloque de cambio aparece más de una vez",
+      excludedArea: "Parte de la impresión está en la zona prohibida del cambiador",
+      injectionNotAllowed: "La inyección de G-code no se puede usar con el cambiador de placas",
+    },
+  },
 };

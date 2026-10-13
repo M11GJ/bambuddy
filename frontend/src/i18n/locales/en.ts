@@ -8026,4 +8026,35 @@ export default {
     noReadAccess: 'You do not have permission to view inventory forecasts.',
     noWriteAccess: 'You do not have permission to modify forecast settings.',
   },
+  // Build-plate swapper (SwapMod fork)
+  swap: {
+    title: "Plate swapper",
+    platesRemaining: "Spare plates: {{count}}",
+    platesUnknownLabel: "Spare plates: not entered",
+    enterPlates: "Enter plate count",
+    resume: "Checked — resume",
+    settings: "Plate swapper settings",
+    enabled: "Enable plate swapper",
+    hold: {
+      stateUnavailable: "Swap state could not be loaded — queue stopped",
+      outOfPlates: "Out of spare plates — refill and enter the count",
+      platesUnknown: "Enter the number of spare plates",
+      printNotConfirmed: "The last print did not finish normally — check the plate, then resume",
+      configInvalid: "Plate swapper settings are invalid",
+    },
+    gate: {
+      noPlate: "No plate detected on the bed",
+      objectOnPlate: "Something is left on the plate",
+      cameraUnavailable: "Camera check failed — queue stopped",
+      notCalibrated: "Plate detection is not calibrated",
+      cameraBusy: "Waiting for the camera to become free",
+    },
+    guard: {
+      unreadable: "The print file could not be read",
+      noMarker: "Not sliced for the plate swapper (no swap block) — slice with the swapper pipeline",
+      multipleMarkers: "The swap block appears more than once",
+      excludedArea: "Part of the print is in the swapper's no-print zone",
+      injectionNotAllowed: "G-code injection cannot be used with the plate swapper",
+    },
+  },
 };

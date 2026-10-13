@@ -7900,4 +7900,35 @@ export default {
     noReadAccess: 'Envanter tahminlerini görüntüleme izniniz yok.',
     noWriteAccess: 'Tahmin ayarlarını değiştirme izniniz yok.',
   },
+  // Build-plate swapper (SwapMod fork)
+  swap: {
+    title: "Plaka değiştirici",
+    platesRemaining: "Yedek plaka: {{count}}",
+    platesUnknownLabel: "Yedek plaka: girilmedi",
+    enterPlates: "Plaka sayısını gir",
+    resume: "Kontrol edildi — devam et",
+    settings: "Plaka değiştirici ayarları",
+    enabled: "Plaka değiştiriciyi etkinleştir",
+    hold: {
+      stateUnavailable: "Değiştirici durumu yüklenemedi — kuyruk durduruldu",
+      outOfPlates: "Yedek plaka kalmadı — doldurun ve sayıyı girin",
+      platesUnknown: "Yedek plaka sayısını girin",
+      printNotConfirmed: "Son baskı normal şekilde bitmedi — plakayı kontrol edip devam edin",
+      configInvalid: "Plaka değiştirici ayarları geçersiz",
+    },
+    gate: {
+      noPlate: "Tablada plaka algılanmadı",
+      objectOnPlate: "Plakanın üzerinde bir şey kaldı",
+      cameraUnavailable: "Kamera kontrolü başarısız — kuyruk durduruldu",
+      notCalibrated: "Plaka algılama kalibre edilmedi",
+      cameraBusy: "Kameranın boşalması bekleniyor",
+    },
+    guard: {
+      unreadable: "Baskı dosyası okunamadı",
+      noMarker: "Plaka değiştirici için dilimlenmemiş (değişim bloğu yok) — değiştirici hattıyla dilimleyin",
+      multipleMarkers: "Değişim bloğu birden fazla kez geçiyor",
+      excludedArea: "Baskının bir kısmı değiştiricinin yasak bölgesinde",
+      injectionNotAllowed: "Plaka değiştiriciyle G-code ekleme kullanılamaz",
+    },
+  },
 };

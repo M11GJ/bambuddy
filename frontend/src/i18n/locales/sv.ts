@@ -8024,4 +8024,35 @@ errors: {
     noReadAccess: 'Du har inte behörighet att visa lagerprognoser.',
     noWriteAccess: 'Du har inte behörighet att modifiera prognosinställningar.',
   },
+  // Build-plate swapper (SwapMod fork)
+  swap: {
+    title: "Plattväxlare",
+    platesRemaining: "Reservplattor: {{count}}",
+    platesUnknownLabel: "Reservplattor: inte angivet",
+    enterPlates: "Ange antal plattor",
+    resume: "Kontrollerat — återuppta",
+    settings: "Inställningar för plattväxlare",
+    enabled: "Aktivera plattväxlare",
+    hold: {
+      stateUnavailable: "Växlarens status kunde inte läsas in — kön stoppad",
+      outOfPlates: "Slut på reservplattor — fyll på och ange antalet",
+      platesUnknown: "Ange antalet reservplattor",
+      printNotConfirmed: "Den senaste utskriften avslutades inte normalt — kontrollera plattan och återuppta sedan",
+      configInvalid: "Plattväxlarens inställningar är ogiltiga",
+    },
+    gate: {
+      noPlate: "Ingen platta hittades på bädden",
+      objectOnPlate: "Något ligger kvar på plattan",
+      cameraUnavailable: "Kamerakontrollen misslyckades — kön stoppad",
+      notCalibrated: "Plattidentifieringen är inte kalibrerad",
+      cameraBusy: "Väntar på att kameran blir ledig",
+    },
+    guard: {
+      unreadable: "Utskriftsfilen kunde inte läsas",
+      noMarker: "Inte slicad för plattväxlaren (inget växlingsblock) — slica med växlarens pipeline",
+      multipleMarkers: "Växlingsblocket förekommer mer än en gång",
+      excludedArea: "En del av utskriften ligger i växlarens förbjudna zon",
+      injectionNotAllowed: "G-kodsinjektion kan inte användas med plattväxlaren",
+    },
+  },
 };

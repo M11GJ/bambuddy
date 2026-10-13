@@ -8026,4 +8026,35 @@ export default {
     noReadAccess: 'Je hebt geen machtiging om voorraadprognoses te bekijken.',
     noWriteAccess: 'Je hebt geen machtiging om prognose-instellingen te wijzigen.',
   },
+  // Build-plate swapper (SwapMod fork)
+  swap: {
+    title: "Plaatwisselaar",
+    platesRemaining: "Reserveplaten: {{count}}",
+    platesUnknownLabel: "Reserveplaten: niet ingevoerd",
+    enterPlates: "Aantal platen invoeren",
+    resume: "Gecontroleerd — hervatten",
+    settings: "Instellingen plaatwisselaar",
+    enabled: "Plaatwisselaar inschakelen",
+    hold: {
+      stateUnavailable: "Status van de wisselaar kon niet worden geladen — wachtrij gestopt",
+      outOfPlates: "Reserveplaten op — bijvullen en het aantal invoeren",
+      platesUnknown: "Voer het aantal reserveplaten in",
+      printNotConfirmed: "De vorige print is niet normaal geëindigd — controleer de plaat en hervat daarna",
+      configInvalid: "De instellingen van de plaatwisselaar zijn ongeldig",
+    },
+    gate: {
+      noPlate: "Geen plaat op het printbed gedetecteerd",
+      objectOnPlate: "Er ligt nog iets op de plaat",
+      cameraUnavailable: "Cameracontrole mislukt — wachtrij gestopt",
+      notCalibrated: "Plaatdetectie is niet gekalibreerd",
+      cameraBusy: "Wachten tot de camera vrij is",
+    },
+    guard: {
+      unreadable: "Het printbestand kon niet worden gelezen",
+      noMarker: "Niet gesliced voor de plaatwisselaar (geen wisselblok) — slice met de wisselaar-pipeline",
+      multipleMarkers: "Het wisselblok komt meer dan eens voor",
+      excludedArea: "Een deel van de print ligt in de verboden zone van de wisselaar",
+      injectionNotAllowed: "G-code-injectie kan niet worden gebruikt met de plaatwisselaar",
+    },
+  },
 };

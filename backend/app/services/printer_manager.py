@@ -627,6 +627,15 @@ class PrinterManager:
         except Exception as e:
             logger.warning("Failed to load awaiting_plate_clear from DB: %s", e)
 
+    def swap_live_state(self, printer_id: int) -> dict:
+        """The ``swap`` block of the status payload (WebSocket and REST alike)."""
+        enabled, remaining, hold = self._swap_state.get(printer_id, (False, None, None))
+        return {
+            "enabled": enabled,
+            "plates_remaining": remaining,
+            "hold_reason": hold if self._swap_state_loaded else "swap.hold.stateUnavailable",
+        }
+
     def is_swap_blocked(self, printer_id: int) -> str | None:
         """Why the queue must not dispatch to this printer (translation key), or None.
 
@@ -1865,12 +1874,7 @@ def printer_state_to_dict(
         # Build-plate swap state, pushed over the WebSocket for the same reason as
         # awaiting_plate_clear above. Before the first successful load the card
         # must show why everything is stopped.
-        enabled, remaining, hold = printer_manager._swap_state.get(printer_id, (False, None, None))
-        result["swap"] = {
-            "enabled": enabled,
-            "plates_remaining": remaining,
-            "hold_reason": hold if printer_manager._swap_state_loaded else "swap.hold.stateUnavailable",
-        }
+        result["swap"] = printer_manager.swap_live_state(printer_id)
     # Add cover URL if there's an active print and printer_id is provided
     # Include PAUSE state so skip objects modal can show cover
     if printer_id and state.state in ("RUNNING", "PAUSE") and state.gcode_file:

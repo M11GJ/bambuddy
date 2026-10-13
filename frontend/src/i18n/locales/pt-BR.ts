@@ -7960,4 +7960,35 @@ export default {
     noReadAccess: 'Você não tem permissão para visualizar previsões de inventário.',
     noWriteAccess: 'Você não tem permissão para modificar as configurações de previsão.',
   },
+  // Build-plate swapper (SwapMod fork)
+  swap: {
+    title: "Trocador de placas",
+    platesRemaining: "Placas reserva: {{count}}",
+    platesUnknownLabel: "Placas reserva: não informado",
+    enterPlates: "Informar quantidade de placas",
+    resume: "Verificado — retomar",
+    settings: "Configurações do trocador de placas",
+    enabled: "Ativar trocador de placas",
+    hold: {
+      stateUnavailable: "Não foi possível carregar o estado do trocador — fila parada",
+      outOfPlates: "Acabaram as placas reserva — reponha e informe a quantidade",
+      platesUnknown: "Informe a quantidade de placas reserva",
+      printNotConfirmed: "A última impressão não terminou normalmente — verifique a placa e depois retome",
+      configInvalid: "As configurações do trocador de placas são inválidas",
+    },
+    gate: {
+      noPlate: "Nenhuma placa detectada na mesa",
+      objectOnPlate: "Ficou algo sobre a placa",
+      cameraUnavailable: "Falha na verificação pela câmera — fila parada",
+      notCalibrated: "A detecção de placa não está calibrada",
+      cameraBusy: "Aguardando a câmera ficar livre",
+    },
+    guard: {
+      unreadable: "Não foi possível ler o arquivo de impressão",
+      noMarker: "Não fatiado para o trocador de placas (sem bloco de troca) — fatie com o pipeline do trocador",
+      multipleMarkers: "O bloco de troca aparece mais de uma vez",
+      excludedArea: "Parte da impressão está na zona proibida do trocador",
+      injectionNotAllowed: "A injeção de G-code não pode ser usada com o trocador de placas",
+    },
+  },
 };

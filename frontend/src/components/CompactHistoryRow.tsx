@@ -17,6 +17,7 @@ import { type TimeFormat, formatDuration, formatRelativeTime } from '../utils/da
 import type { PrintQueueItem, Permission } from '../api/client';
 import { Button } from './Button';
 import { queueItemDisplayName } from '../utils/queueItemName';
+import { translateErrorMessage } from '../utils/translateErrorMessage';
 
 const STATUS_CONFIG = {
   completed: { icon: CheckCircle, color: 'text-emerald-600 dark:text-emerald-400', border: 'border-l-emerald-500' },
@@ -185,7 +186,10 @@ export function CompactHistoryRow({
       {showErrorMessage && (
         <div className="mt-1 ml-[3.25rem] flex items-start gap-1 text-xs text-red-700 dark:text-red-400">
           <AlertCircle className="w-3 h-3 mt-0.5 shrink-0" />
-          <span className="break-words">{item.error_message}</span>
+          <span className="break-words">{(() => {
+                const e = translateErrorMessage(item.error_message, t);
+                return <>{e.text}{e.original && <span className="ml-1 opacity-70 text-[0.9em]">({e.original})</span>}</>;
+              })()}</span>
         </div>
       )}
     </div>

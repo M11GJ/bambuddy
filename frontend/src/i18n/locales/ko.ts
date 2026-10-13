@@ -7593,5 +7593,36 @@ export default {
         fail: '이 가상 프린터의 TLS 인증서가 없습니다. Bambuddy 데이터 디렉터리가 쓰기 가능한지 확인하세요.'
       }
     }
-  }
+  },
+  // Build-plate swapper (SwapMod fork)
+  swap: {
+    title: "플레이트 교환기",
+    platesRemaining: "예비 플레이트: {{count}}장",
+    platesUnknownLabel: "예비 플레이트: 미입력",
+    enterPlates: "플레이트 수 입력",
+    resume: "확인 후 재개",
+    settings: "플레이트 교환기 설정",
+    enabled: "플레이트 교환기 사용",
+    hold: {
+      stateUnavailable: "교환기 상태를 불러올 수 없어 대기열이 중지됨",
+      outOfPlates: "예비 플레이트가 모두 소진됨 — 보충 후 수량을 입력하세요",
+      platesUnknown: "예비 플레이트 수를 입력하세요",
+      printNotConfirmed: "이전 출력이 정상적으로 끝나지 않았습니다 — 플레이트를 확인한 뒤 재개하세요",
+      configInvalid: "플레이트 교환기 설정이 올바르지 않습니다",
+    },
+    gate: {
+      noPlate: "베드에서 플레이트가 감지되지 않음",
+      objectOnPlate: "플레이트 위에 물체가 남아 있음",
+      cameraUnavailable: "카메라 확인 실패로 대기열이 중지됨",
+      notCalibrated: "플레이트 감지가 보정되지 않았습니다",
+      cameraBusy: "카메라가 사용 가능해질 때까지 대기 중",
+    },
+    guard: {
+      unreadable: "출력 파일을 읽을 수 없습니다",
+      noMarker: "플레이트 교환기용으로 슬라이스되지 않음(교환 블록 없음) — 교환기 파이프라인으로 슬라이스하세요",
+      multipleMarkers: "교환 블록이 두 번 이상 들어 있습니다",
+      excludedArea: "출력물 일부가 교환기의 출력 금지 구역에 있습니다",
+      injectionNotAllowed: "플레이트 교환기를 쓰는 프린터에서는 G-code 삽입을 사용할 수 없습니다",
+    },
+  },
 };

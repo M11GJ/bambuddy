@@ -7975,4 +7975,35 @@ export default {
     noReadAccess: 'Sie haben keine Berechtigung, Bestandsprognosen anzuzeigen.',
     noWriteAccess: 'Sie haben keine Berechtigung, Prognoseeinstellungen zu ändern.',
   },
+  // Build-plate swapper (SwapMod fork)
+  swap: {
+    title: "Plattenwechsler",
+    platesRemaining: "Ersatzplatten: {{count}}",
+    platesUnknownLabel: "Ersatzplatten: nicht eingegeben",
+    enterPlates: "Plattenanzahl eingeben",
+    resume: "Geprüft — fortsetzen",
+    settings: "Einstellungen Plattenwechsler",
+    enabled: "Plattenwechsler aktivieren",
+    hold: {
+      stateUnavailable: "Wechslerstatus konnte nicht geladen werden — Warteschlange angehalten",
+      outOfPlates: "Keine Ersatzplatten mehr — nachfüllen und Anzahl eingeben",
+      platesUnknown: "Anzahl der Ersatzplatten eingeben",
+      printNotConfirmed: "Der letzte Druck wurde nicht normal beendet — Platte prüfen, dann fortsetzen",
+      configInvalid: "Die Einstellungen des Plattenwechslers sind ungültig",
+    },
+    gate: {
+      noPlate: "Keine Platte auf dem Druckbett erkannt",
+      objectOnPlate: "Auf der Platte liegt noch etwas",
+      cameraUnavailable: "Kameraprüfung fehlgeschlagen — Warteschlange angehalten",
+      notCalibrated: "Plattenerkennung ist nicht kalibriert",
+      cameraBusy: "Warten, bis die Kamera frei ist",
+    },
+    guard: {
+      unreadable: "Die Druckdatei konnte nicht gelesen werden",
+      noMarker: "Nicht für den Plattenwechsler gesliced (kein Wechselblock) — mit der Wechsler-Pipeline slicen",
+      multipleMarkers: "Der Wechselblock kommt mehrfach vor",
+      excludedArea: "Ein Teil des Drucks liegt in der Sperrzone des Wechslers",
+      injectionNotAllowed: "G-Code-Injektion ist mit dem Plattenwechsler nicht möglich",
+    },
+  },
 };

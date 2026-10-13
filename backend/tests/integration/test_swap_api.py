@@ -148,3 +148,15 @@ async def test_api_updates_memory_mirror(async_client, printer_factory, auth):
     assert r.status_code == 200
     await printer_manager._refresh_swap_state(p.id)
     assert printer_manager.is_swap_blocked(p.id) is None
+
+
+@pytest.mark.asyncio
+@pytest.mark.integration
+async def test_rest_status_carries_swap_state(async_client, printer_factory):
+    """The 30 s REST poll replaces the cached status; without ``swap`` the card panel would vanish."""
+    p = await printer_factory(swap_enabled=True, swap_plates_remaining=2, swap_hold_reason="swap.gate.noPlate")
+    printer_manager._swap_state_loaded = True
+    await printer_manager._refresh_swap_state(p.id)
+    r = await async_client.get(f"/api/v1/printers/{p.id}/status")
+    assert r.status_code == 200
+    assert r.json()["swap"] == {"enabled": True, "plates_remaining": 2, "hold_reason": "swap.gate.noPlate"}

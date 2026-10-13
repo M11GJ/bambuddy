@@ -7961,4 +7961,35 @@ export default {
     noReadAccess: 'Vous n\'avez pas la permission de consulter les prévisions de stock.',
     noWriteAccess: 'Vous n\'avez pas la permission de modifier les paramètres de prévision.',
   },
+  // Build-plate swapper (SwapMod fork)
+  swap: {
+    title: "Changeur de plateaux",
+    platesRemaining: "Plateaux de rechange : {{count}}",
+    platesUnknownLabel: "Plateaux de rechange : non saisi",
+    enterPlates: "Saisir le nombre de plateaux",
+    resume: "Vérifié — reprendre",
+    settings: "Réglages du changeur de plateaux",
+    enabled: "Activer le changeur de plateaux",
+    hold: {
+      stateUnavailable: "Impossible de charger l'état du changeur — file arrêtée",
+      outOfPlates: "Plus de plateaux de rechange — rechargez et saisissez le nombre",
+      platesUnknown: "Saisissez le nombre de plateaux de rechange",
+      printNotConfirmed: "La dernière impression ne s'est pas terminée normalement — vérifiez le plateau, puis reprenez",
+      configInvalid: "Les réglages du changeur de plateaux sont invalides",
+    },
+    gate: {
+      noPlate: "Aucun plateau détecté sur le lit",
+      objectOnPlate: "Il reste quelque chose sur le plateau",
+      cameraUnavailable: "Échec de la vérification par caméra — file arrêtée",
+      notCalibrated: "La détection du plateau n'est pas calibrée",
+      cameraBusy: "En attente de la libération de la caméra",
+    },
+    guard: {
+      unreadable: "Le fichier d'impression n'a pas pu être lu",
+      noMarker: "Non tranché pour le changeur de plateaux (pas de bloc de changement) — tranchez avec le pipeline du changeur",
+      multipleMarkers: "Le bloc de changement apparaît plusieurs fois",
+      excludedArea: "Une partie de l'impression se trouve dans la zone interdite du changeur",
+      injectionNotAllowed: "L'injection de G-code est impossible avec le changeur de plateaux",
+    },
+  },
 };

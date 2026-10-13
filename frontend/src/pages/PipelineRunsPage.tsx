@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import { translateErrorMessage } from '../utils/translateErrorMessage';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Check,
@@ -543,7 +544,10 @@ function RunRow({
                 )}
                 {job.error_message && (
                   <span className="text-red-700 dark:text-red-400 truncate" title={job.error_message}>
-                    {job.error_message}
+                    {(() => {
+                const e = translateErrorMessage(job.error_message, t);
+                return <>{e.text}{e.original && <span className="ml-1 opacity-70 text-[0.9em]">({e.original})</span>}</>;
+              })()}
                   </span>
                 )}
               </div>
@@ -551,7 +555,10 @@ function RunRow({
           </div>
           {run.error_message && !userCancelled && (
             <div className="text-xs text-red-700 dark:text-red-400 mt-2 pt-2 border-t border-bambu-dark-tertiary">
-              {run.error_message}
+              {(() => {
+                const e = translateErrorMessage(run.error_message, t);
+                return <>{e.text}{e.original && <span className="ml-1 opacity-70 text-[0.9em]">({e.original})</span>}</>;
+              })()}
             </div>
           )}
           {userCancelled && (

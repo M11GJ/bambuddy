@@ -178,6 +178,7 @@ import { HMSErrorModal, filterKnownHMSErrors, isSevereHMSError } from '../compon
 import { AiDetectionModal } from '../components/AiDetectionModal';
 import { aiDetectionClass, type AiDetection } from '../utils/aiDetection';
 import { PrinterQueueWidget } from '../components/PrinterQueueWidget';
+import { SwapModPanel, SwapModSettings } from '../components/SwapModPanel';
 import { PrinterHASensorRow } from '../components/PrinterHASensorRow';
 import { AMSHistoryModal } from '../components/AMSHistoryModal';
 import { AmsBackupModal } from '../components/AmsBackupModal';
@@ -4857,6 +4858,8 @@ function PrinterCard({
 
             {viewMode === 'expanded' && showClearPlateButton && expandedClearPlateButton}
 
+            <SwapModPanel printerId={printer.id} swap={status?.swap} />
+
             {/* Controls */}
             {viewMode === 'expanded' && (() => {
               // Determine print state for control buttons
@@ -8444,6 +8447,7 @@ function EditPrinterModal({
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { showToast } = useToast();
+  const { hasPermission } = useAuth();
   const [form, setForm] = useState({
     name: printer.name,
     ip_address: printer.ip_address,
@@ -8692,6 +8696,7 @@ function EditPrinterModal({
               </div>
             )}
           </form>
+          {hasPermission('printers:update') && <SwapModSettings printerId={printer.id} />}
         </CardContent>
       </Card>
     </div>

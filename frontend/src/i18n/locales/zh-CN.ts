@@ -7958,4 +7958,35 @@ export default {
     noReadAccess: '您没有查看库存预测的权限。',
     noWriteAccess: '您没有修改预测设置的权限。',
   },
+  // Build-plate swapper (SwapMod fork)
+  swap: {
+    title: "换板器",
+    platesRemaining: "备用板：{{count}} 块",
+    platesUnknownLabel: "备用板：未输入",
+    enterPlates: "输入板数",
+    resume: "已检查 — 继续",
+    settings: "换板器设置",
+    enabled: "启用换板器",
+    hold: {
+      stateUnavailable: "无法加载换板状态 — 队列已停止",
+      outOfPlates: "备用板已用完 — 请补充并输入数量",
+      platesUnknown: "请输入备用板数量",
+      printNotConfirmed: "上一次打印未正常结束 — 请检查打印板后继续",
+      configInvalid: "换板器设置无效",
+    },
+    gate: {
+      noPlate: "热床上未检测到打印板",
+      objectOnPlate: "打印板上还有物体",
+      cameraUnavailable: "摄像头检查失败 — 队列已停止",
+      notCalibrated: "打印板检测尚未校准",
+      cameraBusy: "正在等待摄像头空闲",
+    },
+    guard: {
+      unreadable: "无法读取打印文件",
+      noMarker: "未针对换板器切片（无换板段）— 请使用换板器流水线切片",
+      multipleMarkers: "换板段出现了不止一次",
+      excludedArea: "部分打印内容位于换板器的禁止打印区",
+      injectionNotAllowed: "使用换板器的打印机不能使用 G-code 注入",
+    },
+  },
 };

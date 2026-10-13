@@ -7974,4 +7974,35 @@ export default {
     noReadAccess: '在庫予測を閲覧する権限がありません。',
     noWriteAccess: '予測設定を変更する権限がありません。',
   },
+  // Build-plate swapper (SwapMod fork)
+  swap: {
+    title: "プレート交換",
+    platesRemaining: "予備プレート：{{count}} 枚",
+    platesUnknownLabel: "予備プレート：未入力",
+    enterPlates: "枚数を入力",
+    resume: "確認して再開",
+    settings: "プレート交換の設定",
+    enabled: "プレート交換を有効にする",
+    hold: {
+      stateUnavailable: "プレート交換の状態を読み込めないため停止中",
+      outOfPlates: "予備プレートが尽きました。補充して枚数を入力してください",
+      platesUnknown: "予備プレートの枚数を入力してください",
+      printNotConfirmed: "前の印刷が正常に終わっていません。プレートを確認してから再開してください",
+      configInvalid: "プレート交換の設定が正しくありません",
+    },
+    gate: {
+      noPlate: "ベッドにプレートが見つかりません",
+      objectOnPlate: "プレートの上に物が残っています",
+      cameraUnavailable: "カメラで確認できないため停止中",
+      notCalibrated: "プレート検出の学習が済んでいません",
+      cameraBusy: "カメラの映像配信が終わるのを待っています",
+    },
+    guard: {
+      unreadable: "印刷データを読み込めません",
+      noMarker: "プレート交換用のデータではありません。交換用のパイプラインでスライスしてください",
+      multipleMarkers: "交換動作が2回以上入っています",
+      excludedArea: "造形物が配置禁止エリア（手前と奥）にかかっています",
+      injectionNotAllowed: "プレート交換を使うプリンターでは G-code の差し込みは使えません",
+    },
+  },
 };

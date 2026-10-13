@@ -647,6 +647,7 @@ class TestPrintersAPI:
         with patch("backend.app.api.routes.printers.printer_manager") as mock_pm:
             mock_pm.get_status = MagicMock(return_value=state)
             mock_pm.is_awaiting_plate_clear = MagicMock(return_value=False)
+            mock_pm.swap_live_state = MagicMock(return_value=None)
 
             response = await async_client.get(f"/api/v1/printers/{printer.id}/status")
 
@@ -684,6 +685,7 @@ class TestPrintersAPI:
         with patch("backend.app.api.routes.printers.printer_manager") as mock_pm:
             mock_pm.get_status = MagicMock(return_value=state)
             mock_pm.is_awaiting_plate_clear = MagicMock(return_value=False)
+            mock_pm.swap_live_state = MagicMock(return_value=None)
 
             unbound = await async_client.get(f"/api/v1/printers/{printer.id}/status")
 
@@ -714,6 +716,7 @@ class TestPrintersAPI:
         with patch("backend.app.api.routes.printers.printer_manager") as mock_pm:
             mock_pm.get_status = MagicMock(return_value=state)
             mock_pm.is_awaiting_plate_clear = MagicMock(return_value=False)
+            mock_pm.swap_live_state = MagicMock(return_value=None)
 
             response = await async_client.get(f"/api/v1/printers/{printer.id}/status")
 
@@ -761,6 +764,7 @@ class TestPrintersAPI:
         with patch("backend.app.api.routes.printers.printer_manager") as mock_pm:
             mock_pm.get_status = MagicMock(return_value=state)
             mock_pm.is_awaiting_plate_clear = MagicMock(return_value=False)
+            mock_pm.swap_live_state = MagicMock(return_value=None)
 
             response = await async_client.get(f"/api/v1/printers/{printer.id}/cover")
 
@@ -912,6 +916,7 @@ class TestPrintersAPI:
         with patch("backend.app.api.routes.printers.printer_manager") as mock_pm:
             mock_pm.get_status = MagicMock(return_value=state)
             mock_pm.is_awaiting_plate_clear = MagicMock(return_value=False)
+            mock_pm.swap_live_state = MagicMock(return_value=None)
 
             response = await async_client.get(f"/api/v1/printers/{printer.id}/cover")
 
@@ -951,6 +956,7 @@ class TestPrintersAPI:
         ):
             mock_pm.get_status = MagicMock(return_value=state)
             mock_pm.is_awaiting_plate_clear = MagicMock(return_value=False)
+            mock_pm.swap_live_state = MagicMock(return_value=None)
 
             r1 = await async_client.get(f"/api/v1/printers/{printer.id}/cover")
             r2 = await async_client.get(f"/api/v1/printers/{printer.id}/cover")
@@ -984,6 +990,7 @@ class TestPrintersAPI:
         with patch("backend.app.api.routes.printers.printer_manager") as mock_pm:
             mock_pm.get_status = MagicMock(return_value=state)
             mock_pm.is_awaiting_plate_clear = MagicMock(return_value=False)
+            mock_pm.swap_live_state = MagicMock(return_value=None)
 
             response = await async_client.get(f"/api/v1/printers/{printer.id}/status")
 
