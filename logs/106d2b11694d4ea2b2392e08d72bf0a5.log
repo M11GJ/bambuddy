@@ -1,0 +1,200 @@
+2026-10-13 12:24:56,230 INFO [uvicorn.access] [-] [IP]:45680 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:24:59,370 INFO [uvicorn.access] [-] [IP]:52618 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:25:02,488 INFO [uvicorn.access] [-] [IP]:52634 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:25:03,285 INFO [backend.app.main] [-] [SNAPSHOT] Capturing fresh frame for printer 1
+2026-10-13 12:25:03,286 INFO [backend.app.services.camera] [-] Capturing camera frame bytes from [IP] using RTSP (model: [PRINTER])
+2026-10-13 12:25:04,465 INFO [backend.app.services.camera] [-] Successfully captured camera frame bytes: 421058 bytes
+2026-10-13 12:25:04,465 INFO [backend.app.main] [-] [SNAPSHOT] Fresh camera frame: 421058 bytes
+2026-10-13 12:25:05,568 INFO [uvicorn.access] [-] [IP]:52656 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:25:08,644 INFO [uvicorn.access] [-] [IP]:52332 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:25:11,793 INFO [uvicorn.access] [-] [IP]:52350 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:25:14,947 INFO [uvicorn.access] [-] [IP]:52366 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:25:18,100 INFO [uvicorn.access] [-] [IP]:59778 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:25:21,226 INFO [uvicorn.access] [-] [IP]:59782 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:25:24,337 INFO [uvicorn.access] [-] [IP]:59808 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:25:27,426 INFO [uvicorn.access] [-] [IP]:48172 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:25:30,564 INFO [uvicorn.access] [-] [IP]:48200 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:25:31,690 INFO [backend.app.main] [-] [SNAPSHOT] Capturing fresh frame for printer 1
+2026-10-13 12:25:31,690 INFO [backend.app.services.camera] [-] Capturing camera frame bytes from [IP] using RTSP (model: [PRINTER])
+2026-10-13 12:25:32,851 INFO [backend.app.services.camera] [-] Successfully captured camera frame bytes: 402128 bytes
+2026-10-13 12:25:32,851 INFO [backend.app.main] [-] [SNAPSHOT] Fresh camera frame: 402128 bytes
+2026-10-13 12:25:33,672 INFO [uvicorn.access] [-] [IP]:48228 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:25:36,816 INFO [uvicorn.access] [-] [IP]:48246 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:25:39,983 INFO [uvicorn.access] [-] [IP]:33270 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:25:43,128 INFO [uvicorn.access] [-] [IP]:33302 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:25:46,247 INFO [uvicorn.access] [-] [IP]:33326 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:25:49,377 INFO [uvicorn.access] [-] [IP]:59862 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:25:52,452 INFO [uvicorn.access] [-] [IP]:59866 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:25:55,542 INFO [uvicorn.access] [-] [IP]:59886 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:25:58,628 INFO [uvicorn.access] [-] [IP]:58882 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:26:00,182 INFO [backend.app.main] [-] [SNAPSHOT] Capturing fresh frame for printer 1
+2026-10-13 12:26:00,182 INFO [backend.app.services.camera] [-] Capturing camera frame bytes from [IP] using RTSP (model: [PRINTER])
+2026-10-13 12:26:01,377 INFO [backend.app.services.camera] [-] Successfully captured camera frame bytes: 411918 bytes
+2026-10-13 12:26:01,377 INFO [backend.app.main] [-] [SNAPSHOT] Fresh camera frame: 411918 bytes
+2026-10-13 12:26:01,712 INFO [uvicorn.access] [-] [IP]:58908 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:26:04,797 INFO [uvicorn.access] [-] [IP]:58922 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:26:07,932 INFO [uvicorn.access] [-] [IP]:32784 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:26:11,051 INFO [uvicorn.access] [-] [IP]:32802 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:26:14,168 INFO [uvicorn.access] [-] [IP]:32824 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:26:17,224 INFO [uvicorn.access] [-] [IP]:38824 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:26:20,347 INFO [uvicorn.access] [-] [IP]:38838 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:26:23,473 INFO [uvicorn.access] [-] [IP]:38860 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:26:26,625 INFO [uvicorn.access] [-] [IP]:38876 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:26:28,013 INFO [backend.app.main] [-] [SNAPSHOT] Capturing fresh frame for printer 1
+2026-10-13 12:26:28,015 INFO [backend.app.services.camera] [-] Capturing camera frame bytes from [IP] using RTSP (model: [PRINTER])
+2026-10-13 12:26:29,160 INFO [backend.app.services.camera] [-] Successfully captured camera frame bytes: 430384 bytes
+2026-10-13 12:26:29,160 INFO [backend.app.main] [-] [SNAPSHOT] Fresh camera frame: 430384 bytes
+2026-10-13 12:26:29,789 INFO [uvicorn.access] [-] [IP]:43932 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:26:32,879 INFO [uvicorn.access] [-] [IP]:43948 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:26:36,035 INFO [uvicorn.access] [-] [IP]:43966 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:26:39,173 INFO [uvicorn.access] [-] [IP]:39032 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:26:42,227 INFO [uvicorn.access] [-] [IP]:39040 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:26:42,550 INFO [backend.app.main] [-] Recorded 2 AMS sensor history entries
+2026-10-13 12:26:45,294 INFO [uvicorn.access] [-] [IP]:39046 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:26:48,361 INFO [uvicorn.access] [-] [IP]:51118 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:26:51,502 INFO [uvicorn.access] [-] [IP]:51128 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:26:53,451 INFO [backend.app.main] [-] [SNAPSHOT] Capturing fresh frame for printer 1
+2026-10-13 12:26:53,451 INFO [backend.app.services.camera] [-] Capturing camera frame bytes from [IP] using RTSP (model: [PRINTER])
+2026-10-13 12:26:54,587 INFO [uvicorn.access] [-] [IP]:51146 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:26:54,655 INFO [backend.app.services.camera] [-] Successfully captured camera frame bytes: 432451 bytes
+2026-10-13 12:26:54,655 INFO [backend.app.main] [-] [SNAPSHOT] Fresh camera frame: 432451 bytes
+2026-10-13 12:26:57,766 INFO [uvicorn.access] [-] [IP]:55488 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:27:00,874 INFO [uvicorn.access] [-] [IP]:55504 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:27:03,958 INFO [uvicorn.access] [-] [IP]:55520 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:27:07,105 INFO [uvicorn.access] [-] [IP]:49974 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:27:10,169 INFO [uvicorn.access] [-] [IP]:50000 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:27:13,258 INFO [uvicorn.access] [-] [IP]:50024 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:27:16,337 INFO [uvicorn.access] [-] [IP]:50046 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:27:19,421 INFO [uvicorn.access] [-] [IP]:34828 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:27:22,220 INFO [backend.app.main] [-] [SNAPSHOT] Capturing fresh frame for printer 1
+2026-10-13 12:27:22,220 INFO [backend.app.services.camera] [-] Capturing camera frame bytes from [IP] using RTSP (model: [PRINTER])
+2026-10-13 12:27:22,609 INFO [uvicorn.access] [-] [IP]:34842 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:27:23,363 INFO [backend.app.services.camera] [-] Successfully captured camera frame bytes: 448535 bytes
+2026-10-13 12:27:23,363 INFO [backend.app.main] [-] [SNAPSHOT] Fresh camera frame: 448535 bytes
+2026-10-13 12:27:25,689 INFO [uvicorn.access] [-] [IP]:34868 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:27:28,753 INFO [uvicorn.access] [-] [IP]:50356 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:27:31,831 INFO [uvicorn.access] [-] [IP]:50386 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:27:34,965 INFO [uvicorn.access] [-] [IP]:50410 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:27:38,064 INFO [uvicorn.access] [-] [IP]:36396 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:27:41,130 INFO [uvicorn.access] [-] [IP]:36416 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:27:44,215 INFO [uvicorn.access] [-] [IP]:36432 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:27:47,335 INFO [uvicorn.access] [-] [IP]:40438 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:27:50,422 INFO [uvicorn.access] [-] [IP]:40462 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:27:53,551 INFO [uvicorn.access] [-] [IP]:40482 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:27:53,635 INFO [backend.app.main] [-] [SNAPSHOT] Capturing fresh frame for printer 1
+2026-10-13 12:27:53,635 INFO [backend.app.services.camera] [-] Capturing camera frame bytes from [IP] using RTSP (model: [PRINTER])
+2026-10-13 12:27:54,845 INFO [backend.app.services.camera] [-] Successfully captured camera frame bytes: 453408 bytes
+2026-10-13 12:27:54,846 INFO [backend.app.main] [-] [SNAPSHOT] Fresh camera frame: 453408 bytes
+2026-10-13 12:27:56,655 INFO [uvicorn.access] [-] [IP]:40500 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:27:59,730 INFO [uvicorn.access] [-] [IP]:55276 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:28:02,817 INFO [uvicorn.access] [-] [IP]:55290 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:28:05,965 INFO [uvicorn.access] [-] [IP]:55310 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:28:09,099 INFO [uvicorn.access] [-] [IP]:54840 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:28:11,974 INFO [backend.app.api.routes.cloud] [e73a6a23] get_filament_info called with 4 IDs: ['GFA01', 'GFL99', 'GFU00', ',']
+2026-10-13 12:28:11,977 INFO [uvicorn.access] [-] [IP]:63752 - "POST /api/v1/cloud/filament-info HTTP/1.1" 200
+2026-10-13 12:28:12,205 INFO [uvicorn.access] [-] [IP]:54856 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:28:14,784 INFO [uvicorn.access] [-] [IP]:63747 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:28:14,803 INFO [backend.app.api.routes.websocket] [-] WebSocket client connecting (principal=<anonymous>)
+2026-10-13 12:28:14,803 INFO [backend.app.api.routes.websocket] [-] WebSocket client connected
+2026-10-13 12:28:14,803 INFO [backend.app.api.routes.websocket] [-] Sent initial status for 2 printers
+2026-10-13 12:28:15,370 INFO [uvicorn.access] [-] [IP]:54870 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:28:18,485 INFO [uvicorn.access] [-] [IP]:47190 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:28:18,651 INFO [backend.app.main] [-] [SNAPSHOT] Capturing fresh frame for printer 1
+2026-10-13 12:28:18,651 INFO [backend.app.services.camera] [-] Capturing camera frame bytes from [IP] using RTSP (model: [PRINTER])
+2026-10-13 12:28:19,833 INFO [backend.app.services.camera] [-] Successfully captured camera frame bytes: 434731 bytes
+2026-10-13 12:28:19,833 INFO [backend.app.main] [-] [SNAPSHOT] Fresh camera frame: 434731 bytes
+2026-10-13 12:28:21,555 INFO [uvicorn.access] [-] [IP]:47194 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:28:24,627 INFO [uvicorn.access] [-] [IP]:47198 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:28:27,727 INFO [uvicorn.access] [-] [IP]:44466 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:28:30,851 INFO [uvicorn.access] [-] [IP]:44478 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:28:33,984 INFO [uvicorn.access] [-] [IP]:44498 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:28:37,124 INFO [uvicorn.access] [-] [IP]:39998 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:28:40,269 INFO [uvicorn.access] [-] [IP]:40018 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:28:43,333 INFO [uvicorn.access] [-] [IP]:40040 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:28:44,800 INFO [backend.app.main] [-] [SNAPSHOT] Capturing fresh frame for printer 1
+2026-10-13 12:28:44,801 INFO [backend.app.services.camera] [-] Capturing camera frame bytes from [IP] using RTSP (model: [PRINTER])
+2026-10-13 12:28:46,000 INFO [backend.app.services.camera] [-] Successfully captured camera frame bytes: 430977 bytes
+2026-10-13 12:28:46,000 INFO [backend.app.main] [-] [SNAPSHOT] Fresh camera frame: 430977 bytes
+2026-10-13 12:28:46,471 INFO [uvicorn.access] [-] [IP]:40060 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:28:49,597 INFO [uvicorn.access] [-] [IP]:53934 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:28:52,724 INFO [uvicorn.access] [-] [IP]:53950 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:28:55,860 INFO [uvicorn.access] [-] [IP]:53966 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:28:58,967 INFO [uvicorn.access] [-] [IP]:47622 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:29:02,044 INFO [uvicorn.access] [-] [IP]:47634 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:29:05,158 INFO [uvicorn.access] [-] [IP]:47654 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:29:08,309 INFO [uvicorn.access] [-] [IP]:50418 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:29:11,385 INFO [uvicorn.access] [-] [IP]:50436 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:29:14,485 INFO [uvicorn.access] [-] [IP]:50468 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:29:16,329 INFO [backend.app.main] [-] [SNAPSHOT] Capturing fresh frame for printer 1
+2026-10-13 12:29:16,329 INFO [backend.app.services.camera] [-] Capturing camera frame bytes from [IP] using RTSP (model: [PRINTER])
+2026-10-13 12:29:17,500 INFO [backend.app.services.camera] [-] Successfully captured camera frame bytes: 449513 bytes
+2026-10-13 12:29:17,500 INFO [backend.app.main] [-] [SNAPSHOT] Fresh camera frame: 449513 bytes
+2026-10-13 12:29:17,615 INFO [uvicorn.access] [-] [IP]:46164 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:29:20,695 INFO [uvicorn.access] [-] [IP]:46184 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:29:23,787 INFO [uvicorn.access] [-] [IP]:46212 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:29:26,872 INFO [uvicorn.access] [-] [IP]:46222 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:29:29,967 INFO [uvicorn.access] [-] [IP]:32846 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:29:33,054 INFO [uvicorn.access] [-] [IP]:32864 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:29:36,156 INFO [uvicorn.access] [-] [IP]:32892 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:29:39,242 INFO [uvicorn.access] [-] [IP]:45222 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:29:42,332 INFO [uvicorn.access] [-] [IP]:45230 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:29:45,482 INFO [uvicorn.access] [-] [IP]:45244 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:29:46,286 INFO [backend.app.api.routes.support] [dd3404a6] Log level changed to DEBUG
+2026-10-13 12:29:46,286 INFO [backend.app.api.routes.bug_report] [dd3404a6] Bug report: enabled debug logging
+2026-10-13 12:29:46,286 DEBUG [backend.app.services.bambu_mqtt] [dd3404a6] [[SERIAL]] Requesting status update (pushall)
+2026-10-13 12:29:46,286 WARNING [backend.app.services.bambu_mqtt] [dd3404a6] [[SERIAL]] request_status_update: not connected
+2026-10-13 12:29:46,286 INFO [uvicorn.access] [-] [IP]:63772 - "POST /api/v1/bug-report/start-logging HTTP/1.1" 200
+2026-10-13 12:29:46,629 DEBUG [backend.app.main] [-] Recorded 4 printer sensor history entries
+2026-10-13 12:29:46,972 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Found xcam inside print data: {'allow_skip_parts': False, 'buildplate_marker_detector': True, 'cfg': 1797431, 'first_layer_inspector': True, 'halt_print_sensitivity': 'medium', 'print_halt': True, 'printing_monitor': True, 'spaghetti_detector': True}
+2026-10-13 12:29:46,972 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Parsing xcam data - all fields: ['allow_skip_parts', 'buildplate_marker_detector', 'cfg', 'first_layer_inspector', 'halt_print_sensitivity', 'print_halt', 'printing_monitor', 'spaghetti_detector']
+2026-10-13 12:29:46,972 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] xcam cfg bitmask: 1797431 (binary: 0b110110110110100110111)
+2026-10-13 12:29:46,972 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Received gcode_state: RUNNING, gcode_file: /data/Metadata/plate_1.gcode, subtask_name: Bambu_Scraper_Grip
+2026-10-13 12:29:46,972 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] AMS dict fields: {'ams_exist_bits': '3', 'ams_exist_bits_raw': '3', 'cali_id': 255, 'cali_stat': 0, 'insert_flag': True, 'power_on_flag': False, 'tray_exist_bits': 'ff', 'tray_is_bbl_bits': 'ff', 'tray_now': '1', 'tray_pre': '1', 'tray_read_done_bits': 'ff', 'tray_reading_bits': '0', 'tray_tar': '1', 'unbind_ams_stat': 0, 'version': 6084}
+2026-10-13 12:29:46,972 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] tray_now updated: 1
+2026-10-13 12:29:46,972 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Merged AMS data: 2 new units, 2 total
+2026-10-13 12:29:46,972 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] AMS 0 info=0x1103 -> extruder 1
+2026-10-13 12:29:46,972 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] AMS 1 info=0x1003 -> extruder 0
+2026-10-13 12:29:46,972 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] ams_extruder_map: {'0': 1, '1': 0}
+2026-10-13 12:29:46,972 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] ams_status: 768 (main=3, sub=0)
+2026-10-13 12:29:46,972 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Received command response: push_status
+2026-10-13 12:29:46,972 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] device.extruder.state=33042 (switch_state bits 12-14: 0)
+2026-10-13 12:29:46,972 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] info.temp direct: 31°C (heater OFF)
+2026-10-13 12:29:46,972 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] ctc_info keys: ['temp']
+2026-10-13 12:29:46,973 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Chamber heating calculated: target=0.0, current=31.0, heating=False, respect_local=False
+2026-10-13 12:29:46,973 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Chamber temp updated to: 31.0, target: 0.0, heating: False
+2026-10-13 12:29:46,973 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] HMS data received: []
+2026-10-13 12:29:46,973 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] ipcam field: {'agora_service': 'disable', 'brtc_service': 'enable', 'bs_state': 0, 'cap_pic_enable': 'invalid', 'ipcam_dev': '1', 'ipcam_record': 'enable', 'laser_preview_res': 6, 'mode_bits': 2, 'resolution': '1080p', 'rtsp_url': 'rtsps://[IP]:322/streaming/live/1', 'timelapse': 'enable', 'tl_store_hpd_type': 2, 'tl_store_path_type': 2, 'tutk_server': 'disable'}
+2026-10-13 12:29:46,973 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Timelapse detected during print (from ipcam)
+2026-10-13 12:29:46,973 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] wifi_signal received: -86dBm
+2026-10-13 12:29:46,973 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] lights_report: [{'mode': 'on', 'node': 'chamber_light'}, {'mode': 'flashing', 'node': 'work_light'}, {'mode': 'on', 'node': 'chamber_light2'}]
+2026-10-13 12:29:46,973 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] MQTT mapping field: [1, 257]
+2026-10-13 12:29:46,973 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] gcode_state: RUNNING -> RUNNING, file: /data/Metadata/plate_1.gcode, subtask: Bambu_Scraper_Grip
+2026-10-13 12:29:46,976 INFO [backend.app.main] [-] [SNAPSHOT] Capturing fresh frame for printer 1
+2026-10-13 12:29:46,977 DEBUG [backend.app.services.camera] [-] TLS proxy for [IP]:322 listening on [IP]:46373
+2026-10-13 12:29:46,977 INFO [backend.app.services.camera] [-] Capturing camera frame bytes from [IP] using RTSP (model: [PRINTER])
+2026-10-13 12:29:48,178 INFO [backend.app.services.camera] [-] Successfully captured camera frame bytes: 423190 bytes
+2026-10-13 12:29:48,178 INFO [backend.app.main] [-] [SNAPSHOT] Fresh camera frame: 423190 bytes
+2026-10-13 12:29:48,178 DEBUG [backend.app.main] [-] [FINISH-PHOTO-BANK] banked in-print frame for printer 1 at layer 220/269 (423190 bytes)
+2026-10-13 12:29:48,271 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Found xcam inside print data: {'allow_skip_parts': False, 'buildplate_marker_detector': True, 'cfg': 1797431, 'first_layer_inspector': True, 'halt_print_sensitivity': 'medium', 'print_halt': True, 'printing_monitor': True, 'spaghetti_detector': True}
+2026-10-13 12:29:48,271 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Parsing xcam data - all fields: ['allow_skip_parts', 'buildplate_marker_detector', 'cfg', 'first_layer_inspector', 'halt_print_sensitivity', 'print_halt', 'printing_monitor', 'spaghetti_detector']
+2026-10-13 12:29:48,271 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] xcam cfg bitmask: 1797431 (binary: 0b110110110110100110111)
+2026-10-13 12:29:48,271 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Received gcode_state: RUNNING, gcode_file: /data/Metadata/plate_1.gcode, subtask_name: Bambu_Scraper_Grip
+2026-10-13 12:29:48,271 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] ams_extruder_map: {'0': 1, '1': 0}
+2026-10-13 12:29:48,271 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Received command response: push_status
+2026-10-13 12:29:48,271 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] HMS data received: []
+2026-10-13 12:29:48,271 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Timelapse detected during print (from ipcam)
+2026-10-13 12:29:48,272 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] lights_report: [{'mode': 'on', 'node': 'chamber_light'}, {'mode': 'flashing', 'node': 'work_light'}, {'mode': 'on', 'node': 'chamber_light2'}]
+2026-10-13 12:29:48,272 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] MQTT mapping field: [1, 257]
+2026-10-13 12:29:48,272 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] gcode_state: RUNNING -> RUNNING, file: /data/Metadata/plate_1.gcode, subtask: Bambu_Scraper_Grip
+2026-10-13 12:29:48,578 INFO [uvicorn.access] [-] [IP]:35808 - "POST /api/v1/auth/ws-token HTTP/1.1" 200
+2026-10-13 12:29:49,314 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Found xcam inside print data: {'allow_skip_parts': False, 'buildplate_marker_detector': True, 'cfg': 1797431, 'first_layer_inspector': True, 'halt_print_sensitivity': 'medium', 'print_halt': True, 'printing_monitor': True, 'spaghetti_detector': True}
+2026-10-13 12:29:49,314 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Parsing xcam data - all fields: ['allow_skip_parts', 'buildplate_marker_detector', 'cfg', 'first_layer_inspector', 'halt_print_sensitivity', 'print_halt', 'printing_monitor', 'spaghetti_detector']
+2026-10-13 12:29:49,314 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] xcam cfg bitmask: 1797431 (binary: 0b110110110110100110111)
+2026-10-13 12:29:49,314 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Received gcode_state: RUNNING, gcode_file: /data/Metadata/plate_1.gcode, subtask_name: Bambu_Scraper_Grip
+2026-10-13 12:29:49,315 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] ams_extruder_map: {'0': 1, '1': 0}
+2026-10-13 12:29:49,315 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Received command response: push_status
+2026-10-13 12:29:49,315 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] HMS data received: []
+2026-10-13 12:29:49,315 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] Timelapse detected during print (from ipcam)
+2026-10-13 12:29:49,315 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] lights_report: [{'mode': 'on', 'node': 'chamber_light'}, {'mode': 'flashing', 'node': 'work_light'}, {'mode': 'on', 'node': 'chamber_light2'}]
+2026-10-13 12:29:49,315 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] MQTT mapping field: [1, 257]
+2026-10-13 12:29:49,315 DEBUG [backend.app.services.bambu_mqtt] [-] [[SERIAL]] gcode_state: RUNNING -> RUNNING, file: /data/Metadata/plate_1.gcode, subtask: Bambu_Scraper_Grip
