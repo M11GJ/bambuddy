@@ -366,3 +366,33 @@ async def test_keep_warm_skips_swap_printer():
     active = sweep.call_args.kwargs["active_candidates"]
     assert 904 not in active
     assert 905 in active
+
+
+async def test_hold_during_upload_stops_the_start(case_factory):
+    # A hold that lands while the file uploads must still stop the start command.
+    ctx = await case_factory()
+
+    async def upload_then_hold(*_a, **_kw):
+        printer_manager._swap_state[ctx.printer_id] = (True, 3, "swap.hold.printNotConfirmed")
+        return True
+
+    ctx.upload.side_effect = upload_then_hold
+    item, _, _, _ = await _run(ctx)
+    ctx.upload.assert_called()
+    ctx.start_print.assert_not_called()
+    assert item.status == "pending"
+    assert item.started_at is None
+
+
+async def test_keep_warm_fails_closed_before_swap_state_loads():
+    printer_manager._swap_state_loaded = False
+    scheduler = PrintScheduler()
+    items = [SimpleNamespace(id=2, printer_id=905)]
+    with (
+        patch.object(scheduler, "_get_bool_setting", AsyncMock(return_value=True)),
+        patch.object(scheduler, "_get_int_setting", AsyncMock(return_value=90)),
+        patch.object(scheduler, "_sweep_keep_warm") as sweep,
+        patch("backend.app.services.print_scheduler.printer_manager.get_status", MagicMock(return_value=None)),
+    ):
+        await scheduler._apply_keep_warm(MagicMock(), items, [], {905}, True)
+    assert sweep.call_args.kwargs["active_candidates"] == set()

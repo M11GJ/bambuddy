@@ -6233,9 +6233,13 @@ class PrintScheduler:
         # Swapper printers never keep the bed warm (spec D6): the plate is
         # swapped right after the print, and a hot bed would skew the camera
         # gate's comparison against its cold reference image.
-        warm_candidates = {
-            pid for pid in (pending_printer_ids & busy_printers) - dispatched_printers if not self._swap_enabled(pid)
-        }
+        # Before the swap state is loaded nobody is known not to be a swapper,
+        # so nobody is kept warm (fail closed).
+        warm_candidates = (
+            {pid for pid in (pending_printer_ids & busy_printers) - dispatched_printers if not self._swap_enabled(pid)}
+            if printer_manager._swap_state_loaded
+            else set()
+        )
 
         keep_warm_enabled = await self._get_bool_setting(db, "queue_keep_bed_warm", default=False)
         preheat_on = await self._get_bool_setting(db, "preheat_enabled", default=False)
@@ -8388,6 +8392,30 @@ class PrintScheduler:
         # parses + injects it only for dual-nozzle models so a null on every
         # other model is a transparent pass-through. The rack fallback is
         # resolved down there too, where the live rack position is known.
+        #
+        # Swap printers: a hold can land while the file uploads (a completion,
+        # a stranded close, an operator). Re-check the mirror with no await
+        # before the command and defer like the busy-refusal below;
+        # `_dispatch_one`'s finally unwinds the expected print, budget and claim.
+        swap_reason = printer_manager.is_swap_blocked(printer.id) if swap_cfg is not None else None
+        if swap_reason:
+            logger.warning(
+                "Queue item %s: swap printer %s became held (%s) during dispatch — not starting, "
+                "reverting item to pending",
+                item.id,
+                printer.id,
+                swap_reason,
+            )
+            try:
+                await delete_file_async(
+                    printer.ip_address, printer.access_code, remote_path, printer_model=printer.model
+                )
+            except Exception:
+                pass  # Best-effort, as in the start-failure path below
+            item.status = "pending"
+            item.started_at = None
+            await db.commit()
+            return
         started = printer_manager.start_print(
             item.printer_id,
             remote_filename,
