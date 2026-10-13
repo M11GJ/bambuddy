@@ -1323,6 +1323,7 @@ class PrintScheduler:
                 now = time.monotonic()
                 seen_printers: set[int] = set()
                 closed = False
+                held: set[int] = set()
                 for item in items:
                     printer_id = item.printer_id
                     seen_printers.add(printer_id)
@@ -1338,6 +1339,17 @@ class PrintScheduler:
                     item.status = status
                     item.completed_at = datetime.now(timezone.utc)
                     closed = True
+                    # Spec 4.7: nobody saw this print end, so a swap printer cannot
+                    # know whether the swap ran. Held in the same transaction.
+                    printer_row = await db.get(Printer, printer_id)
+                    if printer_row is not None and printer_row.swap_enabled:
+                        await printer_manager.set_swap_hold(
+                            db,
+                            printer_id,
+                            "swap.hold.printNotConfirmed",
+                            "print closed while Bambuddy was not watching",
+                        )
+                        held.add(printer_id)
                     logger.warning(
                         "Queue item %s was still 'printing' after printer %s reported %s for %.0fs — "
                         "closing it as %s. Its completion event was never matched to it, which blocks "
@@ -1350,6 +1362,8 @@ class PrintScheduler:
                     )
                 if closed:
                     await db.commit()
+                for printer_id in held:
+                    printer_manager.apply_swap_state_after_commit(printer_id)
                 for printer_id in list(self._terminal_since):
                     if printer_id not in seen_printers:
                         del self._terminal_since[printer_id]

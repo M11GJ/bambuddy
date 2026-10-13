@@ -4089,11 +4089,33 @@ async def on_print_start(printer_id: int, data: dict):
         result = await db.execute(select(Printer).where(Printer.id == printer_id))
         printer = result.scalar_one_or_none()
 
+        # Spec 4.7: a print on a swap printer with no printing queue item was
+        # started outside the queue; its ending can never confirm a swap. The
+        # scheduler commits the item to ``printing`` before the MQTT send, so a
+        # queue dispatch is always visible here.
+        if printer and printer.swap_enabled:
+            from backend.app.models.print_queue import PrintQueueItem
+
+            queued = await db.scalar(
+                select(PrintQueueItem.id)
+                .where(PrintQueueItem.printer_id == printer_id, PrintQueueItem.status == "printing")
+                .limit(1)
+            )
+            if queued is None:
+                logger.warning("[SWAP] Printer %s started a print outside the queue — holding", printer_id)
+                await printer_manager.set_swap_hold(
+                    db, printer_id, "swap.hold.printNotConfirmed", "print started outside the queue"
+                )
+                await db.commit()
+                printer_manager.apply_swap_state_after_commit(printer_id)
+
         # Plate detection check - pause if objects detected on build plate
         logger.info(
             f"[PLATE CHECK] printer_id={printer_id}, plate_detection_enabled={printer.plate_detection_enabled if printer else 'NO PRINTER'}"
         )
-        if printer and printer.plate_detection_enabled:
+        # Swap printers skip it (spec D6): the swap camera gate checks the bed
+        # before dispatch, against its own reference image.
+        if printer and printer.plate_detection_enabled and not printer.swap_enabled:
             logger.info("[PLATE CHECK] ENTERING plate detection code for printer %s", printer_id)
             # Release the pooled DB connection before the plate-detection camera
             # work (a 2.5s light-settle sleep + FTP/camera capture). Only the
@@ -7044,7 +7066,12 @@ async def on_print_complete(printer_id: int, data: dict):
     # after a touchscreen-abort (#1171). Persisted to DB so the gate survives
     # Auto Off power cycles and Bambuddy restarts.
     _final_status = data.get("status", "completed")
-    if _final_status in ("completed", "failed", "aborted", "cancelled"):
+    # Swap printers never wait for a manual plate clear (spec D6): the swapper
+    # clears the bed, and the swap hold covers every ending it did not confirm.
+    if (
+        _final_status in ("completed", "failed", "aborted", "cancelled")
+        and not printer_manager._swap_state.get(printer_id, (False, None, None))[0]
+    ):
         printer_manager.set_awaiting_plate_clear(printer_id, True)
 
     # MQTT relay - publish print complete
@@ -7277,6 +7304,7 @@ async def on_print_complete(printer_id: int, data: dict):
     try:
         from backend.app.core.database import run_with_retry
         from backend.app.models.print_queue import PrintQueueItem
+        from backend.app.models.printer import Printer
 
         async def _update_queue_status(db):
             nonlocal billing_run_id, billing_user_id, billing_cost_center_id, billing_plate_id
@@ -7294,7 +7322,22 @@ async def on_print_complete(printer_id: int, data: dict):
                     [(i.id, i.archive_id, i.library_file_id) for i in printing_items],
                 )
             item = printing_items[0] if printing_items else None
-            if item is not None and not await _completion_belongs_to_queue_item(db, item, data):
+            if item is None:
+                # Spec 4.7: an ending with no printing queue item (a print started
+                # outside the queue, or a duplicate completion) cannot be a
+                # confirmed swap, so a swap printer holds.
+                printer_row = await db.get(Printer, printer_id)
+                if printer_row is not None and printer_row.swap_enabled:
+                    await printer_manager.set_swap_hold(
+                        db, printer_id, "swap.hold.printNotConfirmed", "print ended without a matching queue item"
+                    )
+                    await db.commit()
+                    printer_manager.apply_swap_state_after_commit(printer_id)
+                return
+            # An unmatched ending while an item is printing (the printer's own
+            # calibration run) is ignored; the real ending or the stranded sweep
+            # settles the item, and with it the swap state.
+            if not await _completion_belongs_to_queue_item(db, item, data):
                 return
             if item:
                 queue_status = data.get("status", "completed")
@@ -7312,7 +7355,26 @@ async def on_print_complete(printer_id: int, data: dict):
                 # files — #1008.
                 await _bump_library_file_usage_if_completed(db, item, queue_status)
 
+                # Spec 4.7 / D5: only a matched ``completed`` ran the swap block,
+                # which loaded one spare plate. Written in this transaction so the
+                # item's status and the plate count / hold can never disagree.
+                printer_row = await db.get(Printer, printer_id)
+                swap_applied = False
+                if printer_row is not None and printer_row.swap_enabled:
+                    if queue_status == "completed":
+                        left = await printer_manager.consume_swap_plate(db, printer_id)
+                        if left is None:
+                            # Holder was already empty: the bed is now empty too.
+                            await printer_manager.set_swap_hold(db, printer_id, "swap.hold.outOfPlates", None)
+                    else:
+                        await printer_manager.set_swap_hold(
+                            db, printer_id, "swap.hold.printNotConfirmed", f"print ended as {queue_status}"
+                        )
+                    swap_applied = True
+
                 await db.commit()
+                if swap_applied:
+                    printer_manager.apply_swap_state_after_commit(printer_id)
                 queue_item_id = item.id
                 billing_run_id = item.billing_run_id
                 billing_user_id = item.created_by_id

@@ -43,6 +43,7 @@ def _printer():
     printer.id = 1
     printer.name = "TestP1S"
     printer.plate_detection_enabled = True
+    printer.swap_enabled = False
     printer.plate_detection_roi_x = None
     printer.plate_detection_roi_y = None
     printer.plate_detection_roi_w = None

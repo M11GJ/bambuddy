@@ -81,6 +81,7 @@ class TestPlateClearGate:
         mock_pm.get_printer.return_value = None
         # Real method under test — track each call so the test can assert on it.
         mock_pm.set_awaiting_plate_clear = MagicMock()
+        mock_pm._swap_state = {}  # no swap printers: the plate-clear gate applies
 
         mock_session = AsyncMock()
         mock_session.__aenter__ = AsyncMock(return_value=mock_session)
