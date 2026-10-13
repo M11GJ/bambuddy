@@ -4,6 +4,7 @@ import { compareFwVersions } from '../utils/firmwareVersion';
 import { mapModelCode } from '../utils/printerModel';
 import { formatPrintName } from '../utils/printName';
 import { isBedSlinger } from '../utils/bedSlinger';
+import { translateErrorMessage } from '../utils/translateErrorMessage';
 import { computePopoverPosition, type PopoverPosition } from '../utils/popoverPosition';
 import {
   openCameraWindow,
@@ -3066,14 +3067,14 @@ function PrinterCard({
     mutationFn: ({ distance }: { distance: number }) =>
       api.bedJog(printer.id, distance),
     onError: (error: Error) =>
-      showToast(error.message || t('printers.toast.failedToSendCommand'), 'error'),
+      showToast(translateErrorMessage(error.message, t).text || t('printers.toast.failedToSendCommand'), 'error'),
   });
 
   const xyJogMutation = useMutation({
     mutationFn: ({ x, y }: { x: number; y: number }) =>
       api.xyJog(printer.id, x, y),
     onError: (error: Error) =>
-      showToast(error.message || t('printers.toast.failedToSendCommand'), 'error'),
+      showToast(translateErrorMessage(error.message, t).text || t('printers.toast.failedToSendCommand'), 'error'),
   });
 
   const extruderJogMutation = useMutation({
@@ -3089,7 +3090,7 @@ function PrinterCard({
       showToast(t('printers.bedJog.homingStarted'));
     },
     onError: (error: Error) =>
-      showToast(error.message || t('printers.toast.failedToSendCommand'), 'error'),
+      showToast(translateErrorMessage(error.message, t).text || t('printers.toast.failedToSendCommand'), 'error'),
   });
 
   // Plate detection setting mutation

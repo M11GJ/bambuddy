@@ -8054,5 +8054,8 @@ errors: {
       excludedArea: "En del av utskriften ligger i växlarens förbjudna zon",
       injectionNotAllowed: "G-kodsinjektion kan inte användas med plattväxlaren",
     },
+    control: {
+      motionBlocked: "Hemkörning och manuell förflyttning är inaktiverade på skrivare med plattväxlare",
+    },
   },
 };

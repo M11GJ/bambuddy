@@ -743,3 +743,18 @@ class TestFilamentIsCheckedBeforeSwitchingOn:
         )
 
         assert _woken_printer_ids(power_on) == [1]
+
+
+@pytest.mark.asyncio
+async def test_a_pinned_item_does_not_wake_a_held_swap_printer(queue_db):
+    """A held plate swapper would boot and then refuse the job; leave it off."""
+    from backend.app.services.printer_manager import printer_manager
+
+    await _add_plug(queue_db, 2)
+    item_id = await _add_item(queue_db, printer_id=2)
+    printer_manager._swap_state[2] = (True, 0, "swap.hold.outOfPlates")
+
+    power_on = await _run(queue_db, PrintScheduler(), power_on=AsyncMock(return_value=True))
+
+    assert _woken_printer_ids(power_on) == []
+    assert (await _get_item(queue_db, item_id)).waiting_reason.startswith("[swap.hold.outOfPlates]")

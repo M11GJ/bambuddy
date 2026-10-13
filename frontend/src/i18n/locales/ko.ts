@@ -7624,5 +7624,8 @@ export default {
       excludedArea: "출력물 일부가 교환기의 출력 금지 구역에 있습니다",
       injectionNotAllowed: "플레이트 교환기를 쓰는 프린터에서는 G-code 삽입을 사용할 수 없습니다",
     },
+    control: {
+      motionBlocked: "플레이트 교환기를 쓰는 프린터에서는 원점 복귀와 축 이동이 비활성화됩니다",
+    },
   },
 };

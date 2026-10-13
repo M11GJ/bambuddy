@@ -8013,5 +8013,8 @@ export default {
       excludedArea: "Parte de la impresión está en la zona prohibida del cambiador",
       injectionNotAllowed: "La inyección de G-code no se puede usar con el cambiador de placas",
     },
+    control: {
+      motionBlocked: "El homing y el movimiento manual están desactivados en impresoras con cambiador de placas",
+    },
   },
 };

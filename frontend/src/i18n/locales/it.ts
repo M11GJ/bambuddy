@@ -7990,5 +7990,8 @@ export default {
       excludedArea: "Parte della stampa è nella zona vietata del cambiapiatti",
       injectionNotAllowed: "L'iniezione di G-code non può essere usata con il cambiapiatti",
     },
+    control: {
+      motionBlocked: "Homing e movimento manuale sono disattivati sulle stampanti con cambiapiatti",
+    },
   },
 };

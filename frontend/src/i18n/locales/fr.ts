@@ -7991,5 +7991,8 @@ export default {
       excludedArea: "Une partie de l'impression se trouve dans la zone interdite du changeur",
       injectionNotAllowed: "L'injection de G-code est impossible avec le changeur de plateaux",
     },
+    control: {
+      motionBlocked: "La mise à l'origine et le déplacement manuel sont désactivés sur les imprimantes avec changeur de plateaux",
+    },
   },
 };

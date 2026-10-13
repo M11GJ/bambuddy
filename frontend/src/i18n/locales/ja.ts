@@ -8004,5 +8004,8 @@ export default {
       excludedArea: "造形物が配置禁止エリア（手前と奥）にかかっています",
       injectionNotAllowed: "プレート交換を使うプリンターでは G-code の差し込みは使えません",
     },
+    control: {
+      motionBlocked: "プレート交換を使うプリンターではホーミングと軸移動は無効です",
+    },
   },
 };

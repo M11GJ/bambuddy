@@ -1873,8 +1873,10 @@ class PrintScheduler:
                     printer_idle = self._is_printer_idle(item.printer_id, require_plate_clear)
                     printer_connected = printer_manager.is_connected(item.printer_id)
 
-                    # If printer not connected, try to power on via smart plug
-                    if not printer_connected:
+                    # If printer not connected, try to power on via smart plug.
+                    # A held swapper would boot and refuse the job: leave it off
+                    # (the not-idle hold below words the reason).
+                    if not printer_connected and not printer_manager.is_swap_blocked(item.printer_id):
                         plugs = await self._get_smart_plugs(db, item.printer_id)
                         auto_on_plugs = [p for p in plugs if p.auto_on and p.enabled]
                         if auto_on_plugs:
@@ -8397,7 +8399,11 @@ class PrintScheduler:
         # a stranded close, an operator). Re-check the mirror with no await
         # before the command and defer like the busy-refusal below;
         # `_dispatch_one`'s finally unwinds the expected print, budget and claim.
-        swap_reason = printer_manager.is_swap_blocked(printer.id) if swap_cfg is not None else None
+        swap_reason = printer_manager.is_swap_blocked(printer.id)
+        if not swap_reason and swap_cfg is None and self._swap_enabled(printer.id):
+            # Swap was enabled after the gate decision: this dispatch skipped the
+            # camera gate and the G-code guard, so it must not start.
+            swap_reason = "enabled mid-dispatch"
         if swap_reason:
             logger.warning(
                 "Queue item %s: swap printer %s became held (%s) during dispatch — not starting, "

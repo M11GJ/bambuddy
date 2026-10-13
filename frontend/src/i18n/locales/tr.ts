@@ -7930,5 +7930,8 @@ export default {
       excludedArea: "Baskının bir kısmı değiştiricinin yasak bölgesinde",
       injectionNotAllowed: "Plaka değiştiriciyle G-code ekleme kullanılamaz",
     },
+    control: {
+      motionBlocked: "Plaka değiştiricili yazıcılarda eksen sıfırlama ve elle hareket devre dışıdır",
+    },
   },
 };

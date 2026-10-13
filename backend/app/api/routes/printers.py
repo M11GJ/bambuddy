@@ -3649,8 +3649,26 @@ async def update_swap(
 
     from backend.app.services.swap_config import parse_swap_config
 
-    await _swap_status(db, printer_id)  # 404 check
+    current = await _swap_status(db, printer_id)  # 404 check
     values = {}
+    if body.enabled and not current.enabled:
+        # Never turn a printer into a swapper under a running job: the job was
+        # dispatched ungated and its completion would be counted as a swap.
+        from backend.app.models.print_queue import PrintQueueItem
+        from backend.app.services.print_scheduler import _ACTIVE_PRINT_STATES
+
+        state = getattr(printer_manager.get_status(printer_id), "state", None)
+        printing_item = (
+            await db.execute(
+                select(PrintQueueItem.id)
+                .where(PrintQueueItem.printer_id == printer_id, PrintQueueItem.status == "printing")
+                .limit(1)
+            )
+        ).scalar_one_or_none()
+        if state in _ACTIVE_PRINT_STATES or printing_item is not None:
+            raise HTTPException(409, "Cannot enable the plate swapper while the printer is printing")
+        # Force the admin to count the plates actually in the holder.
+        values["swap_plates_remaining"] = None
     if "config" in body.model_fields_set:
         if body.config is None:
             values["swap_config"] = None
@@ -4054,6 +4072,9 @@ async def set_chamber_light(
     return {"success": True, "message": f"Chamber light {'on' if on else 'off'}"}
 
 
+SWAP_MOTION_BLOCKED = "[swap.control.motionBlocked] Homing and jogging are disabled on plate swapper printers"
+
+
 @router.post("/{printer_id}/bed-jog")
 async def bed_jog(
     printer_id: int,
@@ -4127,6 +4148,11 @@ async def bed_jog(
     if not printer:
         raise HTTPException(404, "Printer not found")
 
+    if printer.swap_enabled:
+        # The swapper owns the plate and Y/Z; a bare move or G28 with spare
+        # plates in the holder can crash it. Pose is set by the admin script.
+        raise HTTPException(409, SWAP_MOTION_BLOCKED)
+
     client = printer_manager.get_client(printer_id)
     if not client:
         raise HTTPException(400, "Printer not connected")
@@ -4158,6 +4184,11 @@ async def xy_jog(
     printer = result.scalar_one_or_none()
     if not printer:
         raise HTTPException(404, "Printer not found")
+
+    if printer.swap_enabled:
+        # The swapper owns the plate and Y/Z; a bare move or G28 with spare
+        # plates in the holder can crash it. Pose is set by the admin script.
+        raise HTTPException(409, SWAP_MOTION_BLOCKED)
 
     client = printer_manager.get_client(printer_id)
     if not client:
@@ -4244,6 +4275,11 @@ async def home_axes(
     printer = result.scalar_one_or_none()
     if not printer:
         raise HTTPException(404, "Printer not found")
+
+    if printer.swap_enabled:
+        # The swapper owns the plate and Y/Z; a bare move or G28 with spare
+        # plates in the holder can crash it. Pose is set by the admin script.
+        raise HTTPException(409, SWAP_MOTION_BLOCKED)
 
     client = printer_manager.get_client(printer_id)
     if not client:

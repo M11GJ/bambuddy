@@ -160,3 +160,91 @@ async def test_rest_status_carries_swap_state(async_client, printer_factory):
     r = await async_client.get(f"/api/v1/printers/{p.id}/status")
     assert r.status_code == 200
     assert r.json()["swap"] == {"enabled": True, "plates_remaining": 2, "hold_reason": "swap.gate.noPlate"}
+
+
+@pytest.mark.asyncio
+@pytest.mark.integration
+@pytest.mark.parametrize("state", ["RUNNING", "PAUSE", "PREPARE"])
+async def test_enable_refused_while_printing(async_client, db_session, printer_factory, auth, state):
+    from types import SimpleNamespace
+    from unittest.mock import MagicMock, patch
+
+    p = await printer_factory()
+    with patch.object(printer_manager, "get_status", MagicMock(return_value=SimpleNamespace(state=state))):
+        r = await async_client.put(f"/api/v1/printers/{p.id}/swap", json={"enabled": True}, headers=auth)
+    assert r.status_code == 409
+    assert (await _db_printer(db_session, p.id)).swap_enabled is False
+
+
+@pytest.mark.asyncio
+@pytest.mark.integration
+async def test_enable_refused_while_queue_item_printing(async_client, db_session, printer_factory, auth):
+    from backend.app.models.print_queue import PrintQueueItem
+
+    p = await printer_factory()
+    db_session.add(PrintQueueItem(printer_id=p.id, status="printing"))
+    await db_session.commit()
+    r = await async_client.put(f"/api/v1/printers/{p.id}/swap", json={"enabled": True}, headers=auth)
+    assert r.status_code == 409
+    assert (await _db_printer(db_session, p.id)).swap_enabled is False
+
+
+@pytest.mark.asyncio
+@pytest.mark.integration
+async def test_enable_resets_plate_count_and_blocks(async_client, db_session, printer_factory, auth):
+    p = await printer_factory(swap_enabled=False, swap_plates_remaining=4)
+    r = await async_client.put(f"/api/v1/printers/{p.id}/swap", json={"enabled": True}, headers=auth)
+    assert r.status_code == 200
+    assert r.json()["plates_remaining"] is None
+    await printer_manager._refresh_swap_state(p.id)
+    assert printer_manager.is_swap_blocked(p.id) == "swap.hold.platesUnknown"
+    # Re-sending enabled=True on an already-enabled printer keeps the count.
+    await async_client.post(f"/api/v1/printers/{p.id}/swap/plates", json={"remaining": 2}, headers=auth)
+    r = await async_client.put(f"/api/v1/printers/{p.id}/swap", json={"enabled": True}, headers=auth)
+    assert r.json()["plates_remaining"] == 2
+
+
+@pytest.mark.asyncio
+@pytest.mark.integration
+@pytest.mark.parametrize(
+    ("method", "path"),
+    [("post", "home-axes?axes=all"), ("post", "bed-jog?distance=5"), ("post", "xy-jog?y=10")],
+)
+async def test_motion_refused_on_swap_printer(async_client, printer_factory, auth, method, path):
+    from unittest.mock import MagicMock, patch
+
+    p = await printer_factory(swap_enabled=True, swap_plates_remaining=3)
+    client = MagicMock()
+    with patch.object(printer_manager, "get_client", MagicMock(return_value=client)):
+        r = await getattr(async_client, method)(f"/api/v1/printers/{p.id}/{path}", headers=auth)
+    assert r.status_code == 409
+    assert r.json()["detail"].startswith("[swap.control.motionBlocked]")
+    client.send_gcode.assert_not_called()
+
+
+@pytest.mark.asyncio
+@pytest.mark.integration
+async def test_motion_allowed_on_normal_printer(async_client, printer_factory, auth):
+    from unittest.mock import MagicMock, patch
+
+    p = await printer_factory()
+    client = MagicMock()
+    client.send_gcode.return_value = True
+    with patch.object(printer_manager, "get_client", MagicMock(return_value=client)):
+        r = await async_client.post(f"/api/v1/printers/{p.id}/home-axes?axes=all", headers=auth)
+    assert r.status_code == 200
+    client.send_gcode.assert_called_once_with("G28")
+
+
+@pytest.mark.asyncio
+@pytest.mark.integration
+async def test_reference_mutations_require_printers_update(async_client, db_session, printer_factory, auth):
+    p = await printer_factory()
+    viewer = await _token(async_client, db_session, "viewer", ["camera:view"])
+    base = f"/api/v1/printers/{p.id}/camera/plate-detection"
+    assert (await async_client.post(f"{base}/calibrate", headers=viewer)).status_code == 403
+    assert (await async_client.delete(f"{base}/calibrate", headers=viewer)).status_code == 403
+    assert (await async_client.put(f"{base}/references/0?label=x", headers=viewer)).status_code == 403
+    assert (await async_client.delete(f"{base}/references/0", headers=viewer)).status_code == 403
+    # Reading stays camera:view.
+    assert (await async_client.get(f"{base}/references", headers=viewer)).status_code != 403

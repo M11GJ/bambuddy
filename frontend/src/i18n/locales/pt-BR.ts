@@ -7990,5 +7990,8 @@ export default {
       excludedArea: "Parte da impressão está na zona proibida do trocador",
       injectionNotAllowed: "A injeção de G-code não pode ser usada com o trocador de placas",
     },
+    control: {
+      motionBlocked: "Homing e movimentação manual estão desativados em impressoras com trocador de placas",
+    },
   },
 };

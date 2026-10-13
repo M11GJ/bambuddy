@@ -8056,5 +8056,8 @@ export default {
       excludedArea: "Part of the print is in the swapper's no-print zone",
       injectionNotAllowed: "G-code injection cannot be used with the plate swapper",
     },
+    control: {
+      motionBlocked: "Homing and jogging are disabled on plate swapper printers",
+    },
   },
 };

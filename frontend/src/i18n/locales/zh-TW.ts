@@ -7988,5 +7988,8 @@ export default {
       excludedArea: "部分列印內容位於換板器的禁止列印區",
       injectionNotAllowed: "使用換板器的印表機不能使用 G-code 注入",
     },
+    control: {
+      motionBlocked: "使用換板器的印表機已停用歸零和軸移動",
+    },
   },
 };

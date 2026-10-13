@@ -396,3 +396,35 @@ async def test_keep_warm_fails_closed_before_swap_state_loads():
     ):
         await scheduler._apply_keep_warm(MagicMock(), items, [], {905}, True)
     assert sweep.call_args.kwargs["active_candidates"] == set()
+
+
+async def test_enable_during_upload_stops_ungated_start(case_factory):
+    # Dispatch started on a normal printer (no gate ran); swap was enabled while
+    # the file uploaded. The mirror now says swap, so the start must not go out.
+    ctx = await case_factory(swap_enabled=False, plates=None, gcode=NO_MARKER_GCODE)
+
+    async def upload_then_enable(*_a, **_kw):
+        printer_manager._swap_state[ctx.printer_id] = (True, 3, None)
+        return True
+
+    ctx.upload.side_effect = upload_then_enable
+    item, _, _, _ = await _run(ctx)
+    ctx.upload.assert_called()
+    ctx.start_print.assert_not_called()
+    assert item.status == "pending"
+
+
+async def test_put_enable_during_upload_blocks_via_mirror(case_factory):
+    # PUT-enable resets the plate count, so the mirror reports platesUnknown.
+    ctx = await case_factory(swap_enabled=False, plates=None, gcode=NO_MARKER_GCODE)
+
+    async def upload_then_enable(*_a, **_kw):
+        printer_manager._swap_state[ctx.printer_id] = (True, None, None)
+        assert printer_manager.is_swap_blocked(ctx.printer_id) == "swap.hold.platesUnknown"
+        return True
+
+    ctx.upload.side_effect = upload_then_enable
+    item, _, _, _ = await _run(ctx)
+    ctx.start_print.assert_not_called()
+    assert item.status == "pending"
+

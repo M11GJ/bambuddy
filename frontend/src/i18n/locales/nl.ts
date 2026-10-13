@@ -8056,5 +8056,8 @@ export default {
       excludedArea: "Een deel van de print ligt in de verboden zone van de wisselaar",
       injectionNotAllowed: "G-code-injectie kan niet worden gebruikt met de plaatwisselaar",
     },
+    control: {
+      motionBlocked: "Homen en verplaatsen zijn uitgeschakeld op printers met een plaatwisselaar",
+    },
   },
 };
