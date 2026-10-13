@@ -32,6 +32,11 @@ logger = logging.getLogger(__name__)
 _ORANGE_LOW = (5, 140, 90)
 _ORANGE_HIGH = (20, 255, 255)
 
+# How long to wait for a live-stream frame taken after the light settled, and
+# how often to look. A few fps stream delivers one well within this window.
+_STREAM_FRESH_FRAME_WAIT_S = 2.0
+_STREAM_POLL_S = 0.2
+
 
 @dataclass(frozen=True)
 class CameraGateResult:
@@ -98,11 +103,19 @@ async def run_camera_gate(printer, config: SwapConfig, *, light_settle_seconds: 
             # A viewer holds the printer's only camera connection; opening a
             # second one would kick it off (#1348). Use the stream's frame, but
             # only one taken after the light settled - otherwise retry later.
-            buffered = get_buffered_frame_with_time(printer.id)
-            if buffered is None or buffered[1] < settled_at:
-                return CameraGateResult("busy", "swap.gate.cameraBusy")
-            image = buffered[0]
+            # The newest buffered frame predates settled_at right after the
+            # sleep, so wait a few frame intervals for one taken after it.
+            deadline = time.monotonic() + _STREAM_FRESH_FRAME_WAIT_S
+            while True:
+                buffered = get_buffered_frame_with_time(printer.id)
+                if buffered is not None and buffered[1] >= settled_at:
+                    image = buffered[0]
+                    break
+                if time.monotonic() >= deadline:
+                    return CameraGateResult("busy", "swap.gate.cameraBusy")
+                await asyncio.sleep(_STREAM_POLL_S)
         else:
+            # Coalesced capture: joining one started before the light settled can return a pre-light (dark) frame, which fails closed via the clip check.
             image = await capture_camera_frame_bytes(printer.ip_address, printer.access_code, printer.model, timeout=10)
         if not image:
             return CameraGateResult("fail", "swap.gate.cameraUnavailable")

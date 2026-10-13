@@ -111,8 +111,14 @@ async def test_capture_failure(patched):
     assert (r.outcome, r.reason_key) == ("fail", "swap.gate.cameraUnavailable")
 
 
+@pytest.fixture
+def short_poll(monkeypatch):
+    monkeypatch.setattr(gate, "_STREAM_FRESH_FRAME_WAIT_S", 0.3)
+    monkeypatch.setattr(gate, "_STREAM_POLL_S", 0.05)
+
+
 @pytest.mark.asyncio
-async def test_streaming_without_fresh_frame_is_busy(patched):
+async def test_streaming_without_any_frame_is_busy(patched, short_poll):
     patched["stream"] = True
     patched["buffered"] = None
     r = await gate.run_camera_gate(_Printer(), DEFAULT_SWAP_CONFIG, light_settle_seconds=0)
@@ -120,19 +126,29 @@ async def test_streaming_without_fresh_frame_is_busy(patched):
 
 
 @pytest.mark.asyncio
-async def test_streaming_stale_frame_is_busy(patched):
+async def test_streaming_frame_from_just_before_settle_is_busy(patched, short_poll):
     patched["stream"] = True
-    patched["buffered"] = (_jpeg(True), 0.0)  # taken long before the light came on
+    # Stamped just before the gate starts, so before settled_at; no newer one arrives.
+    patched["buffered"] = (_jpeg(True), time.time() - 0.01)
     r = await gate.run_camera_gate(_Printer(), DEFAULT_SWAP_CONFIG, light_settle_seconds=0)
-    assert r.outcome == "busy"
+    assert (r.outcome, r.reason_key) == ("busy", "swap.gate.cameraBusy")
 
 
 @pytest.mark.asyncio
-async def test_streaming_fresh_frame_is_used(patched):
+async def test_streaming_frame_arriving_during_poll_is_used(patched, short_poll, monkeypatch):
     patched["stream"] = True
-    patched["buffered"] = (_jpeg(True), time.time() + 1)  # landed after the light settled
+    stale = (_jpeg(False), time.time() - 0.01)  # pre-light frame would fail noPlate
+    calls = []
+
+    def buffered(pid):
+        calls.append(pid)
+        # The stream delivers a new frame (stamped now, after settled_at) on the 3rd look.
+        return stale if len(calls) < 3 else (_jpeg(True), time.time())
+
+    monkeypatch.setattr(gate, "get_buffered_frame_with_time", buffered)
     r = await gate.run_camera_gate(_Printer(), DEFAULT_SWAP_CONFIG, light_settle_seconds=0)
     assert r.outcome == "pass"
+    assert len(calls) == 3
 
 
 @pytest.mark.asyncio
