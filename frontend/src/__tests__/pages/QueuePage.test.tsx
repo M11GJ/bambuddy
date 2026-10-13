@@ -1092,6 +1092,27 @@ describe('QueuePage', () => {
       ).not.toBeInTheDocument();
     });
 
+    it('translates a swap hold key inside the waiting reason', async () => {
+      server.use(
+        http.get('/api/v1/queue/', () => {
+          return HttpResponse.json([
+            {
+              ...mockQueueItems[0],
+              archive_name: 'Held Print',
+              waiting_reason: 'X1C: [swap.hold.outOfPlates] Swap queue stopped: X1C',
+            },
+          ]);
+        }),
+      );
+
+      render(<QueuePage />);
+
+      const row = (await screen.findByText('Held Print')).closest('.group') as HTMLElement;
+      expect(
+        within(row).getByText((_, el) => el?.tagName === 'SPAN' && el.textContent === 'X1C: Out of spare plates — refill and enter the count(Swap queue stopped: X1C)'),
+      ).toBeInTheDocument();
+    });
+
     it('does not show an ETA for a waiting item', async () => {
       server.use(
         http.get('/api/v1/queue/', () => {

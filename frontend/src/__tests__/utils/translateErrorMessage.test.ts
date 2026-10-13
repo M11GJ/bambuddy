@@ -20,3 +20,21 @@ describe('translateErrorMessage', () => {
     expect(translateErrorMessage(null, t)).toEqual({ text: '', original: null });
   });
 });
+
+describe('translateErrorMessage mid-string keys', () => {
+  it('translates the first key after leading text and keeps the lead', () => {
+    expect(translateErrorMessage('X1C: [swap.guard.noMarker] Swap queue stopped: X1C', t)).toEqual({
+      text: 'X1C: SwapMod の交換動作がありません',
+      original: 'Swap queue stopped: X1C',
+    });
+  });
+  it('leaves a message with an unknown mid-string key untouched', () => {
+    expect(translateErrorMessage('Could not open [part.v2.3mf] file', t)).toEqual({
+      text: 'Could not open [part.v2.3mf] file',
+      original: null,
+    });
+  });
+  it('does not treat numeric brackets as keys', () => {
+    expect(translateErrorMessage('[0.4] nozzle mismatch', t)).toEqual({ text: '[0.4] nozzle mismatch', original: null });
+  });
+});

@@ -543,7 +543,7 @@ function RunRow({
                   </span>
                 )}
                 {job.error_message && (
-                  <span className="text-red-700 dark:text-red-400 truncate" title={job.error_message}>
+                  <span className="text-red-700 dark:text-red-400 truncate" title={translateErrorMessage(job.error_message, t).text}>
                     {(() => {
                 const e = translateErrorMessage(job.error_message, t);
                 return <>{e.text}{e.original && <span className="ml-1 opacity-70 text-[0.9em]">({e.original})</span>}</>;

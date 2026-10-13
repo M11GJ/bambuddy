@@ -98,20 +98,44 @@ describe('SwapModPanel', () => {
 });
 
 describe('SwapModSettings', () => {
-  it('saves enable + config and shows the backend 422 message', async () => {
-    const bodies: unknown[] = [];
-    const config = { marker: 'M', exclude_front_mm: 20, exclude_back_mm: 10, bed_depth_mm: 256, clip_roi: [0.3, 0.7, 0.15, 0.3], clip_min_percent: 4 };
+  const config = { marker: 'M', exclude_front_mm: 20, exclude_back_mm: 10, bed_depth_mm: 256, clip_roi: [0.3, 0.7, 0.15, 0.3], clip_min_percent: 4 };
+  let bodies: Record<string, unknown>[];
+  const mock = (put: () => Response) => {
+    bodies = [];
     server.use(
       http.get('*/api/v1/printers/1/swap', () => HttpResponse.json(status({ enabled: false, config }))),
       http.put('*/api/v1/printers/1/swap', async ({ request }) => {
-        bodies.push(await request.json());
-        return HttpResponse.json({ detail: 'swap_config exclusion zones leave no printable depth' }, { status: 422 });
+        bodies.push((await request.json()) as Record<string, unknown>);
+        return put();
       }),
     );
+  };
+
+  it('sends only enabled when no config field changed', async () => {
+    mock(() => HttpResponse.json(status({ enabled: true, config })));
     render(<SwapModSettings printerId={1} />);
     await userEvent.click(await screen.findByLabelText('Enable plate swapper'));
     await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(bodies).toEqual([{ enabled: true }]));
+  });
+
+  it('sends a changed config and shows the backend 422 message', async () => {
+    mock(() => HttpResponse.json({ detail: 'swap_config exclusion zones leave no printable depth' }, { status: 422 }));
+    render(<SwapModSettings printerId={1} />);
+    const back = await screen.findByLabelText('exclude_back_mm');
+    await userEvent.clear(back);
+    await userEvent.type(back, '300');
+    await userEvent.click(screen.getByRole('button', { name: 'Save' }));
     expect(await screen.findByText('swap_config exclusion zones leave no printable depth')).toBeInTheDocument();
-    expect(bodies).toEqual([{ enabled: true, config }]);
+    expect(bodies).toEqual([{ enabled: false, config: { ...config, exclude_back_mm: 300 } }]);
+  });
+
+  it('never saves a blank exclusion field as 0', async () => {
+    mock(() => HttpResponse.json({ detail: 'swap_config.exclude_front_mm must be a finite number' }, { status: 422 }));
+    render(<SwapModSettings printerId={1} />);
+    await userEvent.clear(await screen.findByLabelText('exclude_front_mm'));
+    await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+    expect(await screen.findByText('swap_config.exclude_front_mm must be a finite number')).toBeInTheDocument();
+    expect((bodies[0].config as Record<string, unknown>).exclude_front_mm).toBeNull();
   });
 });

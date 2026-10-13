@@ -1022,7 +1022,10 @@ function SortableQueueItem({
           {item.waiting_reason && item.status === 'pending' && (
             <p className="text-[10px] sm:text-xs text-purple-700 dark:text-purple-400 mt-1.5 sm:mt-2 flex items-start gap-1">
               <AlertCircle className="w-3 h-3 mt-0.5 flex-shrink-0" />
-              <span>{item.waiting_reason}</span>
+              <span>{(() => {
+                const e = translateErrorMessage(item.waiting_reason, t);
+                return <>{e.text}{e.original && <span className="ml-1 opacity-70 text-[0.9em]">({e.original})</span>}</>;
+              })()}</span>
             </p>
           )}
 

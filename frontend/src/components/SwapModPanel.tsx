@@ -121,15 +121,22 @@ function toForm(c: Partial<SwapConfig>): ConfigForm {
   };
 }
 
-// Blank number fields are sent as NaN -> null by JSON, which the backend rejects with a 422 we show.
+// A blank or non-numeric field must never become 0 (Number('') === 0 would silently
+// remove a no-print zone). It is sent as null instead, which the backend rejects
+// with a 422 that the form shows.
+function num(v: string): number {
+  const n = v.trim() === '' ? NaN : Number(v);
+  return (Number.isFinite(n) ? n : null) as number;
+}
+
 function fromForm(f: ConfigForm): SwapConfig {
   return {
     marker: f.marker,
-    exclude_front_mm: Number(f.exclude_front_mm),
-    exclude_back_mm: Number(f.exclude_back_mm),
-    bed_depth_mm: Number(f.bed_depth_mm),
-    clip_min_percent: Number(f.clip_min_percent),
-    clip_roi: f.clip_roi.map(Number) as SwapConfig['clip_roi'],
+    exclude_front_mm: num(f.exclude_front_mm),
+    exclude_back_mm: num(f.exclude_back_mm),
+    bed_depth_mm: num(f.bed_depth_mm),
+    clip_min_percent: num(f.clip_min_percent),
+    clip_roi: f.clip_roi.map(num) as SwapConfig['clip_roi'],
   };
 }
 
@@ -150,7 +157,12 @@ export function SwapModSettings({ printerId }: { printerId: number }) {
   }, [data, form]);
 
   const save = useMutation({
-    mutationFn: () => api.updateSwap(printerId, { enabled, config: form ? fromForm(form) : undefined }),
+    // Only send config when a field changed, so toggling enabled still works while the
+    // stored config is invalid (its fields then load blank and would be rejected).
+    mutationFn: () => {
+      const changed = form && data && JSON.stringify(form) !== JSON.stringify(toForm(data.config));
+      return api.updateSwap(printerId, changed ? { enabled, config: fromForm(form) } : { enabled });
+    },
     onSuccess: (s) => {
       setError(null);
       queryClient.setQueryData(['swap', printerId], s);
@@ -162,7 +174,7 @@ export function SwapModSettings({ printerId }: { printerId: number }) {
   });
 
   if (!form) return null;
-  const num = (key: Exclude<keyof ConfigForm, 'marker' | 'clip_roi'>) => (
+  const numField = (key: Exclude<keyof ConfigForm, 'marker' | 'clip_roi'>) => (
     <label className="block">
       <span className="block text-xs text-bambu-gray mb-0.5">{key}</span>
       <input
@@ -183,10 +195,10 @@ export function SwapModSettings({ printerId }: { printerId: number }) {
         {t('swap.enabled')}
       </label>
       <div className="grid grid-cols-2 gap-2">
-        {num('exclude_front_mm')}
-        {num('exclude_back_mm')}
-        {num('bed_depth_mm')}
-        {num('clip_min_percent')}
+        {numField('exclude_front_mm')}
+        {numField('exclude_back_mm')}
+        {numField('bed_depth_mm')}
+        {numField('clip_min_percent')}
       </div>
       <label className="block">
         <span className="block text-xs text-bambu-gray mb-0.5">clip_roi (x, y, w, h)</span>
