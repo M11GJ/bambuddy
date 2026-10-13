@@ -31,13 +31,14 @@ router = APIRouter(prefix="/settings", tags=["settings"])
 
 DEFAULT_SETTINGS = AppSettings()
 
-# Sensitive credential fields blanked for API-key callers
-_SENSITIVE_FIELDS_FOR_API_KEY = (
+# Sensitive credential fields blanked unless the caller could also change settings
+_SENSITIVE_SETTINGS_FIELDS = (
     "mqtt_password",
     "ha_token",
     "prometheus_token",
     "virtual_printer_access_code",
     "ldap_bind_password",
+    "obico_ml_token",
 )
 
 
@@ -259,8 +260,8 @@ _INT_SETTING_KEYS = frozenset(
 )
 
 
-async def _build_settings_response(db: AsyncSession, is_api_key: bool = False) -> AppSettings:
-    """Build the full settings response, scrubbing secrets for API-key callers."""
+async def _build_settings_response(db: AsyncSession, scrub_secrets: bool = False) -> AppSettings:
+    """Build the full settings response, blanking secrets when scrub_secrets is set."""
     settings_dict = DEFAULT_SETTINGS.model_dump()
 
     result = await db.execute(select(Settings))
@@ -304,8 +305,8 @@ async def _build_settings_response(db: AsyncSession, is_api_key: bool = False) -
     # ldap_bind_password is never returned to any caller
     settings_dict["ldap_bind_password"] = ""
 
-    if is_api_key:
-        for field in _SENSITIVE_FIELDS_FOR_API_KEY:
+    if scrub_secrets:
+        for field in _SENSITIVE_SETTINGS_FIELDS:
             if field in settings_dict:
                 settings_dict[field] = ""
 
@@ -316,11 +317,16 @@ async def _build_settings_response(db: AsyncSession, is_api_key: bool = False) -
 @router.get("/", response_model=AppSettings)
 async def get_settings(
     db: AsyncSession = Depends(get_db),
-    _: User | None = RequirePermissionIfAuthEnabled(Permission.SETTINGS_READ),
+    current_user: User | None = RequirePermissionIfAuthEnabled(Permission.SETTINGS_READ),
     _is_api_key: bool = Depends(caller_is_api_key),
 ):
-    """Get all application settings."""
-    return await _build_settings_response(db, is_api_key=_is_api_key)
+    """Get all application settings.
+
+    Secrets are only returned to callers who could also change them: an API
+    key, or a user without settings:update, gets them blanked.
+    """
+    may_see_secrets = not _is_api_key and (current_user is None or current_user.has_permission("settings:update"))
+    return await _build_settings_response(db, scrub_secrets=not may_see_secrets)
 
 
 @router.put("/", response_model=AppSettings)
@@ -415,7 +421,7 @@ async def update_settings(
             pass  # Don't fail the settings update if MQTT reconfiguration fails
 
     # Return updated settings (never scrub secrets on PUT — caller has SETTINGS_UPDATE permission)
-    return await _build_settings_response(db, is_api_key=False)
+    return await _build_settings_response(db, scrub_secrets=False)
 
 
 @router.patch("/", response_model=AppSettings)
@@ -460,7 +466,7 @@ async def update_electricity_price(
     await set_setting(db, "energy_cost_per_kwh", str(payload.energy_cost_per_kwh))
     await db.commit()
     db.expire_all()
-    return await _build_settings_response(db, is_api_key=_is_api_key)
+    return await _build_settings_response(db, scrub_secrets=_is_api_key)
 
 
 @router.post("/reset", response_model=AppSettings)
@@ -538,7 +544,7 @@ async def get_ui_preferences(db: AsyncSession = Depends(get_db)):
     returns for fields with the same name — bool/int/float/str types stay in
     sync without a separate type-coercion path.
     """
-    full = await _build_settings_response(db, is_api_key=False)
+    full = await _build_settings_response(db, scrub_secrets=False)
     dumped = full.model_dump()
     return {key: dumped[key] for key in _UI_PREFERENCE_FIELDS if key in dumped}
 
@@ -589,7 +595,7 @@ async def get_ui_flags(
     same statement as "readable by anyone", and conflating them is what put a
     settings read in front of a permission that was never meant to require one.
     """
-    full = await _build_settings_response(db, is_api_key=False)
+    full = await _build_settings_response(db, scrub_secrets=False)
     dumped = full.model_dump()
     return {key: dumped[key] for key in _UI_FLAG_FIELDS if key in dumped}
 

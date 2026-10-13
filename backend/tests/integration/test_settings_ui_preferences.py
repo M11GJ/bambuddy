@@ -17,7 +17,7 @@ import pytest
 from httpx import AsyncClient
 
 # Anything in this list MUST NOT appear in the /ui-preferences response.
-# Mirror of _SENSITIVE_FIELDS_FOR_API_KEY in backend/app/api/routes/settings.py
+# Mirror of _SENSITIVE_SETTINGS_FIELDS in backend/app/api/routes/settings.py
 # plus a wider net for any *_password / *_token / *_key suffix.
 _SENSITIVE_KEYS = {
     "smtp_password",
