@@ -380,6 +380,12 @@ _SWAP_HOLD_TEXT = {
     "swap.hold.outOfPlates": "no spare build plates left in the holder",
     "swap.hold.printNotConfirmed": "the last print did not finish as a confirmed swap job",
     "swap.hold.platesUnknown": "the number of spare build plates has not been entered",
+    "swap.hold.configInvalid": "the plate swapper settings are invalid",
+    # Camera gate failures (swap_camera_gate) hold the printer too.
+    "swap.gate.noPlate": "no plate detected on the bed",
+    "swap.gate.objectOnPlate": "something is left on the plate",
+    "swap.gate.cameraUnavailable": "the camera check could not be completed",
+    "swap.gate.notCalibrated": "plate detection is not calibrated",
 }
 
 

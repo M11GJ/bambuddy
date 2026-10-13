@@ -65,6 +65,9 @@ from backend.app.services.spool_assignment_notifications import (
     _global_tray_from_assignment,
     _slot_label_from_global_tray,
 )
+from backend.app.services.swap_camera_gate import run_camera_gate
+from backend.app.services.swap_config import parse_swap_config, strip_error_key
+from backend.app.services.swap_guard import check_swap_job
 from backend.app.utils.ams_drying import is_countdown_parked
 from backend.app.utils.ams_humidity import ams_humidity_percent
 from backend.app.utils.archive_paths import archive_photos_dir
@@ -1034,6 +1037,20 @@ def _effective_plate_id(explicit_plate_id: int | None, file_path: Path) -> int:
     return resolved if resolved is not None else 1
 
 
+async def _notify_swap_camera_fail(db: AsyncSession, printer: Printer, gate) -> None:
+    """Push the camera gate's photo through the existing plate-not-empty channel."""
+    try:
+        await notification_service.on_plate_not_empty(
+            printer_id=printer.id,
+            printer_name=printer.name,
+            db=db,
+            difference_percent=gate.diff_percent,
+            image_data=gate.image,
+        )
+    except Exception as e:
+        logger.warning("Swap camera-fail notification for printer %s failed: %s", printer.id, e)
+
+
 class PrintScheduler:
     """Background scheduler that processes the print queue."""
 
@@ -1615,7 +1632,7 @@ class PrintScheduler:
                     await notification_service.on_queue_job_waiting(
                         job_name=job_name,
                         target_model=(entry[1] if entry else "") or "",
-                        waiting_reason=reason,
+                        waiting_reason=strip_error_key(reason),
                         db=db,
                     )
                 except Exception as e:
@@ -2145,7 +2162,7 @@ class PrintScheduler:
                             await notification_service.on_queue_job_waiting(
                                 job_name=job_name,
                                 target_model=_candidate_model_label(candidates) or item.target_model,
-                                waiting_reason=waiting_reason,
+                                waiting_reason=strip_error_key(waiting_reason),
                                 db=db,
                             )
 
@@ -2820,6 +2837,15 @@ class PrintScheduler:
                     # sibling instead of spending this pass — and every pass —
                     # on the same printer.
                     continue
+                if printer_manager.is_swap_blocked(printer.id):
+                    # Same reasoning as the plate-clear case below: a held
+                    # swapper would boot and then refuse the job anyway.
+                    logger.info(
+                        "Not powering on printer %s for a %s job: plate swapper is holding the queue",
+                        printer.id,
+                        candidate.target_model,
+                    )
+                    continue
                 if require_plate_clear and printer_manager.is_awaiting_plate_clear(printer.id):
                     # Waking this one buys nothing: it would boot into IDLE and
                     # then be held by the plate-clear gate, which is exactly
@@ -3486,7 +3512,7 @@ class PrintScheduler:
             job_name=job_name,
             printer_id=printer_id,
             printer_name=printer.name if printer else "Unknown",
-            reason=message,
+            reason=strip_error_key(message),
             db=db,
         )
         try:
@@ -4253,8 +4279,16 @@ class PrintScheduler:
 
         return True
 
-    def _is_printer_idle(self, printer_id: int, require_plate_clear: bool = True) -> bool:
-        """Check if a printer is connected and idle."""
+    def _is_printer_idle(self, printer_id: int, require_plate_clear: bool = True, for_dispatch: bool = True) -> bool:
+        """Check if a printer is connected and idle.
+
+        ``for_dispatch`` defaults to True so a new dispatch path cannot forget the
+        swap gate; only the auto-drying callers pass False (drying is not blocked).
+        """
+        swap_reason = printer_manager.is_swap_blocked(printer_id) if for_dispatch else None
+        if swap_reason:
+            logger.debug("Printer %d: not idle — swap hold %s", printer_id, swap_reason)
+            return False
         if not printer_manager.is_connected(printer_id):
             logger.debug("Printer %d: not connected", printer_id)
             return False
@@ -4282,6 +4316,37 @@ class PrintScheduler:
             logger.debug("Printer %d: not idle — state=%s", printer_id, state.state)
         return idle
 
+    async def _fail_swap_item(
+        self, db: AsyncSession, item: PrintQueueItem, printer: Printer, message: str, *, item_name: str
+    ) -> None:
+        """Fail one queue item for a swap reason; the printer itself is not held."""
+        item.status = "failed"
+        item.error_message = message
+        item.completed_at = datetime.now(timezone.utc)
+        await db.commit()
+        logger.warning("Queue item %s: rejected for swap printer %s — %s", item.id, printer.id, message)
+        await notification_service.on_queue_job_failed(
+            job_name=item_name,
+            printer_id=printer.id,
+            printer_name=printer.name,
+            reason=strip_error_key(message),
+            db=db,
+        )
+        try:
+            await ws_manager.send_queue_item_failed(
+                user_id=item.created_by_id,
+                queue_item_id=item.id,
+                printer_id=item.printer_id,
+                reason="swap_rejected",
+            )
+        except Exception:
+            pass
+        await self._power_off_if_needed(db, item)
+
+    @staticmethod
+    def _swap_enabled(printer_id: int) -> bool:
+        return printer_manager._swap_state.get(printer_id, (False, None, None))[0]
+
     @staticmethod
     def _pinned_hold_reason(printer_id: int, printer_name: str, require_plate_clear: bool) -> str:
         """Why a connected, non-idle printer cannot take this job, for the queue row (#3074).
@@ -4299,7 +4364,13 @@ class PrintScheduler:
         A plate nobody has confirmed is the one case here that does not resolve
         itself — somebody has to walk over to the printer — so it is worded as
         itself and allowed to notify.
+
+        A swap hold (plate swapper) also needs a person, so it is worded as
+        itself, prefixed with its translation key for the queue UI.
         """
+        swap_reason = printer_manager.is_swap_blocked(printer_id)
+        if swap_reason:
+            return f"[{swap_reason}] Swap queue stopped: {printer_name}"
         if require_plate_clear and printer_manager.is_awaiting_plate_clear(printer_id):
             return f"Waiting for plate confirmation: {printer_name}"
         return f"Busy: {printer_name}"
@@ -5122,7 +5193,7 @@ class PrintScheduler:
             # because the printer is free and nobody is waiting on it. Leaving
             # the plate unacknowledged is also how people hold the queue by
             # hand, and that hold should not cost them their drying.
-            if not mid_print and not self._is_printer_idle(pid, require_plate_clear=False):
+            if not mid_print and not self._is_printer_idle(pid, require_plate_clear=False, for_dispatch=False):
                 logger.debug("Auto-drying: printer %d skipped — not idle", pid)
                 continue
 
@@ -5701,7 +5772,7 @@ class PrintScheduler:
             ) or row.printer_id in running_printer_ids:
                 row.waiting_reason = "already_drying"
                 continue
-            if not self._is_printer_idle(row.printer_id, require_plate_clear=False):
+            if not self._is_printer_idle(row.printer_id, require_plate_clear=False, for_dispatch=False):
                 row.waiting_reason = "printer_busy"
                 continue
 
@@ -5798,7 +5869,7 @@ class PrintScheduler:
             # waits for the printer to be idle. Parked on an idle printer is a
             # refusal, not something a retry fixes. The timer itself is left on
             # the printer: it may yet start once power frees up.
-            if not self._is_printer_idle(row.printer_id, require_plate_clear=False):
+            if not self._is_printer_idle(row.printer_id, require_plate_clear=False, for_dispatch=False):
                 logger.info(
                     "Scheduled drying %d: AMS %d countdown is not running during a print; re-queued",
                     row.id,
@@ -5824,7 +5895,7 @@ class PrintScheduler:
         if elapsed >= row.duration_hours * 3600 * self.SCHEDULED_DRYING_COMPLETE_FRACTION:
             row.status = "completed"
             row.completed_at = now
-        elif not self._is_printer_idle(row.printer_id, require_plate_clear=False):
+        elif not self._is_printer_idle(row.printer_id, require_plate_clear=False, for_dispatch=False):
             row.status = "pending"
             row.started_at = None
             row.waiting_reason = "interrupted"
@@ -6145,7 +6216,12 @@ class PrintScheduler:
         dispatch_set = set(dispatch_ids)
         dispatched_printers = {it.printer_id for it in items if it.id in dispatch_set and it.printer_id}
         pending_printer_ids = {it.printer_id for it in items if it.printer_id}
-        warm_candidates = (pending_printer_ids & busy_printers) - dispatched_printers
+        # Swapper printers never keep the bed warm (spec D6): the plate is
+        # swapped right after the print, and a hot bed would skew the camera
+        # gate's comparison against its cold reference image.
+        warm_candidates = {
+            pid for pid in (pending_printer_ids & busy_printers) - dispatched_printers if not self._swap_enabled(pid)
+        }
 
         keep_warm_enabled = await self._get_bool_setting(db, "queue_keep_bed_warm", default=False)
         preheat_on = await self._get_bool_setting(db, "preheat_enabled", default=False)
@@ -7128,7 +7204,7 @@ class PrintScheduler:
                     job_name=job_name,
                     printer_id=printer_id,
                     printer_name=printer.name if printer else "Unknown",
-                    reason=reason,
+                    reason=strip_error_key(reason),
                     db=db,
                 )
         except Exception as e:
@@ -7298,6 +7374,19 @@ class PrintScheduler:
             await self._power_off_if_needed(db, item)
             return
 
+        # A swap printer's file already carries the swap block; injected End
+        # G-code would run a second swap (or none, if it parks the head).
+        if printer.swap_enabled and item.gcode_injection:
+            await self._fail_swap_item(
+                db,
+                item,
+                printer,
+                "[swap.guard.injectionNotAllowed] G-code injection is not allowed on a swap printer "
+                "(the swap block would run twice).",
+                item_name=await self._get_job_name(db, item),
+            )
+            return
+
         # Check printer is connected
         if not printer_manager.is_connected(item.printer_id):
             item.status = "failed"
@@ -7345,6 +7434,57 @@ class PrintScheduler:
                 pre_dispatch_state,
             )
             return
+
+        # Swap gate (spec 4.4 b). Runs before the print file is resolved so a
+        # deferral has no side effects: no archive copy, no library consumption.
+        swap_cfg = None
+        if printer.swap_enabled:
+            # Last line of defence: re-read the swap state from the DB rather
+            # than trusting the in-memory mirror the idle check used.
+            await db.refresh(printer)
+            if printer.swap_hold_reason or printer.swap_plates_remaining is None:
+                logger.info(
+                    "Queue item %s: swap printer %s held in DB (%s) — deferring",
+                    item.id,
+                    printer.id,
+                    printer.swap_hold_reason or "plates unknown",
+                )
+                # The mirror let this through, so it is stale; resync it.
+                printer_manager.apply_swap_state_after_commit(printer.id)
+                return
+            try:
+                swap_cfg = parse_swap_config(printer.swap_config)
+            except ValueError as e:
+                await printer_manager.set_swap_hold(db, printer.id, "swap.hold.configInvalid", str(e))
+                await db.commit()
+                printer_manager.apply_swap_state_after_commit(printer.id)
+                logger.warning("Queue item %s: swap printer %s has invalid swap_config: %s", item.id, printer.id, e)
+                return
+            gate = await run_camera_gate(printer, swap_cfg)
+            if gate.outcome == "busy":
+                # Someone is watching the live stream; try again next tick.
+                # Not a hold: nothing is wrong with the printer.
+                item.waiting_reason = "[swap.gate.cameraBusy] Waiting for the camera stream to free up"
+                await db.commit()
+                return
+            if gate.outcome != "pass":
+                detail = f"clip={gate.clip_percent} diff={gate.diff_percent}"
+                await printer_manager.set_swap_hold(
+                    db, printer.id, gate.reason_key or "swap.gate.cameraUnavailable", detail
+                )
+                await db.commit()
+                printer_manager.apply_swap_state_after_commit(printer.id)
+                logger.warning(
+                    "Queue item %s: swap camera gate failed on printer %s: %s %s",
+                    item.id,
+                    printer.id,
+                    gate.reason_key,
+                    detail,
+                )
+                await _notify_swap_camera_fail(db, printer, gate)
+                return
+            if item.waiting_reason and item.waiting_reason.startswith("[swap.gate.cameraBusy]"):
+                item.waiting_reason = None
 
         # Determine source: archive or library file
         archive = None
@@ -7625,7 +7765,7 @@ class PrintScheduler:
                     job_name=filename.replace(".gcode.3mf", "").replace(".3mf", ""),
                     printer_id=printer.id,
                     printer_name=printer.name,
-                    reason=mismatch_msg,
+                    reason=strip_error_key(mismatch_msg),
                     db=db,
                 )
                 try:
@@ -7640,6 +7780,25 @@ class PrintScheduler:
                 await self._power_off_if_needed(db, item)
                 return
 
+        # Swap G-code guard (spec 4.4 c): the file itself is wrong, so fail the
+        # item but leave the printer free for the next one.
+        if swap_cfg is None and printer.swap_enabled:
+            # Swap was switched on after the gate above ran (only possible if the
+            # printer row was re-read after a rollback): never send ungated.
+            logger.info("Queue item %s: printer %s became a swap printer mid-dispatch — deferring", item.id, printer.id)
+            return
+        if swap_cfg is not None:
+            guard = check_swap_job(file_path, _effective_plate_id(item.plate_id, file_path), swap_cfg)
+            if not guard.ok:
+                await self._fail_swap_item(
+                    db,
+                    item,
+                    printer,
+                    f"[{guard.reason_key}] Print file rejected for the swap printer: {guard.detail or guard.reason_key}",
+                    item_name=filename.replace(".gcode.3mf", "").replace(".3mf", ""),
+                )
+                return
+
         # Preheat / heat-soak (#1468) — fires before upload so the printer's
         # bed (and chamber, if applicable) is at temperature when the firmware
         # starts the actual print routine. Best-effort: any failure logs and
@@ -7649,7 +7808,9 @@ class PrintScheduler:
         # stage was holding at temperature. Uploading and starting it anyway
         # would print a job the user has already called off, so abandon the
         # dispatch here; `_dispatch_one`'s finally clause unwinds the heaters.
-        if not await self._preheat_and_soak(db, item, printer, archive):
+        # Swap printers never preheat (spec D6): the camera gate needs the
+        # cold post-swap pose, and the swap block owns the bed.
+        if swap_cfg is None and not await self._preheat_and_soak(db, item, printer, archive):
             logger.info("Queue item %s: dispatch abandoned — cancelled during preheat", item.id)
             return
 
@@ -7845,7 +8006,7 @@ class PrintScheduler:
                 printer_name=printer.name,
                 # The same sentence the queue shows. A push notification saying
                 # something different from the UI is its own small bug (#2899).
-                reason=error_msg,
+                reason=strip_error_key(error_msg),
                 db=db,
             )
             try:
@@ -8094,7 +8255,7 @@ class PrintScheduler:
                         job_name=filename.replace(".gcode.3mf", "").replace(".3mf", ""),
                         printer_id=printer.id,
                         printer_name=printer.name,
-                        reason=item.error_message,
+                        reason=strip_error_key(item.error_message),
                         db=db,
                     )
                     try:

@@ -183,6 +183,7 @@ class TestSchedulerIdleCheckWithPlateCleared:
     @patch("backend.app.services.print_scheduler.printer_manager")
     def test_idle_state_is_idle(self, mock_pm, scheduler):
         """IDLE state with no awaiting flag → idle."""
+        mock_pm.is_swap_blocked.return_value = None  # swap-disabled printer
         mock_pm.is_connected.return_value = True
         mock_pm.get_status.return_value = MagicMock(state="IDLE")
         mock_pm.is_awaiting_plate_clear.return_value = False
@@ -191,6 +192,7 @@ class TestSchedulerIdleCheckWithPlateCleared:
     @patch("backend.app.services.print_scheduler.printer_manager")
     def test_running_state_not_idle(self, mock_pm, scheduler):
         """RUNNING state is never idle."""
+        mock_pm.is_swap_blocked.return_value = None  # swap-disabled printer
         mock_pm.is_connected.return_value = True
         mock_pm.get_status.return_value = MagicMock(state="RUNNING")
         mock_pm.is_awaiting_plate_clear.return_value = False
@@ -199,6 +201,7 @@ class TestSchedulerIdleCheckWithPlateCleared:
     @patch("backend.app.services.print_scheduler.printer_manager")
     def test_finish_state_not_idle_when_awaiting(self, mock_pm, scheduler):
         """FINISH + awaiting plate-clear ack → NOT idle."""
+        mock_pm.is_swap_blocked.return_value = None  # swap-disabled printer
         mock_pm.is_connected.return_value = True
         mock_pm.get_status.return_value = MagicMock(state="FINISH")
         mock_pm.is_awaiting_plate_clear.return_value = True
@@ -207,6 +210,7 @@ class TestSchedulerIdleCheckWithPlateCleared:
     @patch("backend.app.services.print_scheduler.printer_manager")
     def test_finish_state_idle_when_acknowledged(self, mock_pm, scheduler):
         """FINISH with flag cleared → idle."""
+        mock_pm.is_swap_blocked.return_value = None  # swap-disabled printer
         mock_pm.is_connected.return_value = True
         mock_pm.get_status.return_value = MagicMock(state="FINISH")
         mock_pm.is_awaiting_plate_clear.return_value = False
@@ -215,6 +219,7 @@ class TestSchedulerIdleCheckWithPlateCleared:
     @patch("backend.app.services.print_scheduler.printer_manager")
     def test_failed_state_not_idle_when_awaiting(self, mock_pm, scheduler):
         """FAILED + awaiting → NOT idle."""
+        mock_pm.is_swap_blocked.return_value = None  # swap-disabled printer
         mock_pm.is_connected.return_value = True
         mock_pm.get_status.return_value = MagicMock(state="FAILED")
         mock_pm.is_awaiting_plate_clear.return_value = True
@@ -223,6 +228,7 @@ class TestSchedulerIdleCheckWithPlateCleared:
     @patch("backend.app.services.print_scheduler.printer_manager")
     def test_failed_state_idle_when_acknowledged(self, mock_pm, scheduler):
         """FAILED with flag cleared → idle."""
+        mock_pm.is_swap_blocked.return_value = None  # swap-disabled printer
         mock_pm.is_connected.return_value = True
         mock_pm.get_status.return_value = MagicMock(state="FAILED")
         mock_pm.is_awaiting_plate_clear.return_value = False
@@ -234,6 +240,7 @@ class TestSchedulerIdleCheckWithPlateCleared:
         with no memory of the previous finish. The persisted awaiting flag must still gate
         the queue — IDLE + awaiting → NOT idle.
         """
+        mock_pm.is_swap_blocked.return_value = None  # swap-disabled printer
         mock_pm.is_connected.return_value = True
         mock_pm.get_status.return_value = MagicMock(state="IDLE")
         mock_pm.is_awaiting_plate_clear.return_value = True
@@ -246,6 +253,7 @@ class TestSchedulerIdleCheckWithPlateCleared:
 
     @patch("backend.app.services.print_scheduler.printer_manager")
     def test_no_status_not_idle(self, mock_pm, scheduler):
+        mock_pm.is_swap_blocked.return_value = None  # swap-disabled printer
         mock_pm.is_connected.return_value = True
         mock_pm.get_status.return_value = None
         assert scheduler._is_printer_idle(1) is False
@@ -253,6 +261,7 @@ class TestSchedulerIdleCheckWithPlateCleared:
     @patch("backend.app.services.print_scheduler.printer_manager")
     def test_finish_state_idle_when_require_plate_clear_disabled(self, mock_pm, scheduler):
         """FINISH is idle when require_plate_clear=False, regardless of awaiting flag."""
+        mock_pm.is_swap_blocked.return_value = None  # swap-disabled printer
         mock_pm.is_connected.return_value = True
         mock_pm.get_status.return_value = MagicMock(state="FINISH")
         mock_pm.is_awaiting_plate_clear.return_value = True
@@ -260,6 +269,7 @@ class TestSchedulerIdleCheckWithPlateCleared:
 
     @patch("backend.app.services.print_scheduler.printer_manager")
     def test_failed_state_idle_when_require_plate_clear_disabled(self, mock_pm, scheduler):
+        mock_pm.is_swap_blocked.return_value = None  # swap-disabled printer
         mock_pm.is_connected.return_value = True
         mock_pm.get_status.return_value = MagicMock(state="FAILED")
         mock_pm.is_awaiting_plate_clear.return_value = True
@@ -267,6 +277,7 @@ class TestSchedulerIdleCheckWithPlateCleared:
 
     @patch("backend.app.services.print_scheduler.printer_manager")
     def test_running_state_not_idle_even_when_require_plate_clear_disabled(self, mock_pm, scheduler):
+        mock_pm.is_swap_blocked.return_value = None  # swap-disabled printer
         mock_pm.is_connected.return_value = True
         mock_pm.get_status.return_value = MagicMock(state="RUNNING")
         mock_pm.is_awaiting_plate_clear.return_value = False
@@ -274,6 +285,7 @@ class TestSchedulerIdleCheckWithPlateCleared:
 
     @patch("backend.app.services.print_scheduler.printer_manager")
     def test_idle_state_unaffected_by_require_plate_clear(self, mock_pm, scheduler):
+        mock_pm.is_swap_blocked.return_value = None  # swap-disabled printer
         mock_pm.is_connected.return_value = True
         mock_pm.get_status.return_value = MagicMock(state="IDLE")
         mock_pm.is_awaiting_plate_clear.return_value = False
@@ -394,6 +406,8 @@ class TestPlateGateEndToEnd:
         require_plate_clear = await self._read_setting(scheduler, row_value)
         assert require_plate_clear is expected_gate
 
+        mock_pm.is_swap_blocked.return_value = None  # swap-disabled printer
+
         mock_pm.is_connected.return_value = True
         mock_pm.get_status.return_value = MagicMock(state="FINISH")
         mock_pm.is_awaiting_plate_clear.return_value = True  # bed potentially fouled
@@ -410,6 +424,8 @@ class TestPlateGateEndToEnd:
         require_plate_clear = await self._read_setting(scheduler, "true")
         assert require_plate_clear is True
 
+        mock_pm.is_swap_blocked.return_value = None  # swap-disabled printer
+
         mock_pm.is_connected.return_value = True
         mock_pm.get_status.return_value = MagicMock(state="FINISH")
 
@@ -425,6 +441,7 @@ class TestPlateGateEndToEnd:
     @patch("backend.app.services.print_scheduler.printer_manager")
     async def test_running_never_idle_regardless_of_gate(self, mock_pm, scheduler):
         """Sanity: a RUNNING printer is never dispatch-eligible, gate on or off."""
+        mock_pm.is_swap_blocked.return_value = None  # swap-disabled printer
         mock_pm.is_connected.return_value = True
         mock_pm.get_status.return_value = MagicMock(state="RUNNING")
         mock_pm.is_awaiting_plate_clear.return_value = False
@@ -451,6 +468,8 @@ class TestSchedulerQueueCheckLogging:
         mock_item.scheduled_time = None
         mock_item.manual_start = False
         mock_item.target_model = None
+
+        mock_pm.is_swap_blocked.return_value = None  # swap-disabled printer
 
         mock_pm.is_connected.return_value = True
         mock_pm.get_status.return_value = MagicMock(state="RUNNING")

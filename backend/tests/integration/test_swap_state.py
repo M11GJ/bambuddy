@@ -132,6 +132,7 @@ async def test_apply_refreshes_memory_on_the_running_loop(db_session):
 
 async def test_state_dict_exposes_swap_state(db_session):
     p = await _printer(db_session, n=8, swap_enabled=True, swap_plates_remaining=2)
+    printer_manager._swap_state_loaded = False  # before the startup load
     assert printer_state_to_dict(PrinterState(), p.id)["swap"]["hold_reason"] == "swap.hold.stateUnavailable"
     await printer_manager.load_swap_state_from_db()
     assert printer_state_to_dict(PrinterState(), p.id)["swap"] == {

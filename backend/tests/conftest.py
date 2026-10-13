@@ -138,6 +138,22 @@ def mfa_encryption_isolation(monkeypatch, tmp_path):
 
 
 @pytest.fixture(autouse=True)
+def swap_state_loaded_without_swappers():
+    """Start every test as a server whose startup swap-state load succeeded with no swap printers.
+
+    Swap state fails closed until it is loaded (every printer blocked), which is
+    right for production but would make every scheduler test see a held printer.
+    Swap tests set ``_swap_state`` / ``_swap_state_loaded`` themselves.
+    """
+    from backend.app.services.printer_manager import printer_manager
+
+    saved = (printer_manager._swap_state, printer_manager._swap_state_loaded)
+    printer_manager._swap_state, printer_manager._swap_state_loaded = {}, True
+    yield
+    printer_manager._swap_state, printer_manager._swap_state_loaded = saved
+
+
+@pytest.fixture(autouse=True)
 def reset_spoolman_location_sync_cache():
     """Drop the per-URL Spoolman location-sync TTL cache between tests.
 

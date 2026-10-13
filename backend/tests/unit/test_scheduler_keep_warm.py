@@ -40,6 +40,14 @@ MAX_HOLD_SECONDS = MAX_HOLD_MINUTES * 60
 NOW = 10_000.0
 
 
+@pytest.fixture(autouse=True)
+def no_swap_printers():
+    # printer_manager is replaced by a MagicMock in these tests, so its swap
+    # mirror would read as "enabled"; these printers are not swappers.
+    with patch.object(PrintScheduler, "_swap_enabled", staticmethod(lambda printer_id: False)):
+        yield
+
+
 @pytest.fixture
 def scheduler():
     return PrintScheduler()
