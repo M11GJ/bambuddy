@@ -616,6 +616,7 @@ export interface SwapConfig {
   bed_depth_mm: number;
   clip_roi: [number, number, number, number];
   clip_min_percent: number;
+  object_diff_percent: number;
 }
 
 export interface SwapStatus extends SwapLiveState {

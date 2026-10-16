@@ -116,7 +116,7 @@ describe('SwapModPanel', () => {
 });
 
 describe('SwapModSettings', () => {
-  const config = { marker: 'M', exclude_front_mm: 20, exclude_back_mm: 10, bed_depth_mm: 256, clip_roi: [0.3, 0.7, 0.15, 0.3], clip_min_percent: 4 };
+  const config = { marker: 'M', exclude_front_mm: 20, exclude_back_mm: 10, bed_depth_mm: 256, clip_roi: [0.3, 0.7, 0.15, 0.3], clip_min_percent: 4, object_diff_percent: 3 };
   let bodies: Record<string, unknown>[];
   const mock = (put: () => Response) => {
     bodies = [];

@@ -19,6 +19,9 @@ class SwapConfig:
     bed_depth_mm: float
     clip_roi: tuple[float, float, float, float]
     clip_min_percent: float
+    # Plate-detector threshold for the swap gate. The detector's own 1% default is too tight
+    # for auto-loaded plates, which land a little differently each swap (measured 0.8-1.3%).
+    object_diff_percent: float = 3.0
 
 
 DEFAULT_SWAP_CONFIG = SwapConfig(
@@ -30,7 +33,15 @@ DEFAULT_SWAP_CONFIG = SwapConfig(
     clip_min_percent=4.0,
 )
 
-_FIELDS = {"marker", "exclude_front_mm", "exclude_back_mm", "bed_depth_mm", "clip_roi", "clip_min_percent"}
+_FIELDS = {
+    "marker",
+    "exclude_front_mm",
+    "exclude_back_mm",
+    "bed_depth_mm",
+    "clip_roi",
+    "clip_min_percent",
+    "object_diff_percent",
+}
 
 
 def _is_number(value) -> bool:
@@ -56,7 +67,7 @@ def parse_swap_config(raw: str | None) -> SwapConfig:
         if not isinstance(data["marker"], str) or not data["marker"].strip():
             raise ValueError("swap_config.marker must be a non-empty string")
         cfg = replace(cfg, marker=data["marker"])
-    for key in ("exclude_front_mm", "exclude_back_mm", "bed_depth_mm", "clip_min_percent"):
+    for key in ("exclude_front_mm", "exclude_back_mm", "bed_depth_mm", "clip_min_percent", "object_diff_percent"):
         if key in data:
             if not _is_number(data[key]):
                 raise ValueError(f"swap_config.{key} must be a finite number")
@@ -75,6 +86,8 @@ def parse_swap_config(raw: str | None) -> SwapConfig:
         raise ValueError("swap_config exclusion zones leave no printable depth")
     if cfg.clip_min_percent <= 0:
         raise ValueError("swap_config.clip_min_percent must be > 0")
+    if not 0 < cfg.object_diff_percent <= 100:
+        raise ValueError("swap_config.object_diff_percent must be in (0, 100]")
     return cfg
 
 

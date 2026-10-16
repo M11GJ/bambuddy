@@ -58,8 +58,8 @@ def patched(monkeypatch):
     monkeypatch.setattr(gate, "_light_is_on", lambda printer_id: True)
 
     class _Det:
-        def __init__(self, roi=None):
-            pass
+        def __init__(self, roi=None, difference_threshold=1.0):
+            state["threshold"] = difference_threshold
 
         def analyze_frame(self, image, printer_id):
             if isinstance(state["analysis"], Exception):
@@ -173,3 +173,13 @@ async def test_light_restored_when_it_was_off(patched, monkeypatch):
     patched["frame"] = None  # even on failure the light goes back off
     await gate.run_camera_gate(_Printer(), DEFAULT_SWAP_CONFIG, light_settle_seconds=0)
     assert calls == [True, False]
+
+
+@pytest.mark.asyncio
+async def test_detector_uses_swap_object_threshold(patched):
+    from dataclasses import replace
+
+    await gate.run_camera_gate(
+        _Printer(), replace(DEFAULT_SWAP_CONFIG, object_diff_percent=2.5), light_settle_seconds=0
+    )
+    assert patched["threshold"] == 2.5

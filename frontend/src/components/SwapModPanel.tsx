@@ -124,7 +124,7 @@ export function SwapModPanel({ printerId, swap }: { printerId: number; swap?: Sw
   );
 }
 
-type ConfigForm = Record<'marker' | 'exclude_front_mm' | 'exclude_back_mm' | 'bed_depth_mm' | 'clip_min_percent', string> & {
+type ConfigForm = Record<'marker' | 'exclude_front_mm' | 'exclude_back_mm' | 'bed_depth_mm' | 'clip_min_percent' | 'object_diff_percent', string> & {
   clip_roi: [string, string, string, string];
 };
 
@@ -137,6 +137,7 @@ function toForm(c: Partial<SwapConfig>): ConfigForm {
     exclude_back_mm: s(c.exclude_back_mm),
     bed_depth_mm: s(c.bed_depth_mm),
     clip_min_percent: s(c.clip_min_percent),
+    object_diff_percent: s(c.object_diff_percent),
     clip_roi: [s(roi[0]), s(roi[1]), s(roi[2]), s(roi[3])],
   };
 }
@@ -156,6 +157,7 @@ function fromForm(f: ConfigForm): SwapConfig {
     exclude_back_mm: num(f.exclude_back_mm),
     bed_depth_mm: num(f.bed_depth_mm),
     clip_min_percent: num(f.clip_min_percent),
+    object_diff_percent: num(f.object_diff_percent),
     clip_roi: f.clip_roi.map(num) as SwapConfig['clip_roi'],
   };
 }
@@ -219,6 +221,7 @@ export function SwapModSettings({ printerId }: { printerId: number }) {
         {numField('exclude_back_mm')}
         {numField('bed_depth_mm')}
         {numField('clip_min_percent')}
+        {numField('object_diff_percent')}
       </div>
       <label className="block">
         <span className="block text-xs text-bambu-gray mb-0.5">clip_roi (x, y, w, h)</span>

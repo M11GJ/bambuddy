@@ -48,3 +48,16 @@ def test_strip_error_key():
     assert strip_error_key("[swap.guard.noMarker] No swap block.") == "No swap block."
     assert strip_error_key("Plain message") == "Plain message"
     assert strip_error_key(None) is None
+
+
+def test_object_diff_percent_default_and_override():
+    assert DEFAULT_SWAP_CONFIG.object_diff_percent == 3.0
+    assert parse_swap_config('{"object_diff_percent": 5}').object_diff_percent == 5.0
+
+
+@pytest.mark.parametrize("v", [0, -1, 101, None, "3"])
+def test_object_diff_percent_rejects_bad_values(v):
+    import json
+
+    with pytest.raises(ValueError):
+        parse_swap_config(json.dumps({"object_diff_percent": v}))
