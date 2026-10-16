@@ -9,8 +9,9 @@ import { useToast } from '../contexts/ToastContext';
 
 const BUTTON =
   'inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg bg-yellow-100 dark:bg-yellow-500/20 border border-yellow-300 dark:border-yellow-400/40 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-500/30 transition-colors text-xs font-medium disabled:opacity-50';
-const INPUT =
-  'w-full px-2 py-1 bg-bambu-dark border border-bambu-dark-tertiary rounded-lg text-white text-sm focus:border-bambu-green focus:outline-none';
+const INPUT_BASE =
+  'px-2 py-1 bg-bambu-dark border border-bambu-dark-tertiary rounded-lg text-white text-sm focus:border-bambu-green focus:outline-none';
+const INPUT = `w-full ${INPUT_BASE}`;
 
 function validPlateCount(value: string): number | null {
   if (!/^\d{1,2}$/.test(value.trim())) return null;
@@ -73,14 +74,14 @@ export function SwapModPanel({ printerId, swap }: { printerId: number; swap?: Sw
             min={0}
             max={99}
             step={1}
-            className={`${INPUT} w-16`}
+            className={`${INPUT_BASE} w-16 shrink-0`}
             value={plates}
             onChange={(e) => setPlates(e.target.value)}
             aria-label={t('swap.enterPlates')}
           />
           <button
             type="button"
-            className={`${BUTTON} flex-1`}
+            className={`${BUTTON} flex-1 whitespace-nowrap`}
             disabled={count == null || platesMutation.isPending}
             onClick={() => count != null && platesMutation.mutate(count)}
           >
