@@ -1118,6 +1118,15 @@ describe('LoginPage', () => {
     it('clears stored tokens and strips dcc_launch from the URL', async () => {
       setAuthToken('stale-token', 'persistent');
       vi.mocked(localStorage.removeItem).mockClear();
+      let logoutAuth: string | null = null;
+      let logoutCalls = 0;
+      server.use(
+        http.post('/api/v1/auth/logout', ({ request }) => {
+          logoutCalls += 1;
+          logoutAuth = request.headers.get('Authorization');
+          return HttpResponse.json({ message: 'ok' });
+        })
+      );
       window.history.replaceState(null, '', '/login?dcc_launch=1');
       mockNavigate.mockClear();
 
@@ -1129,6 +1138,25 @@ describe('LoginPage', () => {
       expect(localStorage.removeItem).toHaveBeenCalledWith('auth_token');
       expect(sessionStorage.getItem('auth_token')).toBeNull();
       expect(mockNavigate).not.toHaveBeenCalledWith('/', { replace: true });
+      await waitFor(() => expect(logoutCalls).toBe(1));
+      expect(logoutAuth).toBe('Bearer stale-token');
+    });
+
+    it('keeps other params and does not autologin with dcc_launch=1&fallback=local', async () => {
+      autologinStatus();
+      let authorizeCalled = false;
+      server.use(
+        http.get('/api/v1/auth/oidc/authorize/101', () => {
+          authorizeCalled = true;
+          return HttpResponse.json({ auth_url: 'https://auth.test/x' });
+        })
+      );
+      window.history.replaceState(null, '', '/login?dcc_launch=1&fallback=local');
+      render(<LoginPage />);
+
+      expect(await screen.findByLabelText(/Username/i)).toBeInTheDocument();
+      expect(window.location.search).toBe('?fallback=local');
+      expect(authorizeCalled).toBe(false);
     });
 
     it('shows the logging-in message instead of the form while autologin redirects', async () => {

@@ -113,25 +113,27 @@ export function LoginPage() {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const { t } = useTranslation();
-  const { login, loginWithToken, user, loading } = useAuth();
+  const { login, loginWithToken, clearSession, user, loading } = useAuth();
   const { showToast } = useToast();
   const { mode } = useTheme();
 
   // DCC launch (Hub iframe -> /login?dcc_launch=1): drop any stale session once,
   // before any other effect, so the DCC Login autologin starts from a clean slate.
   // Declared first so it runs before the "already logged in -> /" redirect below.
-  const { logout } = useAuth();
   const [launchCleared, setLaunchCleared] = useState(() => searchParams.get('dcc_launch') !== '1');
   const launchHandledRef = useRef(false);
   useEffect(() => {
     if (launchCleared || launchHandledRef.current) return;
     launchHandledRef.current = true;
-    logout(); // clears sessionStorage + localStorage token and the AuthContext user
+    // Revoke server-side with the current JWT first (request headers are built
+    // synchronously), then clear locally. No navigation: keeps query/hash/state.
+    api.logout().catch(() => {});
+    clearSession();
     const url = new URL(window.location.href);
     url.searchParams.delete('dcc_launch');
     window.history.replaceState(window.history.state, '', url.pathname + url.search + url.hash);
     setLaunchCleared(true);
-  }, [launchCleared, logout]);
+  }, [launchCleared, clearSession]);
 
   // Resolve the post-login destination, preferring router state (set by
   // ProtectedRoute when it redirects an unauthed visit) over the sessionStorage

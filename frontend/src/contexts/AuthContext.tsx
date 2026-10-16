@@ -13,6 +13,8 @@ interface AuthContextType {
   /** Finalise login after 2FA or OIDC — store token and set user directly. */
   loginWithToken: (token: string, user: UserResponse, persistence?: TokenPersistence) => void;
   logout: () => void;
+  /** Drop token + user locally without navigating or calling the server. */
+  clearSession: () => void;
   refreshUser: () => Promise<void>;
   refreshAuth: () => Promise<void>;
   hasPermission: (permission: Permission) => boolean;
@@ -188,6 +190,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     window.location.href = '/login';
   };
 
+  const clearSession = () => {
+    setAuthToken(null);
+    setUser(null);
+  };
+
   const refreshUser = async () => {
     if (authEnabled && getAuthToken()) {
       try {
@@ -274,6 +281,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         login,
         loginWithToken,
         logout,
+        clearSession,
         refreshUser,
         refreshAuth,
         hasPermission,
