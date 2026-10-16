@@ -7908,6 +7908,8 @@ export default {
     enterPlates: "Plaka sayısını gir",
     resume: "Kontrol edildi — devam et",
     settings: "Plaka değiştirici ayarları",
+    pose: "Değişim sonrası konuma dön",
+    poseSent: "Değişim sonrası konuma gidiliyor. Plakayı kontrol edin, ardından «Kontrol et ve sürdür»e basın",
     enabled: "Plaka değiştiriciyi etkinleştir",
     hold: {
       stateUnavailable: "Değiştirici durumu yüklenemedi — kuyruk durduruldu",
@@ -7932,6 +7934,7 @@ export default {
     },
     control: {
       motionBlocked: "Plaka değiştiricili yazıcılarda eksen sıfırlama ve elle hareket devre dışıdır",
+      poseNotHomed: "Konum yalnızca bir baskı bittikten hemen sonra geri yüklenebilir (yazıcı hâlâ sıfırlanmış olmalı)",
     },
     slice: {
       outsideBed: "Model yazdırma alanına sığmıyor. Plaka değiştiricide kullanılabilir derinlik 226 mm'dir (önde 20 mm ve arkada 10 mm yasak bölgedir). Küçültün veya bölün.",

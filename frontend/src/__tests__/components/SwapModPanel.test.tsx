@@ -68,6 +68,24 @@ describe('SwapModPanel', () => {
     await waitFor(() => expect(calls).toEqual(['resume']));
   });
 
+  it('offers the pose button only for camera holds and posts it', async () => {
+    const calls: string[] = [];
+    server.use(
+      http.post('*/api/v1/printers/1/swap/pose', () => {
+        calls.push('pose');
+        return HttpResponse.json({ success: true });
+      }),
+    );
+    const { unmount } = render(
+      <SwapModPanel printerId={1} swap={{ enabled: true, plates_remaining: 1, hold_reason: 'swap.hold.outOfPlates' }} />,
+    );
+    expect(screen.queryByRole('button', { name: 'Restore post-swap pose' })).not.toBeInTheDocument();
+    unmount();
+    render(<SwapModPanel printerId={1} swap={{ enabled: true, plates_remaining: 1, hold_reason: 'swap.gate.noPlate' }} />);
+    await userEvent.click(screen.getByRole('button', { name: 'Restore post-swap pose' }));
+    await waitFor(() => expect(calls).toEqual(['pose']));
+  });
+
   it('only sends plate counts in 0..99', async () => {
     const bodies: unknown[] = [];
     server.use(

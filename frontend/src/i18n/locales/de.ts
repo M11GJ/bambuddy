@@ -7983,6 +7983,8 @@ export default {
     enterPlates: "Plattenanzahl eingeben",
     resume: "Geprüft — fortsetzen",
     settings: "Einstellungen Plattenwechsler",
+    pose: "Position nach dem Wechsel herstellen",
+    poseSent: "Fährt in die Position nach dem Wechsel. Platte prüfen, dann „Prüfen und fortsetzen“ drücken",
     enabled: "Plattenwechsler aktivieren",
     hold: {
       stateUnavailable: "Wechslerstatus konnte nicht geladen werden — Warteschlange angehalten",
@@ -8007,6 +8009,7 @@ export default {
     },
     control: {
       motionBlocked: "Referenzfahrt und Verfahren sind bei Druckern mit Plattenwechsler deaktiviert",
+      poseNotHomed: "Die Position kann nur direkt nach einem Druck hergestellt werden (der Drucker muss noch referenziert sein)",
     },
     slice: {
       outsideBed: "Das Modell passt nicht in den Druckbereich. Beim Plattenwechsler sind nur 226 mm Tiefe nutzbar (vorne 20 mm und hinten 10 mm sind Sperrzonen). Verkleinern oder aufteilen.",

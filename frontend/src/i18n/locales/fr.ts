@@ -7969,6 +7969,8 @@ export default {
     enterPlates: "Saisir le nombre de plateaux",
     resume: "Vérifié — reprendre",
     settings: "Réglages du changeur de plateaux",
+    pose: "Revenir à la position après échange",
+    poseSent: "Retour à la position après échange. Vérifiez le plateau, puis appuyez sur « Vérifier et reprendre »",
     enabled: "Activer le changeur de plateaux",
     hold: {
       stateUnavailable: "Impossible de charger l'état du changeur — file arrêtée",
@@ -7993,6 +7995,7 @@ export default {
     },
     control: {
       motionBlocked: "La mise à l'origine et le déplacement manuel sont désactivés sur les imprimantes avec changeur de plateaux",
+      poseNotHomed: "La position ne peut être rétablie que juste après la fin d'une impression (l'imprimante doit encore être référencée)",
     },
     slice: {
       outsideBed: "Le modèle ne tient pas dans la zone d'impression. Avec le changeur de plateaux, la profondeur utile est de 226 mm (20 mm à l'avant et 10 mm à l'arrière sont interdits). Réduisez-le ou découpez-le.",

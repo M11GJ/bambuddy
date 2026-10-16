@@ -6,6 +6,7 @@ import { api } from '../api/client';
 import type { PrinterStatus, SwapConfig, SwapLiveState, SwapStatus } from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
+import { translateErrorMessage } from '../utils/translateErrorMessage';
 
 const BUTTON =
   'inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg bg-yellow-100 dark:bg-yellow-500/20 border border-yellow-300 dark:border-yellow-400/40 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-500/30 transition-colors text-xs font-medium disabled:opacity-50';
@@ -34,7 +35,8 @@ export function SwapModPanel({ printerId, swap }: { printerId: number; swap?: Sw
     );
     queryClient.invalidateQueries({ queryKey: ['swap', printerId] });
   };
-  const onError = (error: Error) => showToast(error.message || t('printers.toast.failedToSendCommand'), 'error');
+  const onError = (error: Error) =>
+    showToast(translateErrorMessage(error.message, t).text || t('printers.toast.failedToSendCommand'), 'error');
 
   const platesMutation = useMutation({
     mutationFn: (remaining: number) => api.setSwapPlates(printerId, remaining),
@@ -44,6 +46,12 @@ export function SwapModPanel({ printerId, swap }: { printerId: number; swap?: Sw
     },
     onError,
   });
+  const poseMutation = useMutation({
+    mutationFn: () => api.restoreSwapPose(printerId),
+    onSuccess: () => showToast(t('swap.poseSent'), 'success'),
+    onError,
+  });
+
   const resumeMutation = useMutation({
     mutationFn: () => api.resumeSwap(printerId),
     onSuccess: apply,
@@ -89,6 +97,17 @@ export function SwapModPanel({ printerId, swap }: { printerId: number; swap?: Sw
             {t('swap.enterPlates')}
           </button>
         </div>
+      )}
+      {canClear && swap.hold_reason?.startsWith('swap.gate.') && (
+        <button
+          type="button"
+          className={`${BUTTON} w-full`}
+          disabled={poseMutation.isPending}
+          onClick={() => poseMutation.mutate()}
+        >
+          {poseMutation.isPending && <Loader2 className="w-3 h-3 animate-spin" />}
+          {t('swap.pose')}
+        </button>
       )}
       {canClear && swap.hold_reason && swap.hold_reason !== 'swap.hold.stateUnavailable' && (
         <button

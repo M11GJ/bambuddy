@@ -7968,6 +7968,8 @@ export default {
     enterPlates: "Inserisci numero di piatti",
     resume: "Controllato — riprendi",
     settings: "Impostazioni cambiapiatti",
+    pose: "Ripristina la posizione dopo il cambio",
+    poseSent: "Spostamento nella posizione dopo il cambio. Controlla il piatto, poi premi «Controlla e riprendi»",
     enabled: "Abilita cambiapiatti",
     hold: {
       stateUnavailable: "Impossibile caricare lo stato del cambiapiatti — coda ferma",
@@ -7992,6 +7994,7 @@ export default {
     },
     control: {
       motionBlocked: "Homing e movimento manuale sono disattivati sulle stampanti con cambiapiatti",
+      poseNotHomed: "La posizione si può ripristinare solo subito dopo la fine di una stampa (la stampante deve essere ancora azzerata)",
     },
     slice: {
       outsideBed: "Il modello non rientra nell'area di stampa. Con il cambiapiatti la profondità utile è di 226 mm (20 mm davanti e 10 mm dietro sono zone vietate). Riducilo o dividilo.",

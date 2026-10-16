@@ -7602,6 +7602,8 @@ export default {
     enterPlates: "플레이트 수 입력",
     resume: "확인 후 재개",
     settings: "플레이트 교환기 설정",
+    pose: "교환 후 자세로 되돌리기",
+    poseSent: "교환 후 자세로 이동 중입니다. 플레이트를 확인한 뒤 「확인하고 재개」를 누르세요",
     enabled: "플레이트 교환기 사용",
     hold: {
       stateUnavailable: "교환기 상태를 불러올 수 없어 대기열이 중지됨",
@@ -7626,6 +7628,7 @@ export default {
     },
     control: {
       motionBlocked: "플레이트 교환기를 쓰는 프린터에서는 원점 복귀와 축 이동이 비활성화됩니다",
+      poseNotHomed: "자세는 인쇄가 끝난 직후에만 되돌릴 수 있습니다(전원을 다시 켠 뒤에는 원점을 알 수 없음)",
     },
     slice: {
       outsideBed: "모델이 인쇄 영역에 들어가지 않습니다. 플레이트 교환기 프린터는 앞뒤로 226mm까지만 쓸 수 있습니다(앞 20mm·뒤 10mm는 배치 금지). 축소하거나 분할하세요",

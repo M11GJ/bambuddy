@@ -7966,6 +7966,8 @@ export default {
     enterPlates: "输入板数",
     resume: "已检查 — 继续",
     settings: "换板器设置",
+    pose: "恢复换板后的姿态",
+    poseSent: "正在移动到换板后的姿态。确认打印板后点击「确认并继续」",
     enabled: "启用换板器",
     hold: {
       stateUnavailable: "无法加载换板状态 — 队列已停止",
@@ -7990,6 +7992,7 @@ export default {
     },
     control: {
       motionBlocked: "使用换板器的打印机已禁用归零和轴移动",
+      poseNotHomed: "只能在打印刚结束时恢复姿态（重新上电后原点未知）",
     },
     slice: {
       outsideBed: "模型超出可打印范围。使用换板器的打印机前后可用深度仅 226mm（前 20mm、后 10mm 为禁止区域）。请缩小或拆分模型",

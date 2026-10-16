@@ -4956,6 +4956,10 @@ export const api = {
     request<SwapStatus>(`/printers/${printerId}/swap/resume`, {
       method: 'POST',
     }),
+  restoreSwapPose: (printerId: number) =>
+    request<{ success: boolean }>(`/printers/${printerId}/swap/pose`, {
+      method: 'POST',
+    }),
 
   // Get current print user (for reprint tracking - Issue #206)
   getCurrentPrintUser: (printerId: number) =>

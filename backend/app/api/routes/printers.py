@@ -3692,6 +3692,10 @@ async def update_swap(
         await db.execute(update(Printer).where(Printer.id == printer_id).values(**values))
         await db.commit()
         printer_manager.apply_swap_state_after_commit(printer_id)
+        if body.enabled and not current.enabled:
+            # Swap holds replace the manual plate-clear gate (spec D6); one raised before
+            # the swapper was enabled would otherwise block dispatch with no swap reason shown.
+            printer_manager.set_awaiting_plate_clear(printer_id, False)
     return await _swap_status(db, printer_id)
 
 
@@ -3709,6 +3713,40 @@ async def set_swap_plates(
     await db.commit()
     printer_manager.apply_swap_state_after_commit(printer_id)
     return await _swap_status(db, printer_id)
+
+
+SWAP_POSE_GCODE = "G90\nG1 Z230 F8000\nG1 Y100 F3000"
+SWAP_POSE_NOT_HOMED = (
+    "[swap.control.poseNotHomed] The pose can only be restored right after a print has ended "
+    "(the printer must still be homed)"
+)
+
+
+@router.post("/{printer_id}/swap/pose")
+async def restore_swap_pose(
+    printer_id: int,
+    _=RequirePermissionIfAuthEnabled(Permission.PRINTERS_CLEAR_PLATE),
+    db: AsyncSession = Depends(get_db),
+):
+    """Move a swap printer to the post-swap pose the camera gate expects (Z up first, then Y).
+
+    Needed after a print that did not reach the swap block (failed/cancelled). Sent through
+    Bambuddy's own MQTT session, so it works while the printer refuses extra connections.
+    """
+    printer = (await db.execute(select(Printer).where(Printer.id == printer_id))).scalar_one_or_none()
+    if not printer:
+        raise HTTPException(404, "Printer not found")
+    if not printer.swap_enabled:
+        raise HTTPException(409, "Plate swapper is not enabled on this printer")
+    state = printer_manager.get_status(printer_id)
+    # FINISH/FAILED means a print just ran, so the axes are homed. IDLE may follow a power
+    # cycle (absolute moves on unhomed axes), and RUNNING/PAUSE would move a live print.
+    if not state or state.state not in ("FINISH", "FAILED"):
+        raise HTTPException(409, SWAP_POSE_NOT_HOMED)
+    client = printer_manager.get_client(printer_id)
+    if not client or not client.send_gcode(SWAP_POSE_GCODE):
+        raise HTTPException(400, "Printer not connected")
+    return {"success": True}
 
 
 @router.post("/{printer_id}/swap/resume", response_model=SwapStatus)

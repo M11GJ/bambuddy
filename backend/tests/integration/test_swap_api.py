@@ -254,3 +254,70 @@ async def test_reference_mutations_require_printers_update(async_client, db_sess
     assert (await async_client.delete(f"{base}/references/0", headers=viewer)).status_code == 403
     # Reading stays camera:view.
     assert (await async_client.get(f"{base}/references", headers=viewer)).status_code != 403
+
+
+def _status(state: str):
+    from unittest.mock import MagicMock
+
+    s = MagicMock()
+    s.state = state
+    s.connected = True
+    return s
+
+
+@pytest.mark.asyncio
+@pytest.mark.integration
+async def test_pose_sends_post_swap_pose_after_a_print(async_client, db_session, printer_factory, auth):
+    from unittest.mock import MagicMock, patch
+
+    p = await printer_factory(swap_enabled=True, swap_plates_remaining=3)
+    member = await _token(async_client, db_session, "poser", ["printers:clear_plate"])
+    client = MagicMock()
+    client.send_gcode.return_value = True
+    with (
+        patch.object(printer_manager, "get_client", MagicMock(return_value=client)),
+        patch.object(printer_manager, "get_status", MagicMock(return_value=_status("FAILED"))),
+    ):
+        r = await async_client.post(f"/api/v1/printers/{p.id}/swap/pose", headers=member)
+    assert r.status_code == 200
+    client.send_gcode.assert_called_once_with("G90\nG1 Z230 F8000\nG1 Y100 F3000")
+
+
+@pytest.mark.asyncio
+@pytest.mark.integration
+@pytest.mark.parametrize("state", ["IDLE", "RUNNING", "PAUSE"])
+async def test_pose_refused_unless_just_after_a_print(async_client, printer_factory, auth, state):
+    # IDLE may follow a power cycle (not homed); RUNNING/PAUSE would move a live print.
+    from unittest.mock import MagicMock, patch
+
+    p = await printer_factory(swap_enabled=True, swap_plates_remaining=3)
+    client = MagicMock()
+    with (
+        patch.object(printer_manager, "get_client", MagicMock(return_value=client)),
+        patch.object(printer_manager, "get_status", MagicMock(return_value=_status(state))),
+    ):
+        r = await async_client.post(f"/api/v1/printers/{p.id}/swap/pose", headers=auth)
+    assert r.status_code == 409
+    assert r.json()["detail"].startswith("[swap.control.poseNotHomed]")
+    client.send_gcode.assert_not_called()
+
+
+@pytest.mark.asyncio
+@pytest.mark.integration
+async def test_pose_refused_on_normal_printer(async_client, printer_factory, auth):
+    p = await printer_factory()
+    r = await async_client.post(f"/api/v1/printers/{p.id}/swap/pose", headers=auth)
+    assert r.status_code == 409
+
+
+@pytest.mark.asyncio
+@pytest.mark.integration
+async def test_enabling_swap_drops_stale_plate_clear_gate(async_client, printer_factory, auth):
+    p = await printer_factory()
+    printer_manager._awaiting_plate_clear.add(p.id)
+    try:
+        r = await async_client.put(f"/api/v1/printers/{p.id}/swap", json={"enabled": True}, headers=auth)
+        assert r.status_code == 200
+        assert not printer_manager.is_awaiting_plate_clear(p.id)
+    finally:
+        printer_manager._awaiting_plate_clear.discard(p.id)

@@ -7991,6 +7991,8 @@ export default {
     enterPlates: "Introducir número de placas",
     resume: "Revisado — reanudar",
     settings: "Ajustes del cambiador de placas",
+    pose: "Volver a la posición tras el cambio",
+    poseSent: "Moviendo a la posición tras el cambio. Revisa la placa y pulsa «Comprobar y reanudar»",
     enabled: "Activar cambiador de placas",
     hold: {
       stateUnavailable: "No se pudo cargar el estado del cambiador — cola detenida",
@@ -8015,6 +8017,7 @@ export default {
     },
     control: {
       motionBlocked: "El homing y el movimiento manual están desactivados en impresoras con cambiador de placas",
+      poseNotHomed: "La posición solo puede restaurarse justo después de terminar una impresión (la impresora debe seguir referenciada)",
     },
     slice: {
       outsideBed: "El modelo no cabe en el área de impresión. Con el cambiador de placas la profundidad útil es de 226 mm (20 mm delante y 10 mm detrás son zonas prohibidas). Redúcelo o divídelo.",

@@ -8034,6 +8034,8 @@ export default {
     enterPlates: "Enter plate count",
     resume: "Checked — resume",
     settings: "Plate swapper settings",
+    pose: "Restore post-swap pose",
+    poseSent: "Moving to the post-swap pose. Check the plate, then press Confirm and resume",
     enabled: "Enable plate swapper",
     hold: {
       stateUnavailable: "Swap state could not be loaded — queue stopped",
@@ -8058,6 +8060,7 @@ export default {
     },
     control: {
       motionBlocked: "Homing and jogging are disabled on plate swapper printers",
+      poseNotHomed: "The pose can only be restored right after a print has ended (the printer must still be homed)",
     },
     slice: {
       outsideBed: "The model does not fit the printable area. On the plate swapper the usable depth is 226 mm (front 20 mm and back 10 mm are no-print zones). Scale it down or split it.",

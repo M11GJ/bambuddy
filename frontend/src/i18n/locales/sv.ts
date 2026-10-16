@@ -8032,6 +8032,8 @@ errors: {
     enterPlates: "Ange antal plattor",
     resume: "Kontrollerat — återuppta",
     settings: "Inställningar för plattväxlare",
+    pose: "Återställ läget efter byte",
+    poseSent: "Flyttar till läget efter byte. Kontrollera plattan och tryck sedan på ”Kontrollera och fortsätt”",
     enabled: "Aktivera plattväxlare",
     hold: {
       stateUnavailable: "Växlarens status kunde inte läsas in — kön stoppad",
@@ -8056,6 +8058,7 @@ errors: {
     },
     control: {
       motionBlocked: "Hemkörning och manuell förflyttning är inaktiverade på skrivare med plattväxlare",
+      poseNotHomed: "Läget kan bara återställas direkt efter en utskrift (skrivaren måste fortfarande vara hemkörd)",
     },
     slice: {
       outsideBed: "Modellen får inte plats i utskriftsytan. Med plattväxlaren är 226 mm djup användbart (fram 20 mm och bak 10 mm är spärrzoner). Skala ner eller dela modellen.",

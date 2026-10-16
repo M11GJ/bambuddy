@@ -7968,6 +7968,8 @@ export default {
     enterPlates: "Informar quantidade de placas",
     resume: "Verificado — retomar",
     settings: "Configurações do trocador de placas",
+    pose: "Restaurar posição após a troca",
+    poseSent: "Movendo para a posição após a troca. Verifique a placa e pressione «Verificar e retomar»",
     enabled: "Ativar trocador de placas",
     hold: {
       stateUnavailable: "Não foi possível carregar o estado do trocador — fila parada",
@@ -7992,6 +7994,7 @@ export default {
     },
     control: {
       motionBlocked: "Homing e movimentação manual estão desativados em impressoras com trocador de placas",
+      poseNotHomed: "A posição só pode ser restaurada logo após o fim de uma impressão (a impressora ainda precisa estar referenciada)",
     },
     slice: {
       outsideBed: "O modelo não cabe na área de impressão. Com o trocador de placas a profundidade útil é de 226 mm (20 mm na frente e 10 mm atrás são zonas proibidas). Reduza ou divida o modelo.",

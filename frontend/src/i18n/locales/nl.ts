@@ -8034,6 +8034,8 @@ export default {
     enterPlates: "Aantal platen invoeren",
     resume: "Gecontroleerd — hervatten",
     settings: "Instellingen plaatwisselaar",
+    pose: "Positie na wissel herstellen",
+    poseSent: "Beweegt naar de positie na de wissel. Controleer de plaat en druk dan op „Controleren en hervatten”",
     enabled: "Plaatwisselaar inschakelen",
     hold: {
       stateUnavailable: "Status van de wisselaar kon niet worden geladen — wachtrij gestopt",
@@ -8058,6 +8060,7 @@ export default {
     },
     control: {
       motionBlocked: "Homen en verplaatsen zijn uitgeschakeld op printers met een plaatwisselaar",
+      poseNotHomed: "De positie kan alleen direct na een print worden hersteld (de printer moet nog gehomed zijn)",
     },
     slice: {
       outsideBed: "Het model past niet in het printgebied. Met de plaatwisselaar is 226 mm diepte bruikbaar (voor 20 mm en achter 10 mm zijn verboden zones). Verklein of splits het model.",
