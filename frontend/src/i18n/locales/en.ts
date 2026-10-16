@@ -8059,5 +8059,9 @@ export default {
     control: {
       motionBlocked: "Homing and jogging are disabled on plate swapper printers",
     },
+    slice: {
+      outsideBed: "The model does not fit the printable area. On the plate swapper the usable depth is 226 mm (front 20 mm and back 10 mm are no-print zones). Scale it down or split it.",
+      exclusionArea: "The model overlaps the no-print zones (front 20 mm, back 10 mm). Move it toward the middle of the plate.",
+    },
   },
 };

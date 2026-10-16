@@ -7991,5 +7991,9 @@ export default {
     control: {
       motionBlocked: "使用换板器的打印机已禁用归零和轴移动",
     },
+    slice: {
+      outsideBed: "模型超出可打印范围。使用换板器的打印机前后可用深度仅 226mm（前 20mm、后 10mm 为禁止区域）。请缩小或拆分模型",
+      exclusionArea: "模型进入了禁止区域（前 20mm、后 10mm）。请将其移向打印板中央",
+    },
   },
 };

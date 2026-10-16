@@ -7994,5 +7994,9 @@ export default {
     control: {
       motionBlocked: "La mise à l'origine et le déplacement manuel sont désactivés sur les imprimantes avec changeur de plateaux",
     },
+    slice: {
+      outsideBed: "Le modèle ne tient pas dans la zone d'impression. Avec le changeur de plateaux, la profondeur utile est de 226 mm (20 mm à l'avant et 10 mm à l'arrière sont interdits). Réduisez-le ou découpez-le.",
+      exclusionArea: "Le modèle empiète sur les zones interdites (20 mm à l'avant, 10 mm à l'arrière). Rapprochez-le du centre du plateau.",
+    },
   },
 };

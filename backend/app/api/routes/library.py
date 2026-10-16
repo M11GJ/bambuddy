@@ -4077,6 +4077,18 @@ def _slicer_rejection_message(error_text: str) -> str | None:
     # by itself tells the user nothing about why their slice was rejected.
     if cli_diagnostic and (reason is None or reason == _INPUT_PRESET_INVALID_PLACEHOLDER):
         return cli_diagnostic
+    return _with_swap_slice_key(reason, error_text)
+
+
+def _with_swap_slice_key(reason: str | None, error_text: str) -> str | None:
+    """Prefix the two rejections SwapMod members hit (model larger than the bed minus the
+    no-print zones, or placed in them) with a translation key; the UI shows the translated text."""
+    if not reason:
+        return reason
+    if reason.startswith("One of the plate is empty or has no object fully inside it"):
+        return f"[swap.slice.outsideBed] {reason}"
+    if reason.startswith("Object conflicts were detected") and "exclusion area" in error_text:
+        return f"[swap.slice.exclusionArea] {reason}"
     return reason
 
 

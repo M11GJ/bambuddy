@@ -7993,5 +7993,9 @@ export default {
     control: {
       motionBlocked: "Homing e movimento manuale sono disattivati sulle stampanti con cambiapiatti",
     },
+    slice: {
+      outsideBed: "Il modello non rientra nell'area di stampa. Con il cambiapiatti la profondità utile è di 226 mm (20 mm davanti e 10 mm dietro sono zone vietate). Riducilo o dividilo.",
+      exclusionArea: "Il modello invade le zone vietate (20 mm davanti, 10 mm dietro). Spostalo verso il centro del piatto.",
+    },
   },
 };

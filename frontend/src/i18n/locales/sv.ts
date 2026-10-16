@@ -8057,5 +8057,9 @@ errors: {
     control: {
       motionBlocked: "Hemkörning och manuell förflyttning är inaktiverade på skrivare med plattväxlare",
     },
+    slice: {
+      outsideBed: "Modellen får inte plats i utskriftsytan. Med plattväxlaren är 226 mm djup användbart (fram 20 mm och bak 10 mm är spärrzoner). Skala ner eller dela modellen.",
+      exclusionArea: "Modellen hamnar i spärrzonerna (fram 20 mm, bak 10 mm). Flytta den mot plattans mitt.",
+    },
   },
 };

@@ -7991,5 +7991,9 @@ export default {
     control: {
       motionBlocked: "使用換板器的印表機已停用歸零和軸移動",
     },
+    slice: {
+      outsideBed: "模型超出可列印範圍。使用換板器的印表機前後可用深度僅 226mm（前 20mm、後 10mm 為禁止區域）。請縮小或拆分模型",
+      exclusionArea: "模型進入了禁止區域（前 20mm、後 10mm）。請將其移向列印板中央",
+    },
   },
 };

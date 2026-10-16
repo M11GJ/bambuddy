@@ -8059,5 +8059,9 @@ export default {
     control: {
       motionBlocked: "Homen en verplaatsen zijn uitgeschakeld op printers met een plaatwisselaar",
     },
+    slice: {
+      outsideBed: "Het model past niet in het printgebied. Met de plaatwisselaar is 226 mm diepte bruikbaar (voor 20 mm en achter 10 mm zijn verboden zones). Verklein of splits het model.",
+      exclusionArea: "Het model overlapt de verboden zones (voor 20 mm, achter 10 mm). Verplaats het naar het midden van de plaat.",
+    },
   },
 };

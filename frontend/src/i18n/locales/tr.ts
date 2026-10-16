@@ -7933,5 +7933,9 @@ export default {
     control: {
       motionBlocked: "Plaka değiştiricili yazıcılarda eksen sıfırlama ve elle hareket devre dışıdır",
     },
+    slice: {
+      outsideBed: "Model yazdırma alanına sığmıyor. Plaka değiştiricide kullanılabilir derinlik 226 mm'dir (önde 20 mm ve arkada 10 mm yasak bölgedir). Küçültün veya bölün.",
+      exclusionArea: "Model yasak bölgelere taşıyor (önde 20 mm, arkada 10 mm). Plakanın ortasına doğru taşıyın.",
+    },
   },
 };

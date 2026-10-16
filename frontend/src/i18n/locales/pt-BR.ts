@@ -7993,5 +7993,9 @@ export default {
     control: {
       motionBlocked: "Homing e movimentação manual estão desativados em impressoras com trocador de placas",
     },
+    slice: {
+      outsideBed: "O modelo não cabe na área de impressão. Com o trocador de placas a profundidade útil é de 226 mm (20 mm na frente e 10 mm atrás são zonas proibidas). Reduza ou divida o modelo.",
+      exclusionArea: "O modelo invade as zonas proibidas (20 mm na frente, 10 mm atrás). Mova-o para o centro da placa.",
+    },
   },
 };

@@ -8016,5 +8016,9 @@ export default {
     control: {
       motionBlocked: "El homing y el movimiento manual están desactivados en impresoras con cambiador de placas",
     },
+    slice: {
+      outsideBed: "El modelo no cabe en el área de impresión. Con el cambiador de placas la profundidad útil es de 226 mm (20 mm delante y 10 mm detrás son zonas prohibidas). Redúcelo o divídelo.",
+      exclusionArea: "El modelo invade las zonas prohibidas (20 mm delante, 10 mm detrás). Muévelo hacia el centro de la placa.",
+    },
   },
 };

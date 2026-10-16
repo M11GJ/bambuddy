@@ -18,6 +18,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { api, type SliceJobProgress, type SliceJobState, type SliceJobStatus } from '../api/client';
 import { useToast } from './ToastContext';
 import { AlertModal } from '../components/AlertModal';
+import { translateErrorMessage } from '../utils/translateErrorMessage';
 
 interface TrackedJob {
   id: number;
@@ -217,7 +218,7 @@ export function SliceJobTrackerProvider({ children }: { children: ReactNode }) {
       } else if (state.status === 'failed') {
         setSliceError({
           name: prettifyFilename(job.sourceName),
-          detail: state.error_detail || t('slice.failed'),
+          detail: translateErrorMessage(state.error_detail, t).text || t('slice.failed'),
         });
       }
 

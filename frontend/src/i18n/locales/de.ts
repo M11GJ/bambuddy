@@ -8008,5 +8008,9 @@ export default {
     control: {
       motionBlocked: "Referenzfahrt und Verfahren sind bei Druckern mit Plattenwechsler deaktiviert",
     },
+    slice: {
+      outsideBed: "Das Modell passt nicht in den Druckbereich. Beim Plattenwechsler sind nur 226 mm Tiefe nutzbar (vorne 20 mm und hinten 10 mm sind Sperrzonen). Verkleinern oder aufteilen.",
+      exclusionArea: "Das Modell ragt in die Sperrzonen (vorne 20 mm, hinten 10 mm). Weiter zur Plattenmitte verschieben.",
+    },
   },
 };
