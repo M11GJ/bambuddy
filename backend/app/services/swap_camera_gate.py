@@ -127,7 +127,7 @@ async def run_camera_gate(printer, config: SwapConfig, *, light_settle_seconds: 
             return CameraGateResult("fail", "swap.gate.noPlate", clip_percent=clip, image=image)
         try:
             result = PlateDetector(
-                roi=_detector_roi(printer), difference_threshold=config.object_diff_percent
+                roi=_detector_roi(printer), difference_threshold=config.object_diff_percent, normalize_lighting=True
             ).analyze_frame(image, printer.id)
         except Exception:
             logger.exception("Swap gate: plate detection failed for printer %s", printer.id)

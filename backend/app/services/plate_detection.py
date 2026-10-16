@@ -80,6 +80,7 @@ class PlateDetector:
         roi: tuple[float, float, float, float] | None = None,
         difference_threshold: float = DEFAULT_DIFFERENCE_THRESHOLD,
         blur_size: int = DEFAULT_BLUR_SIZE,
+        normalize_lighting: bool = False,
     ):
         """Initialize the plate detector.
 
@@ -93,6 +94,8 @@ class PlateDetector:
 
         self.roi = roi or self.DEFAULT_ROI
         self.difference_threshold = difference_threshold
+        # Swap gate: room light changes between day and night; z-score the blurred ROI instead of min-max.
+        self.normalize_lighting = normalize_lighting
         self.blur_size = blur_size if blur_size % 2 == 1 else blur_size + 1  # Must be odd
 
     # Maximum number of reference images to store per printer
@@ -303,6 +306,9 @@ class PlateDetector:
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         # Very heavy blur to smooth texture, keep only large shapes
         blurred = cv2.GaussianBlur(gray, (51, 51), 0)
+        if self.normalize_lighting:
+            z = (blurred.astype(np.float32) - blurred.mean()) / (blurred.std() + 1e-3)
+            return np.clip(z * 40 + 128, 0, 255).astype(np.uint8)
         # Normalize to 0-255 range to reduce brightness sensitivity
         normalized = cv2.normalize(blurred, None, 0, 255, cv2.NORM_MINMAX)
         return normalized

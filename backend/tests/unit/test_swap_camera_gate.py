@@ -58,8 +58,9 @@ def patched(monkeypatch):
     monkeypatch.setattr(gate, "_light_is_on", lambda printer_id: True)
 
     class _Det:
-        def __init__(self, roi=None, difference_threshold=1.0):
+        def __init__(self, roi=None, difference_threshold=1.0, normalize_lighting=False):
             state["threshold"] = difference_threshold
+            state["normalize_lighting"] = normalize_lighting
 
         def analyze_frame(self, image, printer_id):
             if isinstance(state["analysis"], Exception):
@@ -183,3 +184,4 @@ async def test_detector_uses_swap_object_threshold(patched):
         _Printer(), replace(DEFAULT_SWAP_CONFIG, object_diff_percent=2.5), light_settle_seconds=0
     )
     assert patched["threshold"] == 2.5
+    assert patched["normalize_lighting"] is True
