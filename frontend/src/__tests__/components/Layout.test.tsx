@@ -79,6 +79,7 @@ describe('Layout', () => {
 
   describe('embedded (iframe)', () => {
     const gh = 'a[href="https://github.com/maziggy/bambuddy"]';
+    afterEach(() => vi.restoreAllMocks());
 
     it('shows GitHub link and bug report outside an iframe', async () => {
       render(<Layout />);
@@ -92,7 +93,6 @@ describe('Layout', () => {
       await waitFor(() => expect(document.querySelector('aside')).toBeInTheDocument());
       expect(document.querySelector(gh)).not.toBeInTheDocument();
       expect(screen.queryByTitle('Report a Bug')).not.toBeInTheDocument();
-      vi.restoreAllMocks();
     });
   });
 
