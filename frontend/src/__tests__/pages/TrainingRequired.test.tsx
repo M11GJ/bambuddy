@@ -7,6 +7,7 @@ vi.mock('../../contexts/AuthContext', () => ({ useAuth: () => auth.value }));
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string) => k }) }));
 
 import { ProtectedRoute } from '../../App';
+import * as embedded from '../../utils/embedded';
 
 const renderGuard = () =>
   render(
@@ -26,6 +27,18 @@ describe('ProtectedRoute training gate', () => {
     renderGuard();
     expect(screen.getByText('trainingRequired.message')).toBeTruthy();
     expect(screen.queryByText('app-content')).toBeNull();
+  });
+
+  it('shows logout on direct access and hides it inside the Hub iframe', () => {
+    const spy = vi.spyOn(embedded, 'isEmbedded');
+    spy.mockReturnValue(false);
+    const { unmount } = renderGuard();
+    expect(screen.getByText('trainingRequired.logout')).toBeTruthy();
+    unmount();
+    spy.mockReturnValue(true);
+    renderGuard();
+    expect(screen.queryByText('trainingRequired.logout')).toBeNull();
+    spy.mockRestore();
   });
 
   it('renders children when the user has permissions', () => {
