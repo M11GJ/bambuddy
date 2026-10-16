@@ -21,6 +21,7 @@ import { Card, CardHeader, CardContent } from './Card';
 import { parseUTCDate } from '../utils/date';
 import { Button } from './Button';
 import { BugReportBubble } from './BugReportBubble';
+import { isEmbedded } from '../utils/embedded';
 import { AnnouncementsPanel } from './AnnouncementsPanel';
 import { AnnouncementBanner } from './AnnouncementBanner';
 import { useAnnouncements } from '../hooks/useAnnouncements';
@@ -90,6 +91,7 @@ export function Layout() {
   // whichever of them happens to be underneath. Moving out of the corner is
   // the only fix that covers in-flow content as well as fixed overlays.
   const [bugReportOpen, setBugReportOpen] = useState(false);
+  const embedded = isEmbedded();
   // A bug-report logging run survives the panel being closed (#2847). The
   // floating disc shows that itself; the compact header's button and the
   // debug-logging banner need telling.
@@ -592,6 +594,7 @@ export function Layout() {
             className="h-8 ml-3"
           />
           {/* Bug report — the compact-layout home of the floating bubble. */}
+          {!embedded && (
           <button
             onClick={() => setBugReportOpen(true)}
             className={`ml-auto p-2 -mr-2 rounded-lg hover:bg-bambu-dark-tertiary transition-colors ${
@@ -602,6 +605,7 @@ export function Layout() {
           >
             <Bug className={`w-5 h-5 ${bugReportLogging ? 'animate-pulse' : ''}`} />
           </button>
+          )}
         </header>
       )}
 
@@ -815,6 +819,7 @@ export function Layout() {
                   </span>
                 )}
                 <InstallAppButton />
+                {!embedded && (
                 <a
                   href="https://github.com/maziggy/bambuddy"
                   target="_blank"
@@ -824,6 +829,7 @@ export function Layout() {
                 >
                   <Github className="w-5 h-5" />
                 </a>
+                )}
                 <button
                   onClick={() => setShowShortcuts(true)}
                   className="p-2 rounded-lg hover:bg-bambu-dark-tertiary transition-colors text-bambu-gray-light hover:text-white"
@@ -937,6 +943,7 @@ export function Layout() {
                 </span>
               )}
               <InstallAppButton />
+              {!embedded && (
               <a
                 href="https://github.com/maziggy/bambuddy"
                 target="_blank"
@@ -946,6 +953,7 @@ export function Layout() {
               >
                 <Github className="w-5 h-5" />
               </a>
+              )}
               <button
                 onClick={() => setShowShortcuts(true)}
                 className="p-2 rounded-lg hover:bg-bambu-dark-tertiary transition-colors text-bambu-gray-light hover:text-white"
@@ -1293,12 +1301,14 @@ export function Layout() {
           `fixed z-40` and so its own stacking context, which would cap the
           z-50 panel at the header's level and bury it under every ordinary
           modal in the app. */}
-      <BugReportBubble
-        showTrigger={!isSidebarCompact}
-        open={bugReportOpen}
-        onOpenChange={setBugReportOpen}
-        onLoggingChange={setBugReportLogging}
-      />
+      {!embedded && (
+        <BugReportBubble
+          showTrigger={!isSidebarCompact}
+          open={bugReportOpen}
+          onOpenChange={setBugReportOpen}
+          onLoggingChange={setBugReportLogging}
+        />
+      )}
     </div>
   );
 }

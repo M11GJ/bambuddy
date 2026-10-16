@@ -8017,4 +8017,8 @@ export default {
       exclusionArea: "モデルが配置禁止エリア（手前20mm・奥10mm）にかかっています。プレートの中央寄りに配置し直してください",
     },
   },
+  trainingRequired: {
+    message: "3Dプリンターを使うには講習が必要です。DCC Hub の3Dプリンタータブで、講習で配られた番号を入力してください",
+    logout: "ログアウト",
+  },
 };

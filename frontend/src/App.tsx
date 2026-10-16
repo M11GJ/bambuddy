@@ -1,6 +1,7 @@
 import { Component, type ReactNode, type ErrorInfo } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { TrainingRequiredPage } from './pages/TrainingRequiredPage';
 import { Layout } from './components/Layout';
 import { PrintersPage } from './pages/PrintersPage';
 import { ArchivesPage } from './pages/ArchivesPage';
@@ -96,8 +97,8 @@ function WebSocketProvider({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { authEnabled, loading, user } = useAuth();
+export function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { authEnabled, loading, user, isAdmin } = useAuth();
   const location = useLocation();
 
   if (loading) {
@@ -106,6 +107,11 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   if (authEnabled && !user) {
     return <Navigate to="/login" replace state={{ from: location }} />;
+  }
+
+  // DCC: untrained members (group 講習前, zero permissions) see only the training page.
+  if (authEnabled && user && !isAdmin && (user.permissions ?? []).length === 0) {
+    return <TrainingRequiredPage />;
   }
 
   return <>{children}</>;

@@ -8003,4 +8003,8 @@ export default {
       exclusionArea: "O modelo invade as zonas proibidas (20 mm na frente, 10 mm atrás). Mova-o para o centro da placa.",
     },
   },
+  trainingRequired: {
+    message: "É necessário fazer um treinamento para usar as impressoras 3D. Digite o código entregue no treinamento na aba de impressoras 3D do DCC Hub.",
+    logout: "Sair",
+  },
 };

@@ -8069,4 +8069,8 @@ export default {
       exclusionArea: "The model overlaps the no-print zones (front 20 mm, back 10 mm). Move it toward the middle of the plate.",
     },
   },
+  trainingRequired: {
+    message: "A training course is required to use the 3D printers. Enter the code handed out at the training in the 3D printer tab of DCC Hub.",
+    logout: "Log out",
+  },
 };

@@ -8067,4 +8067,8 @@ errors: {
       exclusionArea: "Modellen hamnar i spärrzonerna (fram 20 mm, bak 10 mm). Flytta den mot plattans mitt.",
     },
   },
+  trainingRequired: {
+    message: "Du behöver gå en utbildning för att använda 3D-skrivarna. Ange koden du fick på utbildningen på fliken 3D-skrivare i DCC Hub.",
+    logout: "Logga ut",
+  },
 };

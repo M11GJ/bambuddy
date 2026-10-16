@@ -8001,4 +8001,8 @@ export default {
       exclusionArea: "模型進入了禁止區域（前 20mm、後 10mm）。請將其移向列印板中央",
     },
   },
+  trainingRequired: {
+    message: "使用3D列印機需要先參加講習。請在 DCC Hub 的3D列印機分頁輸入講習時發放的號碼。",
+    logout: "登出",
+  },
 };

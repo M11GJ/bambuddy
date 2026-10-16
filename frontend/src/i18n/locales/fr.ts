@@ -8004,4 +8004,8 @@ export default {
       exclusionArea: "Le modèle empiète sur les zones interdites (20 mm à l'avant, 10 mm à l'arrière). Rapprochez-le du centre du plateau.",
     },
   },
+  trainingRequired: {
+    message: "Une formation est requise pour utiliser les imprimantes 3D. Saisissez le code remis pendant la formation dans l'onglet imprimantes 3D de DCC Hub.",
+    logout: "Se déconnecter",
+  },
 };

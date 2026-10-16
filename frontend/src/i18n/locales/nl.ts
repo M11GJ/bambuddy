@@ -8069,4 +8069,8 @@ export default {
       exclusionArea: "Het model overlapt de verboden zones (voor 20 mm, achter 10 mm). Verplaats het naar het midden van de plaat.",
     },
   },
+  trainingRequired: {
+    message: "Voor het gebruik van de 3D-printers is een training nodig. Voer de tijdens de training uitgedeelde code in op het tabblad 3D-printers van DCC Hub.",
+    logout: "Uitloggen",
+  },
 };

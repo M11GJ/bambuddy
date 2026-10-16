@@ -7943,4 +7943,8 @@ export default {
       exclusionArea: "Model yasak bölgelere taşıyor (önde 20 mm, arkada 10 mm). Plakanın ortasına doğru taşıyın.",
     },
   },
+  trainingRequired: {
+    message: "3D yazıcıları kullanmak için eğitim gereklidir. Eğitimde verilen kodu DCC Hub'ın 3D yazıcı sekmesine girin.",
+    logout: "Çıkış yap",
+  },
 };

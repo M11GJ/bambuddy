@@ -8003,4 +8003,8 @@ export default {
       exclusionArea: "Il modello invade le zone vietate (20 mm davanti, 10 mm dietro). Spostalo verso il centro del piatto.",
     },
   },
+  trainingRequired: {
+    message: "Per usare le stampanti 3D è necessario un corso di formazione. Inserisci il codice consegnato durante il corso nella scheda stampanti 3D di DCC Hub.",
+    logout: "Esci",
+  },
 };

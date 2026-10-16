@@ -77,6 +77,25 @@ describe('Layout', () => {
     );
   });
 
+  describe('embedded (iframe)', () => {
+    const gh = 'a[href="https://github.com/maziggy/bambuddy"]';
+
+    it('shows GitHub link and bug report outside an iframe', async () => {
+      render(<Layout />);
+      await waitFor(() => expect(document.querySelector(gh)).toBeInTheDocument());
+      expect(screen.getAllByTitle('Report a Bug').length).toBeGreaterThan(0);
+    });
+
+    it('hides GitHub link and bug report inside an iframe', async () => {
+      vi.spyOn(window, 'top', 'get').mockReturnValue({} as Window);
+      render(<Layout />);
+      await waitFor(() => expect(document.querySelector('aside')).toBeInTheDocument());
+      expect(document.querySelector(gh)).not.toBeInTheDocument();
+      expect(screen.queryByTitle('Report a Bug')).not.toBeInTheDocument();
+      vi.restoreAllMocks();
+    });
+  });
+
   describe('rendering', () => {
     it('renders the sidebar', async () => {
       render(<Layout />);

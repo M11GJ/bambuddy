@@ -7637,4 +7637,8 @@ export default {
       exclusionArea: "모델이 배치 금지 영역(앞 20mm·뒤 10mm)에 걸쳐 있습니다. 플레이트 가운데 쪽으로 옮기세요",
     },
   },
+  trainingRequired: {
+    message: "3D 프린터를 사용하려면 교육 이수가 필요합니다. DCC Hub의 3D 프린터 탭에서 교육 시간에 받은 번호를 입력하세요.",
+    logout: "로그아웃",
+  },
 };

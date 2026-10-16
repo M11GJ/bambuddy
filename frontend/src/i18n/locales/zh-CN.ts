@@ -8001,4 +8001,8 @@ export default {
       exclusionArea: "模型进入了禁止区域（前 20mm、后 10mm）。请将其移向打印板中央",
     },
   },
+  trainingRequired: {
+    message: "使用3D打印机需要先参加培训。请在 DCC Hub 的3D打印机标签页中输入培训时发放的编号。",
+    logout: "退出登录",
+  },
 };

@@ -8018,4 +8018,8 @@ export default {
       exclusionArea: "Das Modell ragt in die Sperrzonen (vorne 20 mm, hinten 10 mm). Weiter zur Plattenmitte verschieben.",
     },
   },
+  trainingRequired: {
+    message: "Für die Nutzung der 3D-Drucker ist eine Schulung erforderlich. Gib im Tab „3D-Drucker“ im DCC Hub den in der Schulung ausgegebenen Code ein.",
+    logout: "Abmelden",
+  },
 };

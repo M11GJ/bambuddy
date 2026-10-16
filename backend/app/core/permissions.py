@@ -377,6 +377,13 @@ ALL_PERMISSIONS = [p.value for p in Permission]
 
 # Default group definitions
 DEFAULT_GROUPS = {
+    # DCC: landing group for OIDC users without a training (BAMBUDDY_OIDC_DEFAULT_GROUP).
+    # Must exist before apply_env_oidc_provider runs; init_db seeds it first.
+    "講習前": {
+        "description": "講習を受けていない利用者 (権限なし)",
+        "permissions": [],
+        "is_system": False,
+    },
     "Administrators": {
         "description": "Full access to all features and settings",
         "permissions": ALL_PERMISSIONS,  # All permissions
