@@ -3314,6 +3314,8 @@ export default {
     rememberMe: "Запам’ятати мене",
     forgotPassword: "Забули пароль?",
     autologinFailed: "Помилка автоматичного входу SSO. Щоб продовжити, виберіть постачальника нижче.",
+    autologinInProgress: 'Виконується вхід…',
+    autologinRetryHint: 'Зачекайте приблизно хвилину та спробуйте ще раз.',
     localDisabledNotice: "Локальний вхід вимкнено. Використовуйте одного з наведених нижче постачальників SSO.",
     loginSuccess: "Успішно ввійшли",
     loginFailed: "Помилка входу",

@@ -3317,6 +3317,8 @@ export default {
     rememberMe: 'Onthoud mij',
     forgotPassword: 'Wachtwoord vergeten?',
     autologinFailed: 'Automatisch inloggen via SSO is mislukt. Kies hieronder een provider om door te gaan.',
+    autologinInProgress: 'Bezig met inloggen…',
+    autologinRetryHint: 'Wacht ongeveer een minuut en probeer het opnieuw.',
     localDisabledNotice: 'Lokaal inloggen is uitgeschakeld. Gebruik een van de onderstaande SSO-providers.',
     loginSuccess: 'Succesvol ingelogd',
     loginFailed: 'Inloggen mislukt',

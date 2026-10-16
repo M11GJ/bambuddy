@@ -1095,4 +1095,82 @@ describe('LoginPage', () => {
       expect(mockNavigate).not.toHaveBeenCalledWith('/', { replace: true });
     });
   });
+  // DCC seamless launch login: the Hub iframe opens /login?dcc_launch=1.
+  describe('DCC launch login', () => {
+    const autologinStatus = () =>
+      server.use(
+        http.get('/api/v1/auth/advanced-auth/status', () =>
+          HttpResponse.json({
+            advanced_auth_enabled: true,
+            smtp_configured: false,
+            local_login_enabled: true,
+            autologin_provider_id: 101,
+          })
+        ),
+        http.get('/api/v1/auth/oidc/providers', () => HttpResponse.json([]))
+      );
+
+    afterEach(() => {
+      window.history.replaceState(null, '', '/');
+      localStorage.clear();
+    });
+
+    it('clears stored tokens and strips dcc_launch from the URL', async () => {
+      setAuthToken('stale-token', 'persistent');
+      vi.mocked(localStorage.removeItem).mockClear();
+      window.history.replaceState(null, '', '/login?dcc_launch=1');
+      mockNavigate.mockClear();
+
+      render(<LoginPage />);
+
+      await waitFor(() => {
+        expect(window.location.search).not.toContain('dcc_launch');
+      });
+      expect(localStorage.removeItem).toHaveBeenCalledWith('auth_token');
+      expect(sessionStorage.getItem('auth_token')).toBeNull();
+      expect(mockNavigate).not.toHaveBeenCalledWith('/', { replace: true });
+    });
+
+    it('shows the logging-in message instead of the form while autologin redirects', async () => {
+      autologinStatus();
+      server.use(
+        http.get('/api/v1/auth/oidc/authorize/101', () => new Promise(() => {}))
+      );
+      render(<LoginPage />);
+
+      expect(await screen.findByText(/Signing you in/i)).toBeInTheDocument();
+      expect(screen.queryByLabelText(/Username/i)).not.toBeInTheDocument();
+    });
+
+    it('does not show the form while the auth status is still loading', async () => {
+      server.use(
+        http.get('/api/v1/auth/advanced-auth/status', () => new Promise(() => {}))
+      );
+      render(<LoginPage />);
+
+      expect(await screen.findByText(/Signing you in/i)).toBeInTheDocument();
+      expect(screen.queryByLabelText(/Username/i)).not.toBeInTheDocument();
+    });
+
+    it('shows the form with fallback=local', async () => {
+      autologinStatus();
+      window.history.replaceState(null, '', '/login?fallback=local');
+      render(<LoginPage />);
+
+      expect(await screen.findByLabelText(/Username/i)).toBeInTheDocument();
+      expect(screen.queryByText(/Signing you in/i)).not.toBeInTheDocument();
+    });
+
+    it('shows the form, banner and retry hint when autologin fails', async () => {
+      autologinStatus();
+      server.use(
+        http.get('/api/v1/auth/oidc/authorize/101', () => HttpResponse.json({ detail: 'x' }, { status: 500 }))
+      );
+      render(<LoginPage />);
+
+      expect(await screen.findByLabelText(/Username/i)).toBeInTheDocument();
+      expect(screen.getByText(/Automatic SSO sign-in failed/i)).toBeInTheDocument();
+      expect(screen.getByText(/wait about a minute/i)).toBeInTheDocument();
+    });
+  });
 });

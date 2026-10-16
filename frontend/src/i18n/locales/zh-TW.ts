@@ -3274,6 +3274,8 @@ export default {
     rememberMe: '記住我',
     forgotPassword: '忘記密碼？',
     autologinFailed: '自動SSO登入失敗。請在下方選擇一個提供者以繼續。',
+    autologinInProgress: '正在登入…',
+    autologinRetryHint: '請等待約一分鐘後重試。',
     localDisabledNotice: '本機登入已停用。請使用下方的SSO提供者之一。',
     loginSuccess: '登入成功',
     loginFailed: '登入失敗',

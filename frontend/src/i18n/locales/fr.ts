@@ -3275,6 +3275,8 @@ export default {
     rememberMe: 'Se souvenir de moi',
     forgotPassword: 'Mot de passe oublié ?',
     autologinFailed: 'La connexion SSO automatique a échoué. Choisissez un fournisseur ci-dessous pour continuer.',
+    autologinInProgress: 'Connexion en cours…',
+    autologinRetryHint: 'Veuillez patienter environ une minute avant de réessayer.',
     localDisabledNotice: 'La connexion locale est désactivée. Utilisez l\'un des fournisseurs SSO ci-dessous.',
     loginSuccess: 'Connecté avec succès',
     loginFailed: 'Échec de connexion',

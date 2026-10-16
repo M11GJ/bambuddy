@@ -3118,6 +3118,8 @@ export default {
     rememberMe: "Запомнить меня",
     forgotPassword: "Забыли пароль?",
     autologinFailed: "Автоматический вход через SSO не выполнен. Выберите провайдера ниже.",
+    autologinInProgress: 'Выполняется вход…',
+    autologinRetryHint: 'Подождите около минуты и повторите попытку.',
     localDisabledNotice: "Локальный вход отключён. Используйте одного из SSO-провайдеров ниже.",
     loginSuccess: "Вход выполнен",
     loginFailed: "Не удалось войти",

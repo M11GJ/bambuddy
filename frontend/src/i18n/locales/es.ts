@@ -3289,6 +3289,8 @@ export default {
     rememberMe: 'Recordarme',
     forgotPassword: '¿Olvidó su contraseña?',
     autologinFailed: 'El inicio de sesión SSO automático falló. Elija un proveedor abajo para continuar.',
+    autologinInProgress: 'Iniciando sesión…',
+    autologinRetryHint: 'Espere aproximadamente un minuto e inténtelo de nuevo.',
     localDisabledNotice: 'El inicio de sesión local está deshabilitado. Use uno de los proveedores SSO de abajo.',
     loginSuccess: 'Sesión iniciada correctamente',
     loginFailed: 'Error al iniciar sesión',

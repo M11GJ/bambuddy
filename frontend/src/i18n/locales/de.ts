@@ -3287,6 +3287,8 @@ export default {
     rememberMe: 'Angemeldet bleiben',
     forgotPassword: 'Passwort vergessen?',
     autologinFailed: 'Automatische SSO-Anmeldung fehlgeschlagen. Bitte wählen Sie unten einen Anbieter.',
+    autologinInProgress: 'Anmeldung läuft…',
+    autologinRetryHint: 'Bitte warten Sie etwa eine Minute und versuchen Sie es erneut.',
     localDisabledNotice: 'Lokale Anmeldung ist deaktiviert. Bitte verwenden Sie einen der SSO-Anbieter unten.',
     loginSuccess: 'Erfolgreich angemeldet',
     loginFailed: 'Anmeldung fehlgeschlagen',

@@ -3287,6 +3287,8 @@ export default {
     rememberMe: 'ログイン状態を保持する',
     forgotPassword: 'パスワードをお忘れですか？',
     autologinFailed: 'SSOへの自動サインインに失敗しました。下から続行するプロバイダーを選択してください。',
+    autologinInProgress: 'ログインしています…',
+    autologinRetryHint: '1分ほど待ってから再試行してください。',
     localDisabledNotice: 'ローカルサインインは無効化されています。下のSSOプロバイダーをご利用ください。',
     loginSuccess: 'ログインしました',
     loginFailed: 'ログインに失敗しました',

@@ -3126,6 +3126,8 @@ export default {
     rememberMe: '로그인 유지',
     forgotPassword: '비밀번호를 잊으셨나요?',
     autologinFailed: 'SSO 자동 로그인에 실패했습니다. 아래에서 계속할 공급자를 선택하세요.',
+    autologinInProgress: '로그인하는 중입니다…',
+    autologinRetryHint: '1분 정도 기다린 후 다시 시도해 주세요.',
     localDisabledNotice: '로컬 로그인이 비활성화되어 있습니다. 아래 SSO 공급자 중 하나를 사용하세요.',
     loginSuccess: '성공적으로 로그인되었습니다',
     loginFailed: '로그인 실패',

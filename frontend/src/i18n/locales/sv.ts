@@ -3316,6 +3316,8 @@ errors: {
     rememberMe: 'Kom ihåg mig',
     forgotPassword: 'Glömt ditt lösenord?',
     autologinFailed: 'Automatisk SSO-inloggning misslyckades. Välj en leverantör nedan för att fortsätta.',
+    autologinInProgress: 'Loggar in…',
+    autologinRetryHint: 'Vänta ungefär en minut och försök igen.',
     localDisabledNotice: 'Lokal inloggning är inaktiverad. Använd en av SSO-leverantörerna nedan.',
     loginSuccess: 'Inloggad',
     loginFailed: 'Inloggning misslyckades',

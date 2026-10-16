@@ -3317,6 +3317,8 @@ export default {
     rememberMe: 'Remember Me',
     forgotPassword: 'Forgot your password?',
     autologinFailed: 'Automatic SSO sign-in failed. Pick a provider below to continue.',
+    autologinInProgress: 'Signing you in…',
+    autologinRetryHint: 'Please wait about a minute and try again.',
     localDisabledNotice: 'Local sign-in is disabled. Use one of the SSO providers below.',
     loginSuccess: 'Logged in successfully',
     loginFailed: 'Login failed',

@@ -3289,6 +3289,8 @@ export default {
     rememberMe: 'Beni Hatırla',
     forgotPassword: 'Parolanızı mı unuttunuz?',
     autologinFailed: 'Otomatik SSO girişi başarısız oldu. Devam etmek için aşağıdan bir sağlayıcı seçin.',
+    autologinInProgress: 'Giriş yapılıyor…',
+    autologinRetryHint: 'Lütfen yaklaşık bir dakika bekleyip tekrar deneyin.',
     localDisabledNotice: 'Yerel oturum açma devre dışı. Aşağıdaki SSO sağlayıcılarından birini kullanın.',
     loginSuccess: 'Başarıyla giriş yapıldı',
     loginFailed: 'Giriş başarısız',

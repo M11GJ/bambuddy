@@ -117,6 +117,22 @@ export function LoginPage() {
   const { showToast } = useToast();
   const { mode } = useTheme();
 
+  // DCC launch (Hub iframe -> /login?dcc_launch=1): drop any stale session once,
+  // before any other effect, so the DCC Login autologin starts from a clean slate.
+  // Declared first so it runs before the "already logged in -> /" redirect below.
+  const { logout } = useAuth();
+  const [launchCleared, setLaunchCleared] = useState(() => searchParams.get('dcc_launch') !== '1');
+  const launchHandledRef = useRef(false);
+  useEffect(() => {
+    if (launchCleared || launchHandledRef.current) return;
+    launchHandledRef.current = true;
+    logout(); // clears sessionStorage + localStorage token and the AuthContext user
+    const url = new URL(window.location.href);
+    url.searchParams.delete('dcc_launch');
+    window.history.replaceState(window.history.state, '', url.pathname + url.search + url.hash);
+    setLaunchCleared(true);
+  }, [launchCleared, logout]);
+
   // Resolve the post-login destination, preferring router state (set by
   // ProtectedRoute when it redirects an unauthed visit) over the sessionStorage
   // stash (used to survive the OIDC provider round-trip, which kills React
@@ -154,7 +170,7 @@ export function LoginPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   // Check if advanced auth is enabled
-  const { data: advancedAuthStatus } = useQuery({
+  const { data: advancedAuthStatus, isLoading: advancedAuthLoading } = useQuery({
     queryKey: ['advancedAuthStatus'],
     queryFn: () => api.getAdvancedAuthStatus(),
   });
@@ -174,6 +190,8 @@ export function LoginPage() {
   // we skip the redirect and render the normal page, surfacing a banner
   // so the user understands why autologin didn't kick in.
   const [autologinFailed, setAutologinFailed] = useState(false);
+  // True while a #oidc_token= fragment is being exchanged for a session.
+  const [oidcExchanging, setOidcExchanging] = useState(() => window.location.hash.startsWith('#oidc_token='));
 
   // #1889: redirect already-authenticated visitors away from /login. Without
   // this, a valid session that lands directly on /login (e.g. the browser
@@ -185,10 +203,10 @@ export function LoginPage() {
   // resolvePostLoginRedirect() to avoid consuming the OIDC redirect stash: an
   // already-authed direct visit has no pending redirect to honour.
   useEffect(() => {
-    if (!loading && user && step === 'credentials') {
+    if (launchCleared && !loading && user && step === 'credentials') {
       navigate('/', { replace: true });
     }
-  }, [loading, user, step, navigate]);
+  }, [launchCleared, loading, user, step, navigate]);
 
   const autologinAttemptedRef = useRef(false);
   useEffect(() => {
@@ -278,6 +296,7 @@ export function LoginPage() {
     }
 
     if (oidcToken) {
+      setOidcExchanging(true);
       api.exchangeOIDCToken(oidcToken).then((resp: LoginResponse) => {
         if (resp.requires_2fa && resp.pre_auth_token) {
           // OIDC user has 2FA enabled — redirect to 2FA step
@@ -303,7 +322,7 @@ export function LoginPage() {
         console.error('OIDC token exchange failed', err);
         showToast(t('login.oidcLoginFailed'), 'error');
         navigate('/login', { replace: true });
-      });
+      }).finally(() => setOidcExchanging(false));
     }
   }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -452,6 +471,21 @@ export function LoginPage() {
     // Re-focus the code input after method switch (autoFocus only fires on mount)
     setTimeout(() => twoFAInputRef.current?.focus(), 0);
   };
+
+  // Show only "signing in" (never the form) while a redirect or exchange is under way.
+  const autologinRedirecting =
+    !!advancedAuthStatus?.autologin_provider_id &&
+    searchParams.get('fallback') !== 'local' &&
+    !autologinFailed &&
+    !searchParams.get('oidc_error') &&
+    !window.location.hash.startsWith('#oidc_token=');
+  if (step === 'credentials' && (!launchCleared || oidcExchanging || advancedAuthLoading || autologinRedirecting)) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-bambu-dark p-4">
+        <p className="text-bambu-gray">{t('login.autologinInProgress')}</p>
+      </div>
+    );
+  }
 
   // ---- Render: password-reset step (H-6) ----
   if (step === 'reset-password') {
@@ -727,7 +761,7 @@ export function LoginPage() {
 
         {showAutologinBanner && (
           <div className="mt-6 rounded-lg border border-amber-300 dark:border-amber-500/40 bg-amber-50 dark:bg-amber-500/10 px-4 py-3 text-sm text-amber-800 dark:text-amber-200">
-            {t('login.autologinFailed')}
+            {t('login.autologinFailed')} {t('login.autologinRetryHint')}
           </div>
         )}
 

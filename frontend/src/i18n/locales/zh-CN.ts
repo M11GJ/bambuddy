@@ -3274,6 +3274,8 @@ export default {
     rememberMe: '记住我',
     forgotPassword: '忘记密码？',
     autologinFailed: '自动SSO登录失败。请在下方选择一个提供商以继续。',
+    autologinInProgress: '正在登录…',
+    autologinRetryHint: '请等待约一分钟后重试。',
     localDisabledNotice: '本地登录已禁用。请使用下方的SSO提供商之一。',
     loginSuccess: '登录成功',
     loginFailed: '登录失败',

@@ -3274,6 +3274,8 @@ export default {
     rememberMe: 'Lembrar de mim',
     forgotPassword: 'Esqueceu sua senha?',
     autologinFailed: 'O login SSO automático falhou. Escolha um provedor abaixo para continuar.',
+    autologinInProgress: 'Entrando…',
+    autologinRetryHint: 'Aguarde cerca de um minuto e tente novamente.',
     localDisabledNotice: 'O login local está desativado. Use um dos provedores SSO abaixo.',
     loginSuccess: 'Login realizado com sucesso',
     loginFailed: 'Falha no login',

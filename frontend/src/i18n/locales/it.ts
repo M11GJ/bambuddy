@@ -3274,6 +3274,8 @@ export default {
     rememberMe: 'Ricordami',
     forgotPassword: 'Hai dimenticato la password?',
     autologinFailed: 'Accesso SSO automatico fallito. Scegli un provider qui sotto per continuare.',
+    autologinInProgress: 'Accesso in corso…',
+    autologinRetryHint: 'Attendi circa un minuto e riprova.',
     localDisabledNotice: 'L\'accesso locale è disabilitato. Usa uno dei provider SSO qui sotto.',
     loginSuccess: 'Accesso riuscito',
     loginFailed: 'Accesso fallito',
