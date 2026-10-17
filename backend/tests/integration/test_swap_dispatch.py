@@ -13,6 +13,7 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from sqlalchemy import update
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 import backend.app.models  # noqa: F401 - populate Base.metadata
@@ -450,3 +451,40 @@ async def test_put_enable_during_upload_blocks_via_mirror(case_factory):
     item, _, _, _ = await _run(ctx)
     ctx.start_print.assert_not_called()
     assert item.status == "pending"
+
+
+async def _set_override(ctx, value="swap.gate.aiObject"):
+    async with ctx.session_maker() as db:
+        await db.execute(update(Printer).where(Printer.id == ctx.printer_id).values(swap_ai_override=value))
+        await db.commit()
+
+
+async def test_override_skips_ai_once_and_is_consumed_on_dispatch(case_factory):
+    ctx = await case_factory()
+    await _set_override(ctx)
+    item, printer, _, gate = await _run(ctx)
+    assert gate.call_args.kwargs["ai_override"] is True
+    assert item.status == "printing"
+    assert printer.swap_ai_override is None
+    # Next dispatch: the AI runs again.
+    await _set_override(ctx, None)
+    async with ctx.session_maker() as db:
+        await db.execute(update(PrintQueueItem).where(PrintQueueItem.id == ctx.item_id).values(status="pending"))
+        await db.commit()
+    _, _, _, gate2 = await _run(ctx)
+    assert gate2.call_args.kwargs["ai_override"] is False
+
+
+async def test_override_kept_while_gate_not_passed(case_factory):
+    ctx = await case_factory()
+    await _set_override(ctx)
+    _, printer, _, _ = await _run(ctx, CameraGateResult("busy", "swap.gate.cameraBusy"))
+    assert printer.swap_ai_override == "swap.gate.aiObject"
+
+
+async def test_override_cleared_when_clip_fails(case_factory):
+    ctx = await case_factory()
+    await _set_override(ctx)
+    _, printer, _, _ = await _run(ctx, CameraGateResult("fail", "swap.gate.noPlate", clip_percent=0.5))
+    assert printer.swap_hold_reason == "swap.gate.noPlate"
+    assert printer.swap_ai_override is None

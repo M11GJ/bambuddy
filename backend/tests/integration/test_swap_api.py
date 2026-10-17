@@ -321,3 +321,24 @@ async def test_enabling_swap_drops_stale_plate_clear_gate(async_client, printer_
         assert not printer_manager.is_awaiting_plate_clear(p.id)
     finally:
         printer_manager._awaiting_plate_clear.discard(p.id)
+
+
+@pytest.mark.asyncio
+@pytest.mark.integration
+@pytest.mark.parametrize(
+    ("hold", "expected"),
+    [
+        ("swap.gate.aiObject", "swap.gate.aiObject"),
+        ("swap.gate.aiUnavailable", "swap.gate.aiUnavailable"),
+        ("swap.gate.noPlate", None),
+        ("swap.gate.objectOnPlate", None),
+    ],
+)
+async def test_resume_records_ai_override_only_for_ai_holds(
+    async_client, db_session, printer_factory, auth, hold, expected
+):
+    p = await printer_factory(swap_enabled=True, swap_plates_remaining=3, swap_hold_reason=hold)
+    r = await async_client.post(f"/api/v1/printers/{p.id}/swap/resume", headers=auth)
+    assert r.status_code == 200 and r.json()["hold_reason"] is None
+    await db_session.refresh(p)
+    assert p.swap_ai_override == expected

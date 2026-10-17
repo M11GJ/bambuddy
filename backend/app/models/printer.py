@@ -55,6 +55,8 @@ class Printer(Base):
     # Translation key of the reason the queue is stopped for this printer; None = not stopped.
     swap_hold_reason: Mapped[str | None] = mapped_column(Text, nullable=True)
     swap_hold_detail: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # One-shot: reason key of the AI hold the operator resumed from; the next dispatch skips the AI verdict once.
+    swap_ai_override: Mapped[str | None] = mapped_column(Text, nullable=True)
     # JSON overrides parsed by swap_config.parse_swap_config; None = all defaults.
     swap_config: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())

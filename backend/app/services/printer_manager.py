@@ -744,7 +744,9 @@ class PrinterManager:
 
         forget_ai_wait(printer_id)  # a hold or resume always means a fresh photo next time
         await db.execute(
-            update(Printer).where(Printer.id == printer_id).values(swap_hold_reason=reason_key, swap_hold_detail=detail)
+            update(Printer)
+            .where(Printer.id == printer_id)
+            .values(swap_hold_reason=reason_key, swap_hold_detail=detail, swap_ai_override=None)
         )
 
     async def clear_swap_hold(self, db: AsyncSession, printer_id: int) -> None:
@@ -752,7 +754,9 @@ class PrinterManager:
 
         forget_ai_wait(printer_id)  # a hold or resume always means a fresh photo next time
         await db.execute(
-            update(Printer).where(Printer.id == printer_id).values(swap_hold_reason=None, swap_hold_detail=None)
+            update(Printer)
+            .where(Printer.id == printer_id)
+            .values(swap_hold_reason=None, swap_hold_detail=None, swap_ai_override=None)
         )
 
     async def set_swap_plates(self, db: AsyncSession, printer_id: int, remaining: int) -> None:

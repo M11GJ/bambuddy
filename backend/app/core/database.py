@@ -3520,6 +3520,7 @@ async def run_migrations(conn):
     await _safe_execute(conn, "ALTER TABLE printers ADD COLUMN swap_hold_reason TEXT")
     await _safe_execute(conn, "ALTER TABLE printers ADD COLUMN swap_hold_detail TEXT")
     await _safe_execute(conn, "ALTER TABLE printers ADD COLUMN swap_config TEXT")
+    await _safe_execute(conn, "ALTER TABLE printers ADD COLUMN swap_ai_override TEXT")
 
     # Migration: Add REST/Webhook smart plug fields
     await _safe_execute(conn, "ALTER TABLE smart_plugs ADD COLUMN rest_on_url VARCHAR(500)")

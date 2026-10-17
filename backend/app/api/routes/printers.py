@@ -3755,8 +3755,11 @@ async def resume_swap(
     _=RequirePermissionIfAuthEnabled(Permission.PRINTERS_CLEAR_PLATE),
     db: AsyncSession = Depends(get_db),
 ):
-    await _swap_status(db, printer_id)  # 404 check
+    current = await _swap_status(db, printer_id)  # 404 check
     await printer_manager.clear_swap_hold(db, printer_id)
+    if current.hold_reason in ("swap.gate.aiObject", "swap.gate.aiUnavailable"):
+        # One-shot: the next dispatch skips the AI verdict (the clip is still checked).
+        await db.execute(update(Printer).where(Printer.id == printer_id).values(swap_ai_override=current.hold_reason))
     await db.commit()
     printer_manager.apply_swap_state_after_commit(printer_id)
     return await _swap_status(db, printer_id)

@@ -7481,7 +7481,13 @@ class PrintScheduler:
                 printer_manager.apply_swap_state_after_commit(printer.id)
                 logger.warning("Queue item %s: swap printer %s has invalid swap_config: %s", item.id, printer.id, e)
                 return
-            gate = await run_camera_gate(printer, swap_cfg, ai=await load_swap_ai_settings(db), item_id=item.id)
+            gate = await run_camera_gate(
+                printer,
+                swap_cfg,
+                ai=await load_swap_ai_settings(db),
+                ai_override=bool(printer.swap_ai_override),
+                item_id=item.id,
+            )
             if gate.outcome == "pending":
                 # The AI check runs in the background; poll it next tick. Not a hold.
                 item.waiting_reason = "[swap.gate.aiPending] Waiting for the plate check"
@@ -8116,6 +8122,9 @@ class PrintScheduler:
             .where(PrintQueueItem.status == "pending")
             .values(status="printing", started_at=now_utc, billing_run_id=billing_run_id)
         )
+        if cas.rowcount and swap_cfg is not None:
+            # Consume the one-shot AI override in the same transaction that commits the dispatch.
+            await db.execute(update(Printer).where(Printer.id == printer.id).values(swap_ai_override=None))
         await db.commit()
         if cas.rowcount == 0:
             logger.info(
