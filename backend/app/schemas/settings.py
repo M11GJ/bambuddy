@@ -1,5 +1,6 @@
 import json
 import re
+from typing import Literal
 
 from pydantic import BaseModel, Field, ValidationInfo, field_validator
 
@@ -646,13 +647,21 @@ class AppSettings(BaseModel):
     )
 
     # SwapMod plate check: local Ollama vision model (global, not per printer)
-    swap_ai_mode: str = Field(default="shadow", description="Plate-check AI mode: 'off', 'shadow', or 'enforce'")
+    swap_ai_mode: Literal["off", "shadow", "enforce"] = Field(
+        default="shadow", description="Plate-check AI mode: 'off', 'shadow', or 'enforce'"
+    )
     swap_ai_url: str = Field(default="", description="Ollama base URL for the plate check (empty = AI not called)")
-    swap_ai_model: str = Field(default="qwen2.5vl:7b", description="Ollama vision model for the plate check")
+    swap_ai_model: str = Field(default="qwen2.5vl:32b", description="Ollama vision model for the plate check")
     swap_ai_timeout_s: int = Field(default=60, ge=1, le=600, description="Seconds to wait for one AI answer")
     swap_ai_max_wait_s: int = Field(
         default=300, ge=1, le=3600, description="Seconds the gate waits for a usable AI answer before it holds"
     )
+
+    @field_validator("swap_ai_mode", mode="before")
+    @classmethod
+    def _normalize_swap_ai_mode(cls, v):
+        # A stored value outside the enum must not make GET /settings fail.
+        return v if v in ("off", "shadow", "enforce") else "shadow"
 
     # Inventory forecasting
     forecast_global_lead_time_days: int = Field(

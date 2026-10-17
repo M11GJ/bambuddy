@@ -42,7 +42,7 @@ class AiVerdict:
 class SwapAiSettings:
     mode: str = "shadow"
     url: str = ""
-    model: str = "qwen2.5vl:7b"
+    model: str = "qwen2.5vl:32b"
     timeout_s: float = 60
     max_wait_s: float = 300
 

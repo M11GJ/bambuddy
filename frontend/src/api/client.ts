@@ -625,6 +625,19 @@ export interface SwapStatus extends SwapLiveState {
   config: Partial<SwapConfig>;
 }
 
+export interface SwapRecord {
+  id: number;
+  created_at: string;
+  mode: string;
+  clip_percent: number | null;
+  ai_object: boolean | null;
+  ai_reason: string | null;
+  ai_ms: number | null;
+  outcome: 'pass' | 'fail' | 'pending' | 'error';
+  reason_key: string | null;
+  has_image: boolean;
+}
+
 export interface PrinterStatus {
   id: number;
   name: string;
@@ -1586,6 +1599,11 @@ export interface AppSettings {
   obico_action: 'notify' | 'pause' | 'pause_and_off';
   obico_poll_interval: number;
   obico_enabled_printers: string;
+  swap_ai_mode: 'off' | 'shadow' | 'enforce';
+  swap_ai_url: string;
+  swap_ai_model: string;
+  swap_ai_timeout_s: number;
+  swap_ai_max_wait_s: number;
   // Inventory forecasting global lead time
   forecast_global_lead_time_days: number;
   location_sensor_poll_interval: number;
@@ -4957,6 +4975,17 @@ export const api = {
     request<SwapStatus>(`/printers/${printerId}/swap/resume`, {
       method: 'POST',
     }),
+  getSwapRecords: (printerId: number) => request<SwapRecord[]>(`/printers/${printerId}/swap/records`),
+  deleteSwapRecords: (printerId: number) =>
+    request<{ deleted: number }>(`/printers/${printerId}/swap/records`, { method: 'DELETE' }),
+  // The image route takes the Bearer header only, so it is fetched as a blob (an <img src> cannot send it).
+  getSwapRecordImage: async (printerId: number, recordId: number): Promise<Blob> => {
+    const headers: Record<string, string> = {};
+    if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
+    const response = await fetch(`${API_BASE}/printers/${printerId}/swap/records/${recordId}/image`, { headers });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return response.blob();
+  },
   restoreSwapPose: (printerId: number) =>
     request<{ success: boolean }>(`/printers/${printerId}/swap/pose`, {
       method: 'POST',

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Trash2 } from 'lucide-react';
 import { api } from '../api/client';
-import type { PrinterStatus, SwapConfig, SwapLiveState, SwapStatus } from '../api/client';
+import type { PrinterStatus, SwapConfig, SwapRecord, SwapLiveState, SwapStatus } from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { translateErrorMessage } from '../utils/translateErrorMessage';
@@ -162,6 +162,88 @@ function fromForm(f: ConfigForm): SwapConfig {
   };
 }
 
+// The route needs the Bearer header, so the cropped image is fetched as a blob.
+function RecordImage({ printerId, recordId }: { printerId: number; recordId: number }) {
+  const { t } = useTranslation();
+  const [src, setSrc] = useState<string | null>(null);
+  useEffect(() => {
+    let url: string | null = null;
+    let cancelled = false;
+    api
+      .getSwapRecordImage(printerId, recordId)
+      .then((blob) => {
+        if (cancelled) return;
+        url = URL.createObjectURL(blob);
+        setSrc(url);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+      if (url) URL.revokeObjectURL(url);
+    };
+  }, [printerId, recordId]);
+  if (!src) return <div className="w-16 h-10 shrink-0 rounded bg-bambu-dark-tertiary" />;
+  return <img src={src} alt={t('swap.records.image')} className="w-16 h-10 shrink-0 rounded object-cover" />;
+}
+
+function aiAnswer(r: SwapRecord, t: (k: string) => string): string {
+  const answer = r.ai_object == null ? t('swap.records.aiNone') : r.ai_object ? t('swap.records.aiObject') : t('swap.records.aiClear');
+  return r.ai_reason ? `${answer} (${r.ai_reason})` : answer;
+}
+
+/** Recent plate-check records with a delete-all button (printers:update). */
+export function SwapRecords({ printerId }: { printerId: number }) {
+  const { t } = useTranslation();
+  const { hasPermission } = useAuth();
+  const { showToast } = useToast();
+  const queryClient = useQueryClient();
+  const allowed = hasPermission('printers:update');
+  const { data } = useQuery({
+    queryKey: ['swapRecords', printerId],
+    queryFn: () => api.getSwapRecords(printerId),
+    enabled: allowed,
+  });
+  const clear = useMutation({
+    mutationFn: () => api.deleteSwapRecords(printerId),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['swapRecords', printerId] }),
+    onError: (e: Error) => showToast(translateErrorMessage(e.message, t).text, 'error'),
+  });
+  if (!allowed) return null;
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between gap-2">
+        <h4 className="text-xs font-semibold text-white">{t('swap.records.title')}</h4>
+        <button
+          type="button"
+          className={BUTTON}
+          disabled={!data?.length || clear.isPending}
+          onClick={() => clear.mutate()}
+        >
+          <Trash2 className="w-3 h-3" />
+          {t('swap.records.clear')}
+        </button>
+      </div>
+      {data && data.length === 0 && <p className="text-xs text-bambu-gray">{t('swap.records.empty')}</p>}
+      <ul className="space-y-1.5 max-h-64 overflow-y-auto">
+        {data?.map((r) => (
+          <li key={r.id} className="flex items-center gap-2 text-xs text-bambu-gray">
+            {r.has_image ? <RecordImage printerId={printerId} recordId={r.id} /> : <div className="w-16 h-10 shrink-0" />}
+            <div className="min-w-0">
+              <div className="text-white">
+                {new Date(r.created_at).toLocaleString()} · {t(`swap.records.outcome.${r.outcome}`)}
+              </div>
+              <div className="truncate">
+                {aiAnswer(r, t)}
+                {r.clip_percent != null && ` · ${t('swap.records.clip', { percent: r.clip_percent })}`}
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 /** Swap settings inside the Edit Printer dialog (printers:update). Saved separately from the printer fields. */
 export function SwapModSettings({ printerId }: { printerId: number }) {
   const { t } = useTranslation();
@@ -256,6 +338,7 @@ export function SwapModSettings({ printerId }: { printerId: number }) {
       >
         {save.isPending ? <Loader2 className="w-4 h-4 animate-spin inline" /> : t('common.save')}
       </button>
+      <SwapRecords printerId={printerId} />
     </div>
   );
 }

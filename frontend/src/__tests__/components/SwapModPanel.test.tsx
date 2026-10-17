@@ -157,3 +157,42 @@ describe('SwapModSettings', () => {
     expect((bodies[0].config as Record<string, unknown>).exclude_front_mm).toBeNull();
   });
 });
+
+describe('SwapRecords', () => {
+  const rec = { id: 7, created_at: '2026-10-17T01:02:03', mode: 'shadow', clip_percent: 12, ai_object: true, ai_reason: 'a screw', ai_ms: 900, outcome: 'fail', reason_key: 'swap.gate.aiObject', has_image: true };
+  beforeEach(() => {
+    perms.clear();
+    perms.add('printers:update');
+    URL.createObjectURL = vi.fn(() => 'blob:x');
+    URL.revokeObjectURL = vi.fn();
+  });
+
+  it('lists records with the image and deletes them all', async () => {
+    const calls: string[] = [];
+    let list = [rec];
+    server.use(
+      http.get('*/api/v1/printers/1/swap', () => HttpResponse.json(status({ enabled: false, config: {} }))),
+      http.get('*/api/v1/printers/1/swap/records', () => HttpResponse.json(list)),
+      http.get('*/api/v1/printers/1/swap/records/7/image', () => new HttpResponse(new Blob(['x']), { headers: { 'Content-Type': 'image/jpeg' } })),
+      http.delete('*/api/v1/printers/1/swap/records', () => {
+        calls.push('delete');
+        list = [];
+        return HttpResponse.json({ deleted: 1 });
+      }),
+    );
+    render(<SwapModSettings printerId={1} />);
+    expect(await screen.findByText(/AI: object on plate \(a screw\)/)).toBeInTheDocument();
+    expect(await screen.findByAltText('Cropped plate image')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Delete all' }));
+    await waitFor(() => expect(calls).toEqual(['delete']));
+    expect(await screen.findByText('No records yet')).toBeInTheDocument();
+  });
+
+  it('is hidden without printers:update', async () => {
+    perms.clear();
+    server.use(http.get('*/api/v1/printers/1/swap', () => HttpResponse.json(status({ enabled: false, config: {} }))));
+    render(<SwapModSettings printerId={1} />);
+    await screen.findByLabelText('Enable plate swapper');
+    expect(screen.queryByText('Plate check records')).not.toBeInTheDocument();
+  });
+});

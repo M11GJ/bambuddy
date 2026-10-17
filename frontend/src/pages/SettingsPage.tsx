@@ -48,6 +48,7 @@ import { VirtualPrinterList } from '../components/VirtualPrinterList';
 import { SpoolBuddySettings } from '../components/SpoolBuddySettings';
 import { GitHubBackupSettings } from '../components/GitHubBackupSettings';
 import { FailureDetectionSettings } from '../components/FailureDetectionSettings';
+import { SwapAiSettings } from '../components/SwapAiSettings';
 import { EmailSettings } from '../components/EmailSettings';
 import { LDAPSettings } from '../components/LDAPSettings';
 import { TwoFactorSettings } from '../components/TwoFactorSettings';
@@ -7663,6 +7664,7 @@ export function SettingsPage() {
       {activeTab === 'failure-detection' && (
         <div id="card-failure-detection">
           <FailureDetectionSettings />
+          <SwapAiSettings />
         </div>
       )}
 

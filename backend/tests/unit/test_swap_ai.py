@@ -95,7 +95,7 @@ def test_crop_default_lower_half():
 @pytest.mark.asyncio
 async def test_load_settings_defaults_and_values(db_session):
     s = await load_swap_ai_settings(db_session)
-    assert (s.mode, s.url, s.model, s.timeout_s, s.max_wait_s) == ("shadow", "", "qwen2.5vl:7b", 60, 300)
+    assert (s.mode, s.url, s.model, s.timeout_s, s.max_wait_s) == ("shadow", "", "qwen2.5vl:32b", 60, 300)
     for k, v in {"swap_ai_mode": "enforce", "swap_ai_url": "http://h:1/", "swap_ai_timeout_s": "30"}.items():
         db_session.add(Settings(key=k, value=v))
     await db_session.commit()
@@ -108,7 +108,7 @@ def test_schema_defaults_and_validation():
     assert (d.swap_ai_mode, d.swap_ai_url, d.swap_ai_model, d.swap_ai_timeout_s, d.swap_ai_max_wait_s) == (
         "shadow",
         "",
-        "qwen2.5vl:7b",
+        "qwen2.5vl:32b",
         60,
         300,
     )
@@ -117,3 +117,12 @@ def test_schema_defaults_and_validation():
     with pytest.raises(ValidationError):
         AppSettingsUpdate(swap_ai_url="http://169.254.169.254/")
     assert AppSettingsUpdate(swap_ai_mode="off", swap_ai_url="http://192.168.1.5:11434")
+
+
+def test_schema_read_model_normalizes_invalid_mode():
+    assert AppSettings(swap_ai_mode="bogus").swap_ai_mode == "shadow"
+    assert AppSettings(swap_ai_mode="enforce").swap_ai_mode == "enforce"
+
+
+def test_tailscale_url_accepted():
+    assert AppSettingsUpdate(swap_ai_url="http://100.86.155.41:11510").swap_ai_url == "http://100.86.155.41:11510"

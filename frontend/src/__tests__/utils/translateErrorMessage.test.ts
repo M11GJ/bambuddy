@@ -38,3 +38,14 @@ describe('translateErrorMessage mid-string keys', () => {
     expect(translateErrorMessage('[0.4] nozzle mismatch', t)).toEqual({ text: '[0.4] nozzle mismatch', original: null });
   });
 });
+
+describe('translateErrorMessage swap.gate.aiPending (real en locale)', () => {
+  it('translates the waiting reason', async () => {
+    const en = (await import('../../i18n/locales/en')).default as { swap: { gate: { aiPending: string } } };
+    const real = ((key: string) => (key === 'swap.gate.aiPending' ? en.swap.gate.aiPending : key)) as never;
+    expect(translateErrorMessage('[swap.gate.aiPending] Waiting for the plate check AI (12 s)', real)).toEqual({
+      text: 'Waiting for the plate check AI',
+      original: 'Waiting for the plate check AI (12 s)',
+    });
+  });
+});
