@@ -217,16 +217,16 @@ export function SwapRecords({ printerId }: { printerId: number }) {
         <button
           type="button"
           className={BUTTON}
-          disabled={!data?.length || clear.isPending}
+          disabled={!data?.total || clear.isPending}
           onClick={() => clear.mutate()}
         >
           <Trash2 className="w-3 h-3" />
           {t('swap.records.clear')}
         </button>
       </div>
-      {data && data.length === 0 && <p className="text-xs text-bambu-gray">{t('swap.records.empty')}</p>}
+      {data && data.total === 0 && <p className="text-xs text-bambu-gray">{t('swap.records.empty')}</p>}
       <ul className="space-y-1.5 max-h-64 overflow-y-auto">
-        {data?.map((r) => (
+        {data?.items.map((r) => (
           <li key={r.id} className="flex items-center gap-2 text-xs text-bambu-gray">
             {r.has_image ? <RecordImage printerId={printerId} recordId={r.id} /> : <div className="w-16 h-10 shrink-0" />}
             <div className="min-w-0">
@@ -241,6 +241,9 @@ export function SwapRecords({ printerId }: { printerId: number }) {
           </li>
         ))}
       </ul>
+      {data && data.total > data.items.length && (
+        <p className="text-xs text-bambu-gray">{t('swap.records.showing', { shown: data.items.length, total: data.total })}</p>
+      )}
     </div>
   );
 }

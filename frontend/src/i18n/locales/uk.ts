@@ -8058,6 +8058,7 @@ export default {
       aiNone: "ШІ: немає відповіді",
       clip: "Кліп {{percent}}%",
       image: "Обрізане зображення пластини",
+      showing: "Показано {{shown}} з {{total}}",
     },
     hold: {
       stateUnavailable: "Не вдалося завантажити стан змінювача — чергу зупинено",

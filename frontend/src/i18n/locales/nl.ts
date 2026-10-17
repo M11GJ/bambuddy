@@ -8068,6 +8068,7 @@ export default {
       aiNone: "AI: geen antwoord",
       clip: "Clipbedekking {{percent}}%",
       image: "Bijgesneden plaatafbeelding",
+      showing: "{{shown}} van {{total}} getoond",
     },
     hold: {
       stateUnavailable: "Status van de wisselaar kon niet worden geladen — wachtrij gestopt",

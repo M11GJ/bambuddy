@@ -8000,6 +8000,7 @@ export default {
       aiNone: "AI：無回答",
       clip: "夾片 {{percent}}%",
       image: "裁切後的列印板影像",
+      showing: "顯示 {{total}} 筆中的 {{shown}} 筆",
     },
     hold: {
       stateUnavailable: "無法載入換板狀態 — 佇列已停止",

@@ -7942,6 +7942,7 @@ export default {
       aiNone: "YZ: yanıt yok",
       clip: "Klip %{{percent}}",
       image: "Kırpılmış plaka görüntüsü",
+      showing: "{{total}} kayıttan {{shown}} tanesi gösteriliyor",
     },
     hold: {
       stateUnavailable: "Değiştirici durumu yüklenemedi — kuyruk durduruldu",

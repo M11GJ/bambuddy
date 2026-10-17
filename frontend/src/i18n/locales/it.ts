@@ -8002,6 +8002,7 @@ export default {
       aiNone: "IA: nessuna risposta",
       clip: "Clip al {{percent}}%",
       image: "Immagine ritagliata del piatto",
+      showing: "Mostrati {{shown}} di {{total}}",
     },
     hold: {
       stateUnavailable: "Impossibile caricare lo stato del cambiapiatti — coda ferma",

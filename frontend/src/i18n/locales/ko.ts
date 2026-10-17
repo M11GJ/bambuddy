@@ -7636,6 +7636,7 @@ export default {
       aiNone: "AI: 응답 없음",
       clip: "클립 {{percent}}%",
       image: "잘라낸 플레이트 이미지",
+      showing: "{{total}}개 중 {{shown}}개 표시",
     },
     hold: {
       stateUnavailable: "교환기 상태를 불러올 수 없어 대기열이 중지됨",

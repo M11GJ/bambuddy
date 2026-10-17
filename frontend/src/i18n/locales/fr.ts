@@ -8003,6 +8003,7 @@ export default {
       aiNone: "IA : pas de réponse",
       clip: "Clip {{percent}} %",
       image: "Image recadrée du plateau",
+      showing: "{{shown}} sur {{total}} affichés",
     },
     hold: {
       stateUnavailable: "Impossible de charger l'état du changeur — file arrêtée",

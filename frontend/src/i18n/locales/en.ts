@@ -8068,6 +8068,7 @@ export default {
       aiNone: "AI: no answer",
       clip: "Clip {{percent}}%",
       image: "Cropped plate image",
+      showing: "Showing {{shown}} of {{total}}",
     },
     hold: {
       stateUnavailable: "Swap state could not be loaded — queue stopped",

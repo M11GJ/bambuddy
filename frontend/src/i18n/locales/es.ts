@@ -8025,6 +8025,7 @@ export default {
       aiNone: "IA: sin respuesta",
       clip: "Clip {{percent}} %",
       image: "Imagen recortada de la placa",
+      showing: "Mostrando {{shown}} de {{total}}",
     },
     hold: {
       stateUnavailable: "No se pudo cargar el estado del cambiador — cola detenida",

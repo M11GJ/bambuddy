@@ -3772,23 +3772,34 @@ async def resume_swap(
 @router.get("/{printer_id}/swap/records")
 async def list_swap_records(
     printer_id: int,
+    limit: int = Query(50, ge=1, le=500),
+    offset: int = Query(0, ge=0),
     _=RequirePermissionIfAuthEnabled(Permission.PRINTERS_UPDATE),
     db: AsyncSession = Depends(get_db),
 ):
-    """Newest-first plate-check records (at most 50 are kept per printer)."""
+    """Newest-first page of plate-check records (at most 500 are kept per printer) plus the total count."""
     from backend.app.models.swap_gate_record import SwapGateRecord
 
     await _swap_status(db, printer_id)  # 404 check
+    total = (
+        await db.execute(
+            select(func.count()).select_from(SwapGateRecord).where(SwapGateRecord.printer_id == printer_id)
+        )
+    ).scalar_one()
     rows = (
         (
             await db.execute(
-                select(SwapGateRecord).where(SwapGateRecord.printer_id == printer_id).order_by(SwapGateRecord.id.desc())
+                select(SwapGateRecord)
+                .where(SwapGateRecord.printer_id == printer_id)
+                .order_by(SwapGateRecord.id.desc())
+                .limit(limit)
+                .offset(offset)
             )
         )
         .scalars()
         .all()
     )
-    return [
+    items = [
         {
             "id": r.id,
             "created_at": r.created_at,
@@ -3803,6 +3814,7 @@ async def list_swap_records(
         }
         for r in rows
     ]
+    return {"total": total, "items": items}
 
 
 @router.get("/{printer_id}/swap/records/{record_id}/image")

@@ -104,13 +104,31 @@ async def test_records_api_permissions_and_delete(
     assert (await async_client.delete(base, headers=viewer)).status_code == 403
 
     r = await async_client.get(base, headers=updater)
-    assert r.status_code == 200 and r.json()[0]["id"] == row.id and r.json()[0]["has_image"]
+    assert r.status_code == 200 and r.json()["items"][0]["id"] == row.id and r.json()["items"][0]["has_image"]
     img = await async_client.get(f"{base}/{row.id}/image", headers=updater)
     assert img.status_code == 200 and img.headers["content-type"] == "image/jpeg"
 
     assert (await async_client.delete(base, headers=updater)).json() == {"deleted": 1}
     assert await _rows(db_session, pid) == []
     assert list(gate_dir.glob("*.jpg")) == []
+
+
+@pytest.mark.asyncio
+@pytest.mark.integration
+async def test_records_api_pages_newest_first_with_total(async_client, db_session, printer_factory, auth):
+    pid = (await printer_factory()).id
+    db_session.add_all([SwapGateRecord(printer_id=pid, mode="v1", outcome="pass") for _ in range(60)])
+    await db_session.commit()
+    ids = sorted(r.id for r in await _rows(db_session, pid))
+    base = f"/api/v1/printers/{pid}/swap/records"
+
+    body = (await async_client.get(base, headers=auth)).json()  # default limit 50
+    assert body["total"] == 60 and [i["id"] for i in body["items"]] == ids[::-1][:50]
+    body = (await async_client.get(base, params={"limit": 5, "offset": 10}, headers=auth)).json()
+    assert body["total"] == 60 and [i["id"] for i in body["items"]] == ids[::-1][10:15]
+    assert (await async_client.get(base, params={"offset": 100}, headers=auth)).json() == {"total": 60, "items": []}
+    for bad in ({"limit": 0}, {"limit": 501}, {"offset": -1}):
+        assert (await async_client.get(base, params=bad, headers=auth)).status_code == 422
 
 
 # --- the real record_gate behind run_camera_gate (no stub) ---

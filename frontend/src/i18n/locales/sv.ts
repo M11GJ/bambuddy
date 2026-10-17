@@ -8066,6 +8066,7 @@ errors: {
       aiNone: "AI: inget svar",
       clip: "Klipp {{percent}} %",
       image: "Beskuren plattbild",
+      showing: "Visar {{shown}} av {{total}}",
     },
     hold: {
       stateUnavailable: "Växlarens status kunde inte läsas in — kön stoppad",

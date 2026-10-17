@@ -7618,6 +7618,7 @@ export default {
       aiNone: "ИИ: нет ответа",
       clip: "Клип {{percent}}%",
       image: "Обрезанное изображение пластины",
+      showing: "Показано {{shown}} из {{total}}",
     },
     hold: {
       stateUnavailable: "Не удалось загрузить состояние сменщика — очередь остановлена",

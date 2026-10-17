@@ -170,9 +170,10 @@ describe('SwapRecords', () => {
   it('lists records with the image and deletes them all', async () => {
     const calls: string[] = [];
     let list = [rec];
+    const page = () => ({ total: list.length, items: list });
     server.use(
       http.get('*/api/v1/printers/1/swap', () => HttpResponse.json(status({ enabled: false, config: {} }))),
-      http.get('*/api/v1/printers/1/swap/records', () => HttpResponse.json(list)),
+      http.get('*/api/v1/printers/1/swap/records', () => HttpResponse.json(page())),
       http.get('*/api/v1/printers/1/swap/records/7/image', () => new HttpResponse(new Blob(['x']), { headers: { 'Content-Type': 'image/jpeg' } })),
       http.delete('*/api/v1/printers/1/swap/records', () => {
         calls.push('delete');
@@ -191,11 +192,25 @@ describe('SwapRecords', () => {
   it('shows record times as UTC converted to local, not shifted', async () => {
     server.use(
       http.get('*/api/v1/printers/1/swap', () => HttpResponse.json(status({ enabled: false, config: {} }))),
-      http.get('*/api/v1/printers/1/swap/records', () => HttpResponse.json([{ ...rec, has_image: false }])),
+      http.get('*/api/v1/printers/1/swap/records', () => HttpResponse.json({ total: 1, items: [{ ...rec, has_image: false }] })),
     );
     render(<SwapModSettings printerId={1} />);
     const expected = new Date('2026-10-17T01:02:03Z').toLocaleString();
     expect(await screen.findByText(new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))).toBeInTheDocument();
+  });
+
+  it('requests the first 50 and shows how many of the total are listed', async () => {
+    let query = '';
+    server.use(
+      http.get('*/api/v1/printers/1/swap', () => HttpResponse.json(status({ enabled: false, config: {} }))),
+      http.get('*/api/v1/printers/1/swap/records', ({ request }) => {
+        query = new URL(request.url).search;
+        return HttpResponse.json({ total: 123, items: [{ ...rec, has_image: false }] });
+      }),
+    );
+    render(<SwapModSettings printerId={1} />);
+    expect(await screen.findByText('Showing 1 of 123')).toBeInTheDocument();
+    expect(query).toBe('?limit=50&offset=0');
   });
 
   it('is hidden without printers:update', async () => {

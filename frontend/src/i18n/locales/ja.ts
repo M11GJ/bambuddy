@@ -8016,6 +8016,7 @@ export default {
       aiNone: "AI: 回答なし",
       clip: "クリップ {{percent}}%",
       image: "切り出したプレート画像",
+      showing: "{{total}} 件中 {{shown}} 件を表示",
     },
     hold: {
       stateUnavailable: "プレート交換の状態を読み込めないため停止中",

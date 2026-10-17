@@ -8017,6 +8017,7 @@ export default {
       aiNone: "KI: keine Antwort",
       clip: "Clip {{percent}} %",
       image: "Zugeschnittenes Plattenbild",
+      showing: "{{shown}} von {{total}} angezeigt",
     },
     hold: {
       stateUnavailable: "Wechslerstatus konnte nicht geladen werden — Warteschlange angehalten",

@@ -4975,7 +4975,8 @@ export const api = {
     request<SwapStatus>(`/printers/${printerId}/swap/resume`, {
       method: 'POST',
     }),
-  getSwapRecords: (printerId: number) => request<SwapRecord[]>(`/printers/${printerId}/swap/records`),
+  getSwapRecords: (printerId: number, limit = 50, offset = 0) =>
+    request<{ total: number; items: SwapRecord[] }>(`/printers/${printerId}/swap/records?limit=${limit}&offset=${offset}`),
   deleteSwapRecords: (printerId: number) =>
     request<{ deleted: number }>(`/printers/${printerId}/swap/records`, { method: 'DELETE' }),
   // The image route takes the Bearer header only, so it is fetched as a blob (an <img src> cannot send it).

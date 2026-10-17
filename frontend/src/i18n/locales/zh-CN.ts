@@ -8000,6 +8000,7 @@ export default {
       aiNone: "AI：无回答",
       clip: "夹片 {{percent}}%",
       image: "裁剪后的打印板图像",
+      showing: "显示 {{total}} 条中的 {{shown}} 条",
     },
     hold: {
       stateUnavailable: "无法加载换板状态 — 队列已停止",

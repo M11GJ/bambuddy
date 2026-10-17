@@ -8002,6 +8002,7 @@ export default {
       aiNone: "IA: sem resposta",
       clip: "Cobertura do clipe {{percent}}%",
       image: "Imagem recortada da placa",
+      showing: "Mostrando {{shown}} de {{total}}",
     },
     hold: {
       stateUnavailable: "Não foi possível carregar o estado do trocador — fila parada",
