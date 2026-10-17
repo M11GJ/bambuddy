@@ -309,6 +309,7 @@ async def test_ai_pending_defers_without_hold(case_factory):
     assert lib is not None
     # The scheduler hands the global AI settings (defaults here) to the gate.
     assert gate.call_args.kwargs["ai"].mode == "shadow"
+    assert gate.call_args.kwargs["item_id"] == ctx.item_id
 
 
 async def test_pass_after_ai_pending_clears_waiting_reason(case_factory):

@@ -7481,7 +7481,7 @@ class PrintScheduler:
                 printer_manager.apply_swap_state_after_commit(printer.id)
                 logger.warning("Queue item %s: swap printer %s has invalid swap_config: %s", item.id, printer.id, e)
                 return
-            gate = await run_camera_gate(printer, swap_cfg, ai=await load_swap_ai_settings(db))
+            gate = await run_camera_gate(printer, swap_cfg, ai=await load_swap_ai_settings(db), item_id=item.id)
             if gate.outcome == "pending":
                 # The AI check runs in the background; poll it next tick. Not a hold.
                 item.waiting_reason = "[swap.gate.aiPending] Waiting for the plate check"

@@ -740,11 +740,17 @@ class PrinterManager:
 
     async def set_swap_hold(self, db: AsyncSession, printer_id: int, reason_key: str, detail: str | None) -> None:
         """Stop the queue for this printer (written in the caller's transaction)."""
+        from backend.app.services.swap_camera_gate import forget_ai_wait
+
+        forget_ai_wait(printer_id)  # a hold or resume always means a fresh photo next time
         await db.execute(
             update(Printer).where(Printer.id == printer_id).values(swap_hold_reason=reason_key, swap_hold_detail=detail)
         )
 
     async def clear_swap_hold(self, db: AsyncSession, printer_id: int) -> None:
+        from backend.app.services.swap_camera_gate import forget_ai_wait
+
+        forget_ai_wait(printer_id)  # a hold or resume always means a fresh photo next time
         await db.execute(
             update(Printer).where(Printer.id == printer_id).values(swap_hold_reason=None, swap_hold_detail=None)
         )

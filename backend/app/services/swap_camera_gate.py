@@ -51,12 +51,15 @@ class CameraGateResult:
 
 @dataclass
 class _AiWait:
-    """An AI plate check in flight (or finished, not yet used) for one printer."""
+    """An AI plate check in flight (or finished, not yet used) for one dispatch."""
 
     task: asyncio.Task
     image: bytes
     clip: float
+    item_id: int | None
     first_pending_at: float
+    asked_at: float
+    last_polled_at: float
 
 
 # Per-printer AI checks, kept in process memory across scheduler ticks: the
@@ -65,12 +68,26 @@ _ai_waits: dict[int, _AiWait] = {}
 # Shadow-mode checks are fire-and-forget; hold references so they are not GC'd.
 _shadow_tasks: dict[int, asyncio.Task] = {}
 
+# A wait nobody polled for this long (scheduler ticks every 30 s) belongs to a
+# dispatch that went away; its verdict says nothing about the plate now.
+_POLL_GAP_S = 120
+# httpx's timeout is per phase, so a request can outlive timeout_s; past this
+# margin the task counts as hung and its check as undecidable.
+_HUNG_MARGIN_S = 30
+
+
+def forget_ai_wait(printer_id: int) -> None:
+    """Drop a printer's pending AI check, so the next dispatch takes a fresh photo."""
+    w = _ai_waits.pop(printer_id, None)
+    if w is not None:
+        w.task.cancel()
+
 
 async def _ask(ai: SwapAiSettings, image: bytes, roi) -> AiVerdict:
     try:
         jpeg = crop_plate(image, roi)
-    except ValueError as e:
-        return AiVerdict(None, "", 0, str(e))
+    except Exception as e:  # cv2.error, odd ROIs...: undecidable, never an exception out of the task
+        return AiVerdict(None, "", 0, str(e) or type(e).__name__)
     return await ask_plate_empty(ai.url, ai.model, jpeg, ai.timeout_s)
 
 
@@ -96,28 +113,31 @@ def _start_shadow_check(printer, ai: SwapAiSettings, image: bytes) -> None:
     task.add_done_callback(_log)
 
 
-def _poll_ai_wait(printer_id: int, ai: SwapAiSettings, now: float, roi) -> CameraGateResult | None:
+def _poll_ai_wait(printer_id: int, item_id, ai: SwapAiSettings, now: float, roi) -> CameraGateResult | None:
     """Decide from a pending AI check; None means none usable, take a fresh photo."""
     w = _ai_waits.get(printer_id)
     if w is None:
         return None
-    if now - w.first_pending_at > ai.max_wait_s + ai.timeout_s:
-        # Left over from a dispatch that never came back (item cancelled,
-        # scheduler paused): too old to say anything about the plate now.
-        w.task.cancel()
-        del _ai_waits[printer_id]
+    if w.item_id != item_id or now - w.last_polled_at > _POLL_GAP_S:
+        forget_ai_wait(printer_id)
         return None
+    w.last_polled_at = now
     if not w.task.done():
-        return CameraGateResult("pending", "swap.gate.aiPending", w.clip, image=w.image)
-    verdict = w.task.result()
-    if verdict.object_on_plate is None:
+        if now - w.asked_at <= ai.timeout_s + _HUNG_MARGIN_S:
+            return CameraGateResult("pending", "swap.gate.aiPending", w.clip, image=w.image)
+        w.task.cancel()
+        verdict = None
+    else:
+        verdict = None if w.task.cancelled() else w.task.result().object_on_plate
+    if verdict is None:
         if now - w.first_pending_at <= ai.max_wait_s:
             w.task = asyncio.create_task(_ask(ai, w.image, roi))
+            w.asked_at = now
             return CameraGateResult("pending", "swap.gate.aiPending", w.clip, image=w.image)
         del _ai_waits[printer_id]
         return CameraGateResult("fail", "swap.gate.aiUnavailable", w.clip, image=w.image)
     del _ai_waits[printer_id]
-    if verdict.object_on_plate:
+    if verdict:
         return CameraGateResult("fail", "swap.gate.aiObject", w.clip, image=w.image)
     return CameraGateResult("pass", None, w.clip, image=w.image)
 
@@ -171,15 +191,18 @@ async def run_camera_gate(
     light_settle_seconds: float = 2.5,
     ai: SwapAiSettings | None = None,
     ai_override: bool = False,
+    item_id: int | None = None,
     clock: Callable[[], float] = time.monotonic,
 ) -> CameraGateResult:
     """``ai`` None means v1 only. ``ai_override`` skips the AI verdict once (Task 3 wires it)."""
     if not is_plate_detection_available():
         return CameraGateResult("fail", "swap.gate.cameraUnavailable")
     if ai is not None and ai.mode == "enforce" and ai.url and not ai_override:
-        polled = _poll_ai_wait(printer.id, ai, clock(), _detector_roi(printer))
+        polled = _poll_ai_wait(printer.id, item_id, ai, clock(), _detector_roi(printer))
         if polled is not None:
             return polled
+    else:
+        forget_ai_wait(printer.id)  # override or mode change: an old verdict must not linger
     light_was_on = _light_is_on(printer.id)
     if not light_was_on:
         _set_light(printer.id, True)
@@ -217,7 +240,8 @@ async def run_camera_gate(
             if ai_override:
                 return CameraGateResult("pass", None, clip, image=image)
             task = asyncio.create_task(_ask(ai, image, _detector_roi(printer)))
-            _ai_waits[printer.id] = _AiWait(task, image, clip, clock())
+            now = clock()
+            _ai_waits[printer.id] = _AiWait(task, image, clip, item_id, now, now, now)
             return CameraGateResult("pending", "swap.gate.aiPending", clip, image=image)
         if ai is not None and ai.mode == "shadow" and ai.url:
             _start_shadow_check(printer, ai, image)

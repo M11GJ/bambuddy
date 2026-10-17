@@ -194,7 +194,7 @@ from backend.app.services.swap_ai import AiVerdict, SwapAiSettings  # noqa: E402
 
 
 @pytest.fixture
-def ai(patched, monkeypatch):
+async def ai(patched, monkeypatch):
     """AI answers come from patched["verdicts"] (popped in order); a fake clock."""
     gate._ai_waits.clear()
     gate._shadow_tasks.clear()
@@ -212,6 +212,10 @@ def ai(patched, monkeypatch):
         "ai": SwapAiSettings(**{"mode": "enforce", "url": "http://ai", **kw}),
         "clock": lambda: clock["t"],
     }
+    leftover = [w.task for w in gate._ai_waits.values()] + list(gate._shadow_tasks.values())
+    for t in leftover:
+        t.cancel()
+    await asyncio.gather(*leftover, return_exceptions=True)
     gate._ai_waits.clear()
     gate._shadow_tasks.clear()
 
@@ -263,14 +267,15 @@ async def test_enforce_in_flight_stays_pending(ai, patched, monkeypatch):
 
 @pytest.mark.asyncio
 async def test_enforce_undecidable_retries_then_unavailable(ai, patched):
-    patched["verdicts"] = [AiVerdict(None, "", 5, "timeout") for _ in range(3)]
+    patched["verdicts"] = [AiVerdict(None, "", 5, "timeout") for _ in range(4)]
     await _run(**ai())
     await _settle()
-    patched["clock"]["t"] += 200  # within max_wait_s (300): ask again
-    assert (await _run(**ai())).outcome == "pending"
-    await _settle()
-    assert patched["asks"] == 2
-    patched["clock"]["t"] += 150  # 350s since first pending
+    for _ in range(3):  # t = 100, 200, 300: within max_wait_s (300), ask again
+        patched["clock"]["t"] += 100
+        assert (await _run(**ai())).outcome == "pending"
+        await _settle()
+    assert patched["asks"] == 4
+    patched["clock"]["t"] += 100  # 400 s since first pending
     r = await _run(**ai())
     assert (r.outcome, r.reason_key) == ("fail", "swap.gate.aiUnavailable")
     assert not gate._ai_waits
@@ -328,4 +333,78 @@ async def test_off_or_no_url_is_v1_only(ai, patched, kw):
     r = await _run(**ai(**kw))
     assert r.reason_key == "swap.gate.objectOnPlate"
     await _settle()
+    assert patched["asks"] == 0
+
+
+def _hang(monkeypatch):
+    async def ask(*a):
+        await asyncio.Event().wait()
+
+    monkeypatch.setattr(gate, "ask_plate_empty", ask)
+
+
+@pytest.mark.asyncio
+async def test_enforce_hanging_ai_ends_unavailable(ai, patched, monkeypatch):
+    _hang(monkeypatch)
+    r = await _run(**ai())
+    outcomes = []
+    for _ in range(20):  # 30 s scheduler ticks, 10 minutes
+        patched["clock"]["t"] += 30
+        r = await _run(**ai())
+        outcomes.append(r.outcome)
+        if r.outcome != "pending":
+            break
+    assert (r.outcome, r.reason_key) == ("fail", "swap.gate.aiUnavailable")
+    assert len(outcomes) <= 12  # max_wait 300 s + hung margin, not forever
+
+
+@pytest.mark.asyncio
+async def test_enforce_wait_is_per_item(ai, patched):
+    patched["verdicts"] = [AiVerdict(False, "empty", 5, None), AiVerdict(True, "part", 5, None)]
+    await _run(item_id=1, **ai())
+    await _settle()
+    # A different queue item must not reuse item 1's verdict: new photo, new ask.
+    assert (await _run(item_id=2, **ai())).outcome == "pending"
+    await _settle()
+    r = await _run(item_id=2, **ai())
+    assert r.reason_key == "swap.gate.aiObject"
+    assert patched["asks"] == 2
+
+
+@pytest.mark.asyncio
+async def test_hold_and_resume_forget_the_wait(ai, patched):
+    from unittest.mock import AsyncMock
+
+    from backend.app.services.printer_manager import printer_manager
+
+    db = AsyncMock()
+    for change in (
+        lambda: printer_manager.set_swap_hold(db, _Printer.id, "swap.gate.noPlate", None),
+        lambda: printer_manager.clear_swap_hold(db, _Printer.id),
+    ):
+        patched["verdicts"] = [AiVerdict(False, "empty", 5, None)]
+        await _run(**ai())
+        await _settle()
+        await change()
+        assert not gate._ai_waits
+
+
+@pytest.mark.asyncio
+async def test_mode_change_forgets_the_wait(ai, patched):
+    patched["verdicts"] = [AiVerdict(False, "empty", 5, None)]
+    await _run(**ai())
+    await _run(**ai(mode="off"))
+    assert not gate._ai_waits
+
+
+@pytest.mark.asyncio
+async def test_crop_error_is_undecidable(ai, patched, monkeypatch):
+    def boom(image, roi):
+        raise ZeroDivisionError
+
+    monkeypatch.setattr(gate, "crop_plate", boom)
+    await _run(**ai())
+    await _settle()
+    w = gate._ai_waits[_Printer.id]
+    assert w.task.result().object_on_plate is None
     assert patched["asks"] == 0
