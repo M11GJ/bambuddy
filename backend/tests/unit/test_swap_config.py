@@ -61,3 +61,9 @@ def test_object_diff_percent_rejects_bad_values(v):
 
     with pytest.raises(ValueError):
         parse_swap_config(json.dumps({"object_diff_percent": v}))
+
+
+def test_plate_detector_keeps_twenty_references():
+    from backend.app.services.plate_detection import PlateDetector
+
+    assert PlateDetector.MAX_REFERENCES == 20

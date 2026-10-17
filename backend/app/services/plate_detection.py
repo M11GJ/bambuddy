@@ -99,7 +99,9 @@ class PlateDetector:
         self.blur_size = blur_size if blur_size % 2 == 1 else blur_size + 1  # Must be odd
 
     # Maximum number of reference images to store per printer
-    MAX_REFERENCES = 5
+    # DCC: swapped plates land a few mm differently and look different per plate and lighting,
+    # so keep more references than upstream (5). Oldest is rotated out when full.
+    MAX_REFERENCES = 20
 
     def _get_metadata_path(self, printer_id: int) -> Path:
         """Get the path to the metadata JSON file for a printer."""
