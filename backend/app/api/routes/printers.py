@@ -3765,6 +3765,76 @@ async def resume_swap(
     return await _swap_status(db, printer_id)
 
 
+@router.get("/{printer_id}/swap/records")
+async def list_swap_records(
+    printer_id: int,
+    _=RequirePermissionIfAuthEnabled(Permission.PRINTERS_UPDATE),
+    db: AsyncSession = Depends(get_db),
+):
+    """Newest-first plate-check records (at most 50 are kept per printer)."""
+    from backend.app.models.swap_gate_record import SwapGateRecord
+
+    await _swap_status(db, printer_id)  # 404 check
+    rows = (
+        (
+            await db.execute(
+                select(SwapGateRecord).where(SwapGateRecord.printer_id == printer_id).order_by(SwapGateRecord.id.desc())
+            )
+        )
+        .scalars()
+        .all()
+    )
+    return [
+        {
+            "id": r.id,
+            "created_at": r.created_at,
+            "mode": r.mode,
+            "clip_percent": r.clip_percent,
+            "ai_object": r.ai_object,
+            "ai_reason": r.ai_reason,
+            "ai_ms": r.ai_ms,
+            "outcome": r.outcome,
+            "reason_key": r.reason_key,
+            "has_image": bool(r.image_path),
+        }
+        for r in rows
+    ]
+
+
+@router.get("/{printer_id}/swap/records/{record_id}/image")
+async def get_swap_record_image(
+    printer_id: int,
+    record_id: int,
+    _=RequirePermissionIfAuthEnabled(Permission.PRINTERS_UPDATE),
+    db: AsyncSession = Depends(get_db),
+):
+    from backend.app.models.swap_gate_record import SwapGateRecord
+
+    rec = (
+        await db.execute(
+            select(SwapGateRecord).where(SwapGateRecord.id == record_id, SwapGateRecord.printer_id == printer_id)
+        )
+    ).scalar_one_or_none()
+    if rec is None or not rec.image_path:
+        raise HTTPException(404, "Record image not found")
+    path = settings.swap_gate_dir / Path(rec.image_path).name
+    if not path.is_file():
+        raise HTTPException(404, "Record image not found")
+    return FileResponse(path, media_type="image/jpeg")
+
+
+@router.delete("/{printer_id}/swap/records")
+async def delete_swap_records(
+    printer_id: int,
+    _=RequirePermissionIfAuthEnabled(Permission.PRINTERS_UPDATE),
+    db: AsyncSession = Depends(get_db),
+):
+    from backend.app.services.swap_gate_records import delete_records
+
+    await _swap_status(db, printer_id)  # 404 check
+    return {"deleted": await delete_records(db, printer_id)}
+
+
 @router.post("/{printer_id}/clear-plate")
 async def clear_plate(
     printer_id: int,

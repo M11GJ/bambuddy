@@ -70,6 +70,7 @@ class Settings(BaseSettings):
     app_dir: Path = _app_dir
     archive_dir: Path = _data_dir / "archive"
     plate_calibration_dir: Path = _plate_cal_dir  # Plate detection references
+    swap_gate_dir: Path = _data_dir / "swap_gate"  # Cropped SwapMod plate-check images
     static_dir: Path = _app_dir / "static"  # Static files are part of app, not data
     log_dir: Path = _log_dir
     database_url: str = _external_db_url or f"sqlite+aiosqlite:///{_db_path}"

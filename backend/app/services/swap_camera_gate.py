@@ -19,6 +19,7 @@ from backend.app.services.plate_detection import PlateDetector, is_plate_detecti
 from backend.app.services.printer_manager import printer_manager
 from backend.app.services.swap_ai import AiVerdict, SwapAiSettings, ask_plate_empty, crop_plate
 from backend.app.services.swap_config import SwapConfig
+from backend.app.services.swap_gate_records import record_gate
 
 # OpenCV is optional in this codebase (see plate_detection); without it the
 # gate must still import and then fail closed, not crash the dispatcher.
@@ -47,6 +48,9 @@ class CameraGateResult:
     clip_percent: float | None = None
     diff_percent: float | None = None
     image: bytes | None = None
+    ai_object: bool | None = None
+    ai_reason: str | None = None
+    ai_ms: int | None = None
 
 
 @dataclass
@@ -67,6 +71,8 @@ class _AiWait:
 _ai_waits: dict[int, _AiWait] = {}
 # Shadow-mode checks are fire-and-forget; hold references so they are not GC'd.
 _shadow_tasks: dict[int, asyncio.Task] = {}
+# Fire-and-forget record writes (shadow results); hold references so they are not GC'd.
+_record_tasks: set[asyncio.Task] = set()
 
 # A wait nobody polled for this long (scheduler ticks every 30 s) belongs to a
 # dispatch that went away; its verdict says nothing about the plate now.
@@ -91,11 +97,12 @@ async def _ask(ai: SwapAiSettings, image: bytes, roi) -> AiVerdict:
     return await ask_plate_empty(ai.url, ai.model, jpeg, ai.timeout_s)
 
 
-def _start_shadow_check(printer, ai: SwapAiSettings, image: bytes) -> None:
+def _start_shadow_check(printer, ai: SwapAiSettings, image: bytes, clip: float | None = None) -> None:
     running = _shadow_tasks.get(printer.id)
     if running and not running.done():
         return
-    task = asyncio.create_task(_ask(ai, image, _detector_roi(printer)))
+    roi = _detector_roi(printer)
+    task = asyncio.create_task(_ask(ai, image, roi))
     _shadow_tasks[printer.id] = task
 
     def _log(t: asyncio.Task) -> None:
@@ -109,6 +116,22 @@ def _start_shadow_check(printer, ai: SwapAiSettings, image: bytes) -> None:
                 v.ms,
                 v.error,
             )
+            rec = asyncio.create_task(
+                record_gate(
+                    printer.id,
+                    mode="shadow",
+                    outcome="error" if v.object_on_plate is None else ("fail" if v.object_on_plate else "pass"),
+                    reason_key="swap.gate.aiObject" if v.object_on_plate else None,
+                    clip_percent=clip,
+                    ai_object=v.object_on_plate,
+                    ai_reason=v.error or v.reason,
+                    ai_ms=v.ms,
+                    image=image,
+                    roi=roi,
+                )
+            )
+            _record_tasks.add(rec)
+            rec.add_done_callback(_record_tasks.discard)
 
     task.add_done_callback(_log)
 
@@ -126,20 +149,22 @@ def _poll_ai_wait(printer_id: int, item_id, ai: SwapAiSettings, now: float, roi)
         if now - w.asked_at <= ai.timeout_s + _HUNG_MARGIN_S:
             return CameraGateResult("pending", "swap.gate.aiPending", w.clip, image=w.image)
         w.task.cancel()
-        verdict = None
+        v = None
     else:
-        verdict = None if w.task.cancelled() else w.task.result().object_on_plate
+        v = None if w.task.cancelled() else w.task.result()
+    verdict = v.object_on_plate if v else None
+    detail = {"ai_object": verdict, "ai_reason": (v.error or v.reason) if v else None, "ai_ms": v.ms if v else None}
     if verdict is None:
         if now - w.first_pending_at <= ai.max_wait_s:
             w.task = asyncio.create_task(_ask(ai, w.image, roi))
             w.asked_at = now
             return CameraGateResult("pending", "swap.gate.aiPending", w.clip, image=w.image)
         del _ai_waits[printer_id]
-        return CameraGateResult("fail", "swap.gate.aiUnavailable", w.clip, image=w.image)
+        return CameraGateResult("fail", "swap.gate.aiUnavailable", w.clip, image=w.image, **detail)
     del _ai_waits[printer_id]
     if verdict:
-        return CameraGateResult("fail", "swap.gate.aiObject", w.clip, image=w.image)
-    return CameraGateResult("pass", None, w.clip, image=w.image)
+        return CameraGateResult("fail", "swap.gate.aiObject", w.clip, image=w.image, **detail)
+    return CameraGateResult("pass", None, w.clip, image=w.image, **detail)
 
 
 def clip_percent(image_bytes: bytes, roi: tuple[float, float, float, float]) -> float:
@@ -185,6 +210,28 @@ def _detector_roi(printer) -> tuple[float, float, float, float] | None:
 
 
 async def run_camera_gate(
+    printer, config: SwapConfig, *, ai: SwapAiSettings | None = None, **kwargs
+) -> CameraGateResult:
+    """Run the gate and record each terminal (pass/fail) decision."""
+    result = await _run_camera_gate(printer, config, ai=ai, **kwargs)
+    if result.outcome in ("pass", "fail"):
+        mode = ai.mode if ai is not None and ai.url and ai.mode in ("shadow", "enforce") else "v1"
+        await record_gate(
+            printer.id,
+            mode=mode,
+            outcome=result.outcome,
+            reason_key=result.reason_key,
+            clip_percent=result.clip_percent,
+            ai_object=result.ai_object,
+            ai_reason=result.ai_reason,
+            ai_ms=result.ai_ms,
+            image=result.image,
+            roi=_detector_roi(printer),
+        )
+    return result
+
+
+async def _run_camera_gate(
     printer,
     config: SwapConfig,
     *,
@@ -240,11 +287,20 @@ async def run_camera_gate(
             if ai_override:
                 return CameraGateResult("pass", None, clip, image=image)
             task = asyncio.create_task(_ask(ai, image, _detector_roi(printer)))
+            await record_gate(  # once per wait: polls do not write
+                printer.id,
+                mode="enforce",
+                outcome="pending",
+                reason_key="swap.gate.aiPending",
+                clip_percent=clip,
+                image=image,
+                roi=_detector_roi(printer),
+            )
             now = clock()
             _ai_waits[printer.id] = _AiWait(task, image, clip, item_id, now, now, now)
             return CameraGateResult("pending", "swap.gate.aiPending", clip, image=image)
         if ai is not None and ai.mode == "shadow" and ai.url:
-            _start_shadow_check(printer, ai, image)
+            _start_shadow_check(printer, ai, image, clip)
         try:
             result = PlateDetector(
                 roi=_detector_roi(printer), difference_threshold=config.object_diff_percent, normalize_lighting=True

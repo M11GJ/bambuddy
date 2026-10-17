@@ -65,8 +65,8 @@ from backend.app.services.spool_assignment_notifications import (
     _global_tray_from_assignment,
     _slot_label_from_global_tray,
 )
-from backend.app.services.swap_ai import load_swap_ai_settings
-from backend.app.services.swap_camera_gate import run_camera_gate
+from backend.app.services.swap_ai import crop_plate, load_swap_ai_settings
+from backend.app.services.swap_camera_gate import _detector_roi, run_camera_gate
 from backend.app.services.swap_config import parse_swap_config, strip_error_key
 from backend.app.services.swap_guard import check_swap_job
 from backend.app.utils.ams_drying import is_countdown_parked
@@ -1041,12 +1041,18 @@ def _effective_plate_id(explicit_plate_id: int | None, file_path: Path) -> int:
 async def _notify_swap_camera_fail(db: AsyncSession, printer: Printer, gate) -> None:
     """Push the camera gate's photo through the existing plate-not-empty channel."""
     try:
+        image = gate.image
+        if image:
+            try:  # external channels get the plate crop, never the full camera frame
+                image = crop_plate(image, _detector_roi(printer))
+            except Exception:
+                image = None
         await notification_service.on_plate_not_empty(
             printer_id=printer.id,
             printer_name=printer.name,
             db=db,
             difference_percent=gate.diff_percent,
-            image_data=gate.image,
+            image_data=image,
         )
     except Exception as e:
         logger.warning("Swap camera-fail notification for printer %s failed: %s", printer.id, e)

@@ -58,6 +58,11 @@ def patched(monkeypatch):
     monkeypatch.setattr(gate, "_set_light", lambda printer_id, on: None)
     monkeypatch.setattr(gate, "_light_is_on", lambda printer_id: True)
 
+    async def no_record(*a, **k):
+        pass
+
+    monkeypatch.setattr(gate, "record_gate", no_record)
+
     class _Det:
         def __init__(self, roi=None, difference_threshold=1.0, normalize_lighting=False):
             state["threshold"] = difference_threshold

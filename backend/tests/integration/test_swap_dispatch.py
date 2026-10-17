@@ -274,8 +274,12 @@ async def test_invalid_config_holds_printer(case_factory):
 
 async def test_camera_fail_holds_printer(case_factory):
     ctx = await case_factory()
+    import cv2
+    import numpy as np
+
+    frame = cv2.imencode(".jpg", np.full((1000, 2000, 3), 90, np.uint8))[1].tobytes()
     item, printer, lib, _ = await _run(
-        ctx, CameraGateResult("fail", "swap.gate.noPlate", clip_percent=0.5, diff_percent=None, image=b"jpg")
+        ctx, CameraGateResult("fail", "swap.gate.noPlate", clip_percent=0.5, diff_percent=None, image=frame)
     )
     assert printer.swap_hold_reason == "swap.gate.noPlate"
     assert item.status == "pending"
@@ -285,7 +289,8 @@ async def test_camera_fail_holds_printer(case_factory):
     assert lib is not None
     ctx.apply_after_commit.assert_called_with(ctx.printer_id)
     ctx.on_plate_not_empty.assert_awaited_once()
-    assert ctx.on_plate_not_empty.call_args.kwargs["image_data"] == b"jpg"
+    sent = cv2.imdecode(np.frombuffer(ctx.on_plate_not_empty.call_args.kwargs["image_data"], np.uint8), 1)
+    assert max(sent.shape[:2]) == 768  # the plate crop, not the 2000px frame
 
 
 async def test_camera_busy_defers_without_hold(case_factory):
