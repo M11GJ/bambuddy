@@ -18,7 +18,7 @@ from backend.app.utils.printer_models import MAX_CHAMBER_TEMP_C
 # tests/unit/test_outbound_url_ssrf_guards.py can import the real list and
 # cannot drift from it. Any new outbound-URL setting belongs here (or, if it
 # must be reachable on the public internet, on the stricter OIDC guard).
-LAN_SERVICE_URL_SETTINGS = ("ha_url", "obico_ml_url", "orcaslicer_api_url", "bambu_studio_api_url")
+LAN_SERVICE_URL_SETTINGS = ("ha_url", "obico_ml_url", "orcaslicer_api_url", "bambu_studio_api_url", "swap_ai_url")
 
 # ``docker_compose_dir`` is unusual among the string settings: it is not
 # consumed by Bambuddy at all, it is interpolated into a shell command that
@@ -645,6 +645,15 @@ class AppSettings(BaseModel):
         description="JSON array of printer IDs to monitor (empty = all connected printers)",
     )
 
+    # SwapMod plate check: local Ollama vision model (global, not per printer)
+    swap_ai_mode: str = Field(default="shadow", description="Plate-check AI mode: 'off', 'shadow', or 'enforce'")
+    swap_ai_url: str = Field(default="", description="Ollama base URL for the plate check (empty = AI not called)")
+    swap_ai_model: str = Field(default="qwen2.5vl:7b", description="Ollama vision model for the plate check")
+    swap_ai_timeout_s: int = Field(default=60, ge=1, le=600, description="Seconds to wait for one AI answer")
+    swap_ai_max_wait_s: int = Field(
+        default=300, ge=1, le=3600, description="Seconds the gate waits for a usable AI answer before it holds"
+    )
+
     # Inventory forecasting
     forecast_global_lead_time_days: int = Field(
         default=0,
@@ -820,6 +829,11 @@ class AppSettingsUpdate(BaseModel):
     obico_action: str | None = None
     obico_poll_interval: int | None = Field(default=None, ge=5, le=120)
     obico_enabled_printers: str | None = None
+    swap_ai_mode: str | None = None
+    swap_ai_url: str | None = None
+    swap_ai_model: str | None = None
+    swap_ai_timeout_s: int | None = Field(default=None, ge=1, le=600)
+    swap_ai_max_wait_s: int | None = Field(default=None, ge=1, le=3600)
     default_sidebar_order: str | None = None
     forecast_global_lead_time_days: int | None = Field(default=None, ge=0)
     location_sensor_poll_interval: int | None = Field(default=None, ge=60, le=3600)
@@ -992,6 +1006,13 @@ class AppSettingsUpdate(BaseModel):
             return v
         if v not in ("notify", "pause", "pause_and_off"):
             raise ValueError("obico_action must be 'notify', 'pause', or 'pause_and_off'")
+        return v
+
+    @field_validator("swap_ai_mode")
+    @classmethod
+    def validate_swap_ai_mode(cls, v: str | None) -> str | None:
+        if v is not None and v not in ("off", "shadow", "enforce"):
+            raise ValueError("swap_ai_mode must be 'off', 'shadow', or 'enforce'")
         return v
 
     @field_validator("default_sidebar_order")

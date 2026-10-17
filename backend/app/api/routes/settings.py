@@ -235,6 +235,8 @@ _FLOAT_SETTING_KEYS = frozenset(
 
 _INT_SETTING_KEYS = frozenset(
     {
+        "swap_ai_timeout_s",
+        "swap_ai_max_wait_s",
         "ams_humidity_good",
         "ams_humidity_fair",
         "ams_history_retention_days",

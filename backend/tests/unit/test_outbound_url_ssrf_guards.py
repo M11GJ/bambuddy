@@ -573,6 +573,7 @@ GUARDED_BODY_URLS = {
     ("AppSettingsUpdate", "bambu_studio_api_url"),
     ("AppSettingsUpdate", "ha_url"),
     ("AppSettingsUpdate", "obico_ml_url"),
+    ("AppSettingsUpdate", "swap_ai_url"),
     ("AppSettingsUpdate", "orcaslicer_api_url"),
     ("AppSettingsUpdate", "spoolman_url"),  # assert_safe_spoolman_url at each consumer
     ("HATestConnectionRequest", "url"),  # homeassistant._validate_url
