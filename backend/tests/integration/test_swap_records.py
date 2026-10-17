@@ -96,3 +96,145 @@ async def test_records_api_permissions_and_delete(
     assert (await async_client.delete(base, headers=updater)).json() == {"deleted": 1}
     assert await _rows(db_session, pid) == []
     assert list(gate_dir.glob("*.jpg")) == []
+
+
+# --- the real record_gate behind run_camera_gate (no stub) ---
+
+import asyncio  # noqa: E402
+import os  # noqa: E402
+import time  # noqa: E402
+
+from backend.app.services import swap_camera_gate as gate  # noqa: E402
+from backend.app.services.swap_ai import AiVerdict, SwapAiSettings  # noqa: E402
+from backend.app.services.swap_config import DEFAULT_SWAP_CONFIG  # noqa: E402
+from backend.tests.unit.test_swap_camera_gate import _jpeg, _Printer, _Result  # noqa: E402
+
+
+@pytest.fixture
+def real_gate(monkeypatch, printer_factory):
+    state = {"empty": True}
+
+    async def capture(ip, code, model, timeout=10):
+        return _jpeg(True)
+
+    class _Det:
+        def __init__(self, **kw):
+            pass
+
+        def analyze_frame(self, image, printer_id):
+            return _Result(state["empty"])
+
+    monkeypatch.setattr(gate, "capture_camera_frame_bytes", capture)
+    monkeypatch.setattr(gate, "is_stream_active", lambda pid: False)
+    monkeypatch.setattr(gate, "is_plate_detection_available", lambda: True)
+    monkeypatch.setattr(gate, "_set_light", lambda *a: None)
+    monkeypatch.setattr(gate, "_light_is_on", lambda pid: True)
+    monkeypatch.setattr(gate, "PlateDetector", _Det)
+    gate._ai_waits.clear()
+    return state
+
+
+async def _printer(printer_factory):
+    p = _Printer()
+    p.id = (await printer_factory()).id
+    return p
+
+
+async def _run(p, **kw):
+    r = await gate.run_camera_gate(p, DEFAULT_SWAP_CONFIG, light_settle_seconds=0, **kw)
+    await gate.drain_records()
+    return r
+
+
+@pytest.mark.asyncio
+@pytest.mark.integration
+@pytest.mark.parametrize("ai", [None, SwapAiSettings(mode="off", url="http://x")])
+async def test_gate_v1_pass_and_fail_each_write_a_row(real_gate, printer_factory, db_session, gate_dir, ai):
+    p = await _printer(printer_factory)
+    assert (await _run(p, ai=ai)).outcome == "pass"
+    real_gate["empty"] = False
+    assert (await _run(p, ai=ai)).outcome == "fail"
+    rows = await _rows(db_session, p.id)
+    assert [(r.mode, r.outcome) for r in rows] == [("v1", "pass"), ("v1", "fail")]
+    assert all(r.image_path and (gate_dir / r.image_path).is_file() for r in rows)
+
+
+@pytest.mark.asyncio
+@pytest.mark.integration
+@pytest.mark.parametrize("verdict,outcome", [(False, "pass"), (True, "fail")])
+async def test_gate_enforce_pending_once_then_terminal(
+    real_gate, printer_factory, db_session, monkeypatch, verdict, outcome
+):
+    release = asyncio.Event()
+
+    async def ask(url, model, jpeg, timeout):
+        await release.wait()
+        return AiVerdict(verdict, "r", 5, None)
+
+    monkeypatch.setattr(gate, "ask_plate_empty", ask)
+    p = await _printer(printer_factory)
+    ai = SwapAiSettings(mode="enforce", url="http://x")
+    for _ in range(3):
+        assert (await _run(p, ai=ai, item_id=1)).outcome == "pending"
+    assert [r.outcome for r in await _rows(db_session, p.id)] == ["pending"]
+    release.set()
+    await asyncio.sleep(0.05)
+    assert (await _run(p, ai=ai, item_id=1)).outcome == outcome
+    rows = await _rows(db_session, p.id)
+    assert [r.outcome for r in rows] == ["pending", outcome]
+    assert rows[1].mode == "enforce" and rows[1].ai_object is verdict and rows[1].image_path
+
+
+@pytest.mark.asyncio
+@pytest.mark.integration
+@pytest.mark.parametrize("verdict,outcome", [(True, "fail"), (None, "error")])
+async def test_gate_shadow_ai_result_recorded_when_task_finishes(
+    real_gate, printer_factory, db_session, monkeypatch, verdict, outcome
+):
+    async def ask(url, model, jpeg, timeout):
+        return AiVerdict(verdict, "r", 5, None if verdict is not None else "boom")
+
+    monkeypatch.setattr(gate, "ask_plate_empty", ask)
+    p = await _printer(printer_factory)
+    assert (await _run(p, ai=SwapAiSettings(mode="shadow", url="http://x"))).outcome == "pass"
+    await asyncio.sleep(0.05)
+    await gate.drain_records()
+    rows = await _rows(db_session, p.id)
+    ai_rows = [r for r in rows if r.ai_ms == 5]
+    assert len(rows) == 2 and len(ai_rows) == 1
+    assert (ai_rows[0].ai_object, ai_rows[0].outcome, ai_rows[0].mode) == (verdict, outcome, "shadow")
+    assert ai_rows[0].image_path
+
+
+@pytest.mark.asyncio
+@pytest.mark.integration
+async def test_gate_shadow_without_url_records_not_configured(real_gate, printer_factory, db_session):
+    p = await _printer(printer_factory)
+    await _run(p, ai=SwapAiSettings(mode="shadow", url=""))
+    (row,) = await _rows(db_session, p.id)
+    assert (row.mode, row.outcome, row.ai_reason) == ("v1", "pass", "not configured")
+
+
+@pytest.mark.asyncio
+@pytest.mark.integration
+async def test_orphan_images_are_swept(db_session, printer_factory, gate_dir):
+    p = await printer_factory()
+    gate_dir.mkdir(parents=True)
+    old, young = gate_dir / "old.jpg", gate_dir / "young.jpg"
+    old.write_bytes(b"x")
+    young.write_bytes(b"x")
+    os.utime(old, (time.time() - 3600,) * 2)
+    await record_gate(p.id, mode="v1", outcome="pass", image=_frame())
+    assert not old.exists() and young.exists()
+    assert len(list(gate_dir.glob("*.jpg"))) == 2
+
+
+@pytest.mark.asyncio
+@pytest.mark.integration
+async def test_deleting_printer_removes_record_images(async_client, db_session, printer_factory, auth, gate_dir):
+    pid = (await printer_factory()).id
+    await record_gate(pid, mode="v1", outcome="pass", image=_frame())
+    assert len(list(gate_dir.glob("*.jpg"))) == 1
+    r = await async_client.delete(f"/api/v1/printers/{pid}", headers=auth)
+    assert r.status_code == 200
+    assert list(gate_dir.glob("*.jpg")) == []

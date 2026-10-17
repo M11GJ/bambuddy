@@ -82,6 +82,19 @@ _POLL_GAP_S = 120
 _HUNG_MARGIN_S = 30
 
 
+def _spawn_record(**kw) -> None:
+    """Write a record in the background; the gate never waits for disk or DB."""
+    t = asyncio.create_task(record_gate(**kw))
+    _record_tasks.add(t)
+    t.add_done_callback(_record_tasks.discard)
+
+
+async def drain_records() -> None:
+    """Wait for pending record writes (tests)."""
+    while _record_tasks:
+        await asyncio.gather(*list(_record_tasks), return_exceptions=True)
+
+
 def forget_ai_wait(printer_id: int) -> None:
     """Drop a printer's pending AI check, so the next dispatch takes a fresh photo."""
     w = _ai_waits.pop(printer_id, None)
@@ -116,22 +129,18 @@ def _start_shadow_check(printer, ai: SwapAiSettings, image: bytes, clip: float |
                 v.ms,
                 v.error,
             )
-            rec = asyncio.create_task(
-                record_gate(
-                    printer.id,
-                    mode="shadow",
-                    outcome="error" if v.object_on_plate is None else ("fail" if v.object_on_plate else "pass"),
-                    reason_key="swap.gate.aiObject" if v.object_on_plate else None,
-                    clip_percent=clip,
-                    ai_object=v.object_on_plate,
-                    ai_reason=v.error or v.reason,
-                    ai_ms=v.ms,
-                    image=image,
-                    roi=roi,
-                )
+            _spawn_record(
+                printer_id=printer.id,
+                mode="shadow",
+                outcome="error" if v.object_on_plate is None else ("fail" if v.object_on_plate else "pass"),
+                reason_key="swap.gate.aiObject" if v.object_on_plate else None,
+                clip_percent=clip,
+                ai_object=v.object_on_plate,
+                ai_reason=v.error or v.reason,
+                ai_ms=v.ms,
+                image=image,
+                roi=roi,
             )
-            _record_tasks.add(rec)
-            rec.add_done_callback(_record_tasks.discard)
 
     task.add_done_callback(_log)
 
@@ -216,14 +225,15 @@ async def run_camera_gate(
     result = await _run_camera_gate(printer, config, ai=ai, **kwargs)
     if result.outcome in ("pass", "fail"):
         mode = ai.mode if ai is not None and ai.url and ai.mode in ("shadow", "enforce") else "v1"
-        await record_gate(
-            printer.id,
+        _spawn_record(
+            printer_id=printer.id,
             mode=mode,
             outcome=result.outcome,
             reason_key=result.reason_key,
             clip_percent=result.clip_percent,
             ai_object=result.ai_object,
-            ai_reason=result.ai_reason,
+            ai_reason=result.ai_reason
+            or ("not configured" if ai is not None and ai.mode == "shadow" and not ai.url else None),
             ai_ms=result.ai_ms,
             image=result.image,
             roi=_detector_roi(printer),
@@ -287,8 +297,8 @@ async def _run_camera_gate(
             if ai_override:
                 return CameraGateResult("pass", None, clip, image=image)
             task = asyncio.create_task(_ask(ai, image, _detector_roi(printer)))
-            await record_gate(  # once per wait: polls do not write
-                printer.id,
+            _spawn_record(  # once per wait: polls do not write
+                printer_id=printer.id,
                 mode="enforce",
                 outcome="pending",
                 reason_key="swap.gate.aiPending",

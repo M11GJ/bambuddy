@@ -446,6 +446,10 @@ async def delete_printer(
 
     printer_manager.disconnect_printer(printer_id)
 
+    from backend.app.services.swap_gate_records import delete_records
+
+    await delete_records(db, printer_id)  # plate-check rows and their image files
+
     if delete_archives:
         # Delete all archives for this printer
         await db.execute(sql_delete(PrintArchive).where(PrintArchive.printer_id == printer_id))

@@ -2,6 +2,7 @@
 
 import asyncio
 import logging
+import time
 import uuid
 
 from sqlalchemy import delete, select
@@ -28,6 +29,17 @@ def _unlink(names) -> None:
     for n in names:
         if n:
             (settings.swap_gate_dir / n).unlink(missing_ok=True)  # SEC-PATH-OK: names are our own uuid files
+
+
+_ORPHAN_MIN_AGE_S = 60  # a file this young may belong to a row still being inserted
+
+
+def _sweep_orphans(keep: set[str]) -> None:
+    """Remove image files no row references (e.g. left by a deleted printer)."""
+    now = time.time()
+    for f in settings.swap_gate_dir.glob("*.jpg"):
+        if f.name not in keep and now - f.stat().st_mtime > _ORPHAN_MIN_AGE_S:
+            f.unlink(missing_ok=True)
 
 
 async def record_gate(
@@ -77,7 +89,9 @@ async def record_gate(
             if old:
                 await db.execute(delete(SwapGateRecord).where(SwapGateRecord.id.in_([r.id for r in old])))
             await db.commit()
+            keep = {r for (r,) in (await db.execute(select(SwapGateRecord.image_path))).all() if r}
         await asyncio.to_thread(_unlink, [r.image_path for r in old])
+        await asyncio.to_thread(_sweep_orphans, keep)
     except Exception:
         logger.exception("Swap gate record failed for printer %s", printer_id)
         await asyncio.to_thread(_unlink, [name])
