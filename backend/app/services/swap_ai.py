@@ -6,12 +6,18 @@ import logging
 import time
 from dataclasses import dataclass
 
-import cv2
 import httpx
-import numpy as np
 from sqlalchemy import select
 
 from backend.app.models.settings import Settings
+
+# Optional like in swap_camera_gate: the scheduler imports this module, so it
+# must import without OpenCV; crop_plate then raises ValueError (undecidable).
+try:
+    import cv2
+    import numpy as np
+except ImportError:  # pragma: no cover - exercised only on installs without OpenCV
+    cv2 = np = None
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +49,8 @@ class SwapAiSettings:
 
 def crop_plate(image: bytes, roi: tuple[float, float, float, float] | None) -> bytes:
     """Crop to the ROI (fractions x, y, w, h; lower half when None), long side 768px, JPEG."""
+    if cv2 is None:
+        raise ValueError("OpenCV is not available")
     img = cv2.imdecode(np.frombuffer(image, np.uint8), cv2.IMREAD_COLOR)
     if img is None:
         raise ValueError("undecodable image")

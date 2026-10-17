@@ -297,6 +297,28 @@ async def test_camera_busy_defers_without_hold(case_factory):
     ctx.archive_print.assert_not_called()
 
 
+async def test_ai_pending_defers_without_hold(case_factory):
+    ctx = await case_factory()
+    item, printer, lib, gate = await _run(ctx, CameraGateResult("pending", "swap.gate.aiPending", clip_percent=9.0))
+    assert item.status == "pending"
+    assert printer.swap_hold_reason is None
+    assert item.waiting_reason.startswith("[swap.gate.aiPending]")
+    ctx.upload.assert_not_called()
+    ctx.archive_print.assert_not_called()
+    ctx.on_plate_not_empty.assert_not_called()
+    assert lib is not None
+    # The scheduler hands the global AI settings (defaults here) to the gate.
+    assert gate.call_args.kwargs["ai"].mode == "shadow"
+
+
+async def test_pass_after_ai_pending_clears_waiting_reason(case_factory):
+    ctx = await case_factory()
+    await _run(ctx, CameraGateResult("pending", "swap.gate.aiPending"))
+    item, _, _, _ = await _run(ctx)
+    assert item.status == "printing"
+    assert item.waiting_reason is None
+
+
 async def test_guard_fail_fails_item_only(case_factory):
     ctx = await case_factory(gcode=NO_MARKER_GCODE)
     item, printer, _, _ = await _run(ctx)
@@ -427,4 +449,3 @@ async def test_put_enable_during_upload_blocks_via_mirror(case_factory):
     item, _, _, _ = await _run(ctx)
     ctx.start_print.assert_not_called()
     assert item.status == "pending"
-

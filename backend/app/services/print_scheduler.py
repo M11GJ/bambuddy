@@ -65,6 +65,7 @@ from backend.app.services.spool_assignment_notifications import (
     _global_tray_from_assignment,
     _slot_label_from_global_tray,
 )
+from backend.app.services.swap_ai import load_swap_ai_settings
 from backend.app.services.swap_camera_gate import run_camera_gate
 from backend.app.services.swap_config import parse_swap_config, strip_error_key
 from backend.app.services.swap_guard import check_swap_job
@@ -7480,7 +7481,12 @@ class PrintScheduler:
                 printer_manager.apply_swap_state_after_commit(printer.id)
                 logger.warning("Queue item %s: swap printer %s has invalid swap_config: %s", item.id, printer.id, e)
                 return
-            gate = await run_camera_gate(printer, swap_cfg)
+            gate = await run_camera_gate(printer, swap_cfg, ai=await load_swap_ai_settings(db))
+            if gate.outcome == "pending":
+                # The AI check runs in the background; poll it next tick. Not a hold.
+                item.waiting_reason = "[swap.gate.aiPending] Waiting for the plate check"
+                await db.commit()
+                return
             if gate.outcome == "busy":
                 # Someone is watching the live stream; try again next tick.
                 # Not a hold: nothing is wrong with the printer.
@@ -7503,7 +7509,9 @@ class PrintScheduler:
                 )
                 await _notify_swap_camera_fail(db, printer, gate)
                 return
-            if item.waiting_reason and item.waiting_reason.startswith("[swap.gate.cameraBusy]"):
+            if item.waiting_reason and item.waiting_reason.startswith(
+                ("[swap.gate.cameraBusy]", "[swap.gate.aiPending]")
+            ):
                 item.waiting_reason = None
 
         # Determine source: archive or library file

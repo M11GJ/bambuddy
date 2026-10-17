@@ -1,3 +1,4 @@
+import asyncio
 import time
 
 import cv2
@@ -185,3 +186,146 @@ async def test_detector_uses_swap_object_threshold(patched):
     )
     assert patched["threshold"] == 2.5
     assert patched["normalize_lighting"] is True
+
+
+# --- AI plate check (v2) ---
+
+from backend.app.services.swap_ai import AiVerdict, SwapAiSettings  # noqa: E402
+
+
+@pytest.fixture
+def ai(patched, monkeypatch):
+    """AI answers come from patched["verdicts"] (popped in order); a fake clock."""
+    gate._ai_waits.clear()
+    gate._shadow_tasks.clear()
+    patched["verdicts"] = []
+    patched["asks"] = 0
+    clock = {"t": 1000.0}
+
+    async def ask(url, model, jpeg, timeout_s):
+        patched["asks"] += 1
+        return patched["verdicts"].pop(0)
+
+    monkeypatch.setattr(gate, "ask_plate_empty", ask)
+    patched["clock"] = clock
+    yield lambda **kw: {
+        "ai": SwapAiSettings(**{"mode": "enforce", "url": "http://ai", **kw}),
+        "clock": lambda: clock["t"],
+    }
+    gate._ai_waits.clear()
+    gate._shadow_tasks.clear()
+
+
+async def _settle():
+    for _ in range(5):
+        await asyncio.sleep(0)
+
+
+async def _run(**kw):
+    return await gate.run_camera_gate(_Printer(), DEFAULT_SWAP_CONFIG, light_settle_seconds=0, **kw)
+
+
+@pytest.mark.asyncio
+async def test_enforce_pending_then_pass(ai, patched):
+    patched["verdicts"] = [AiVerdict(False, "empty", 5, None)]
+    patched["analysis"] = _Result(False)  # v1 would fail; enforce ignores it
+    r = await _run(**ai())
+    assert (r.outcome, r.reason_key) == ("pending", "swap.gate.aiPending")
+    await _settle()
+    patched["frame"] = None  # a pending verdict is used without a new photo
+    r = await _run(**ai())
+    assert r.outcome == "pass"
+    assert not gate._ai_waits
+
+
+@pytest.mark.asyncio
+async def test_enforce_object_fails(ai, patched):
+    patched["verdicts"] = [AiVerdict(True, "a part", 5, None)]
+    await _run(**ai())
+    await _settle()
+    r = await _run(**ai())
+    assert (r.outcome, r.reason_key) == ("fail", "swap.gate.aiObject")
+    assert r.image == patched["frame"]
+
+
+@pytest.mark.asyncio
+async def test_enforce_in_flight_stays_pending(ai, patched, monkeypatch):
+    never = asyncio.Event()
+
+    async def ask(*a):
+        await never.wait()
+
+    monkeypatch.setattr(gate, "ask_plate_empty", ask)
+    await _run(**ai())
+    r = await _run(**ai())
+    assert r.outcome == "pending"
+
+
+@pytest.mark.asyncio
+async def test_enforce_undecidable_retries_then_unavailable(ai, patched):
+    patched["verdicts"] = [AiVerdict(None, "", 5, "timeout") for _ in range(3)]
+    await _run(**ai())
+    await _settle()
+    patched["clock"]["t"] += 200  # within max_wait_s (300): ask again
+    assert (await _run(**ai())).outcome == "pending"
+    await _settle()
+    assert patched["asks"] == 2
+    patched["clock"]["t"] += 150  # 350s since first pending
+    r = await _run(**ai())
+    assert (r.outcome, r.reason_key) == ("fail", "swap.gate.aiUnavailable")
+    assert not gate._ai_waits
+
+
+@pytest.mark.asyncio
+async def test_enforce_stale_wait_takes_new_photo(ai, patched):
+    patched["verdicts"] = [AiVerdict(True, "old", 5, None), AiVerdict(False, "new", 5, None)]
+    await _run(**ai())
+    await _settle()
+    patched["clock"]["t"] += 10_000
+    assert (await _run(**ai())).outcome == "pending"
+    await _settle()
+    assert (await _run(**ai())).outcome == "pass"
+
+
+@pytest.mark.asyncio
+async def test_enforce_still_checks_clip(ai, patched):
+    patched["frame"] = _jpeg(False)
+    r = await _run(**ai())
+    assert r.reason_key == "swap.gate.noPlate"
+    assert patched["asks"] == 0
+
+
+@pytest.mark.asyncio
+async def test_enforce_override_skips_ai(ai, patched):
+    patched["analysis"] = _Result(False)
+    r = await _run(ai_override=True, **ai())
+    assert r.outcome == "pass"
+    await _settle()
+    assert patched["asks"] == 0
+
+
+@pytest.mark.asyncio
+async def test_shadow_v1_decides(ai, patched):
+    patched["verdicts"] = [AiVerdict(True, "a part", 5, None)]
+    r = await _run(**ai(mode="shadow"))
+    assert r.outcome == "pass"
+    await _settle()
+    assert patched["asks"] == 1  # ran in the background, not waited on
+
+
+@pytest.mark.asyncio
+async def test_shadow_v1_fail_still_fails(ai, patched):
+    patched["verdicts"] = [AiVerdict(False, "empty", 5, None)]
+    patched["analysis"] = _Result(False)
+    r = await _run(**ai(mode="shadow"))
+    assert r.reason_key == "swap.gate.objectOnPlate"
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("kw", [{"mode": "off"}, {"mode": "enforce", "url": ""}, {"mode": "shadow", "url": ""}])
+async def test_off_or_no_url_is_v1_only(ai, patched, kw):
+    patched["analysis"] = _Result(False)
+    r = await _run(**ai(**kw))
+    assert r.reason_key == "swap.gate.objectOnPlate"
+    await _settle()
+    assert patched["asks"] == 0
