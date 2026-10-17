@@ -73,6 +73,7 @@ async def test_request_body():
     assert body["prompt"] == PROMPT and body["model"] == "m"
     assert body["format"] == "json" and body["stream"] is False
     assert body["options"]["temperature"] == 0 and body["keep_alive"] == -1
+    assert body["options"]["num_ctx"] == 4096
     assert body["images"] == ["aW1n"]
 
 

@@ -77,7 +77,9 @@ async def ask_plate_empty(url: str, model: str, image_jpeg: bytes, timeout_s: fl
         "images": [base64.b64encode(image_jpeg).decode()],
         "stream": False,
         "format": "json",
-        "options": {"temperature": 0},
+        # One 768px image plus the prompt is ~540 tokens. The model default (32768) adds
+        # ~8 GiB of KV cache, so qwen2.5vl:32b no longer fits next to the shared GPU users.
+        "options": {"temperature": 0, "num_ctx": 4096},
         "keep_alive": -1,
     }
     start = time.monotonic()
