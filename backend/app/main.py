@@ -4026,6 +4026,22 @@ async def on_print_start(printer_id: int, data: dict):
 
     clear_cover_cache(printer_id)
 
+    # SwapMod: the one-shot "send anyway" plate-check override ends when a print starts.
+    try:
+        from sqlalchemy import update
+
+        from backend.app.models.printer import Printer
+
+        async with async_session() as db:
+            await db.execute(
+                update(Printer)
+                .where(Printer.id == printer_id, Printer.swap_enabled.is_(True))
+                .values(swap_ai_override=None)
+            )
+            await db.commit()
+    except Exception as e:
+        logger.warning("Could not clear swap_ai_override for printer %s: %s", printer_id, e)
+
     await ws_manager.send_print_start(printer_id, data)
 
     # Notify when the print-start AMS mapping references tray slots without spool assignments.

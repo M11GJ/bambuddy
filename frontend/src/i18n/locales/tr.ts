@@ -7922,6 +7922,7 @@ export default {
       modeEnforce: "Zorla (nesne varsa durdur)",
       url: "Ollama URL'si",
       urlHint: "Boş = yapay zeka çağrılmaz.",
+      enforceNeedsUrl: "Enforce için Ollama URL'si gerekir; olmadan kaydedilmez.",
       model: "Model",
       timeout: "Yanıt zaman aşımı (sn)",
       maxWait: "En uzun bekleme (sn)",

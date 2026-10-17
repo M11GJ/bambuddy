@@ -1,4 +1,4 @@
-"""One SwapMod plate-check decision (kept per printer, newest 50)."""
+"""One SwapMod plate-check decision (kept per printer, newest 500)."""
 
 from __future__ import annotations
 

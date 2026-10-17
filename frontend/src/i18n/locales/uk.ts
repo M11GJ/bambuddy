@@ -8038,6 +8038,7 @@ export default {
       modeEnforce: "Примусово (зупинка за наявності предмета)",
       url: "URL Ollama",
       urlHint: "Порожньо = ШІ не викликається.",
+      enforceNeedsUrl: "Для Enforce потрібен URL Ollama; без нього зберегти не можна.",
       model: "Модель",
       timeout: "Тайм-аут відповіді (с)",
       maxWait: "Макс. очікування (с)",

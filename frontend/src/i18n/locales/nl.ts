@@ -8048,6 +8048,7 @@ export default {
       modeEnforce: "Afdwingen (stoppen bij voorwerp)",
       url: "Ollama-URL",
       urlHint: "Leeg = de AI wordt niet aangeroepen.",
+      enforceNeedsUrl: "Enforce vereist een Ollama-URL; zonder wordt niet opgeslagen.",
       model: "Model",
       timeout: "Time-out antwoord (s)",
       maxWait: "Maximale wachttijd (s)",

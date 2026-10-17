@@ -2285,6 +2285,18 @@ class TestPlateNotEmptyNotifications:
             assert call_kwargs.get("force_immediate") is True
 
     @pytest.mark.asyncio
+    async def test_on_plate_not_empty_appends_reason(self, service, mock_provider, mock_db):
+        with (
+            patch.object(service, "_get_providers_for_event", new_callable=AsyncMock) as mock_get,
+            patch.object(service, "_send_to_providers", new_callable=AsyncMock) as mock_send,
+            patch.object(service, "_build_message_from_template", new_callable=AsyncMock) as mock_build,
+        ):
+            mock_get.return_value = [mock_provider]
+            mock_build.return_value = ("Plate Not Empty", "Objects detected")
+            await service.on_plate_not_empty(1, "P", mock_db, reason="swap.gate.aiUnavailable")
+            assert mock_send.call_args[0][2] == "Objects detected\n[swap.gate.aiUnavailable]"
+
+    @pytest.mark.asyncio
     async def test_on_plate_not_empty_skipped_when_disabled(self, service, mock_provider, mock_db):
         """Verify notification is skipped when toggle is disabled."""
         mock_provider.on_plate_not_empty = False

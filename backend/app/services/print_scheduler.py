@@ -1053,6 +1053,7 @@ async def _notify_swap_camera_fail(db: AsyncSession, printer: Printer, gate) -> 
             db=db,
             difference_percent=gate.diff_percent,
             image_data=image,
+            reason=gate.reason_key,
         )
     except Exception as e:
         logger.warning("Swap camera-fail notification for printer %s failed: %s", printer.id, e)

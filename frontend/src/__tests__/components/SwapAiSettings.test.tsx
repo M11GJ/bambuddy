@@ -29,4 +29,26 @@ describe('SwapAiSettings', () => {
       ]),
     );
   });
+
+  it('keeps Save disabled until settings have loaded', async () => {
+    server.use(http.get('*/api/v1/settings', async () => {
+      await new Promise((r) => setTimeout(r, 50));
+      return HttpResponse.json({ swap_ai_mode: 'shadow', swap_ai_url: '', swap_ai_model: 'm', swap_ai_timeout_s: 60, swap_ai_max_wait_s: 300 });
+    }));
+    render(<SwapAiSettings />);
+    expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
+    await waitFor(() => expect(screen.getByLabelText('Model')).toHaveValue('m'));
+    expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
+  });
+
+  it('warns when enforce is chosen without a URL', async () => {
+    server.use(http.get('*/api/v1/settings', () => HttpResponse.json({ swap_ai_mode: 'shadow', swap_ai_url: '', swap_ai_model: 'm', swap_ai_timeout_s: 60, swap_ai_max_wait_s: 300 })));
+    render(<SwapAiSettings />);
+    await waitFor(() => expect(screen.getByLabelText('Model')).toHaveValue('m'));
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    await userEvent.selectOptions(screen.getByLabelText('Mode'), 'enforce');
+    expect(screen.getByRole('alert')).toHaveTextContent('Enforce needs an Ollama URL');
+    await userEvent.type(screen.getByLabelText('Ollama URL'), 'http://x');
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
 });

@@ -65,6 +65,9 @@ export function SwapAiSettings() {
             <option value="shadow">{t('swap.ai.modeShadow')}</option>
             <option value="enforce">{t('swap.ai.modeEnforce')}</option>
           </select>
+          {mode === 'enforce' && !url.trim() && (
+            <p role="alert" className="text-xs text-yellow-400 mt-1">{t('swap.ai.enforceNeedsUrl')}</p>
+          )}
         </div>
         <div>
           <label htmlFor="swap-ai-url" className="block text-sm text-bambu-gray mb-1">{t('swap.ai.url')}</label>
@@ -85,7 +88,7 @@ export function SwapAiSettings() {
             <input id="swap-ai-maxwait" type="number" min={1} max={3600} value={maxWait} onChange={(e) => setMaxWait(e.target.value)} className={INPUT} />
           </div>
         </div>
-        <Button onClick={() => save.mutate()} disabled={save.isPending}>{t('common.save')}</Button>
+        <Button onClick={() => save.mutate()} disabled={save.isPending || !settings}>{t('common.save')}</Button>
       </CardContent>
     </Card>
   );

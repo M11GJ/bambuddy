@@ -1,4 +1,4 @@
-"""Plate-check records: one row + cropped image per decision, 50 kept, printers:update only."""
+"""Plate-check records: one row + cropped image per decision, 500 kept, printers:update only."""
 
 import cv2
 import numpy as np
@@ -63,14 +63,29 @@ async def test_record_keeps_row_and_cropped_image(db_session, printer_factory, g
 
 @pytest.mark.asyncio
 @pytest.mark.integration
-async def test_51st_record_prunes_oldest_row_and_file(db_session, printer_factory, gate_dir):
+async def test_record_over_cap_prunes_oldest_row_and_file(db_session, printer_factory, gate_dir, monkeypatch):
+    assert KEEP_PER_PRINTER == 500
+    monkeypatch.setattr("backend.app.services.swap_gate_records.KEEP_PER_PRINTER", 3)  # keep the test fast
     p = await printer_factory()
-    for _ in range(KEEP_PER_PRINTER + 1):
+    for _ in range(4):
         await record_gate(p.id, mode="v1", outcome="fail", image=_frame())
     rows = await _rows(db_session, p.id)
-    assert len(rows) == KEEP_PER_PRINTER
+    assert len(rows) == 3
     assert rows[0].id > 1
-    assert len(list(gate_dir.glob("*.jpg"))) == KEEP_PER_PRINTER
+    assert len(list(gate_dir.glob("*.jpg"))) == 3
+
+
+@pytest.mark.asyncio
+@pytest.mark.integration
+async def test_sweep_failure_keeps_committed_image(db_session, printer_factory, gate_dir, monkeypatch):
+    def boom(keep):
+        raise OSError("sweep broke")
+
+    monkeypatch.setattr("backend.app.services.swap_gate_records._sweep_orphans", boom)
+    p = await printer_factory()
+    await record_gate(p.id, mode="v1", outcome="fail", image=_frame())
+    (row,) = await _rows(db_session, p.id)
+    assert row.image_path and (gate_dir / row.image_path).exists()
 
 
 @pytest.mark.asyncio
@@ -238,3 +253,46 @@ async def test_deleting_printer_removes_record_images(async_client, db_session, 
     r = await async_client.delete(f"/api/v1/printers/{pid}", headers=auth)
     assert r.status_code == 200
     assert list(gate_dir.glob("*.jpg")) == []
+
+
+@pytest.mark.asyncio
+@pytest.mark.integration
+async def test_settings_reject_enforce_without_url(async_client: AsyncClient, auth):
+    r = await async_client.put("/api/v1/settings/", json={"swap_ai_mode": "enforce"}, headers=auth)
+    assert r.status_code == 422 and "swap_ai_url" in r.json()["detail"]
+    r = await async_client.put("/api/v1/settings/", json={"swap_ai_mode": "enforce", "swap_ai_url": "  "}, headers=auth)
+    assert r.status_code == 422
+    r = await async_client.put(
+        "/api/v1/settings/", json={"swap_ai_mode": "enforce", "swap_ai_url": "http://10.0.0.5:11434"}, headers=auth
+    )
+    assert r.status_code == 200
+    # stored enforce + URL: clearing only the URL is refused, switching mode away is fine
+    r = await async_client.put("/api/v1/settings/", json={"swap_ai_url": ""}, headers=auth)
+    assert r.status_code == 422
+    r = await async_client.put("/api/v1/settings/", json={"swap_ai_mode": "shadow", "swap_ai_url": ""}, headers=auth)
+    assert r.status_code == 200
+
+
+@pytest.mark.asyncio
+@pytest.mark.integration
+async def test_print_start_clears_swap_ai_override(db_session, printer_factory, monkeypatch):
+    from unittest.mock import AsyncMock
+
+    from backend.app import main
+
+    swap = await printer_factory(swap_enabled=True, swap_ai_override="swap.gate.aiObject")
+    plain = await printer_factory(swap_ai_override="keep")
+    swap_id, plain_id = swap.id, plain.id
+    monkeypatch.setattr(main, "async_session", async_sessionmaker(db_session.bind, expire_on_commit=False))
+    monkeypatch.setattr(main.ws_manager, "send_print_start", AsyncMock(side_effect=RuntimeError("stop here")))
+    for pid in (swap_id, plain_id):
+        with pytest.raises(RuntimeError):
+            await main.on_print_start(pid, {})
+    from backend.app.models.printer import Printer
+
+    async def override(pid):
+        db_session.expire_all()
+        return (await db_session.execute(select(Printer.swap_ai_override).where(Printer.id == pid))).scalar_one()
+
+    assert await override(swap_id) is None
+    assert await override(plain_id) == "keep"

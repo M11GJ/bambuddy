@@ -1,4 +1,4 @@
-"""Store plate-check decisions with the cropped image the AI saw (newest 50 per printer)."""
+"""Store plate-check decisions with the cropped image the AI saw (newest 500 per printer)."""
 
 import asyncio
 import logging
@@ -14,7 +14,7 @@ from backend.app.services.swap_ai import crop_plate
 
 logger = logging.getLogger(__name__)
 
-KEEP_PER_PRINTER = 50
+KEEP_PER_PRINTER = 500
 
 
 def _write_crop(image: bytes, roi) -> str | None:
@@ -90,11 +90,16 @@ async def record_gate(
                 await db.execute(delete(SwapGateRecord).where(SwapGateRecord.id.in_([r.id for r in old])))
             await db.commit()
             keep = {r for (r,) in (await db.execute(select(SwapGateRecord.image_path))).all() if r}
-        await asyncio.to_thread(_unlink, [r.image_path for r in old])
-        await asyncio.to_thread(_sweep_orphans, keep)
+        name = None  # committed: the row owns the image now, no later failure may delete it
     except Exception:
         logger.exception("Swap gate record failed for printer %s", printer_id)
         await asyncio.to_thread(_unlink, [name])
+        return
+    try:
+        await asyncio.to_thread(_unlink, [r.image_path for r in old])
+        await asyncio.to_thread(_sweep_orphans, keep)
+    except Exception:
+        logger.warning("Swap gate record cleanup failed for printer %s", printer_id, exc_info=True)
 
 
 async def delete_records(db, printer_id: int) -> int:

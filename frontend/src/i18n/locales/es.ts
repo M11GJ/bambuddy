@@ -8005,6 +8005,7 @@ export default {
       modeEnforce: "Aplicar (detener si hay objeto)",
       url: "URL de Ollama",
       urlHint: "Vacío = no se llama a la IA.",
+      enforceNeedsUrl: "Enforce necesita una URL de Ollama; no se guarda sin ella.",
       model: "Modelo",
       timeout: "Tiempo de espera de respuesta (s)",
       maxWait: "Espera máxima (s)",

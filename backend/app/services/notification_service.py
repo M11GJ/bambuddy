@@ -2034,8 +2034,13 @@ class NotificationService:
         db: AsyncSession,
         difference_percent: float | None = None,
         image_data: bytes | None = None,
+        reason: str | None = None,
     ):
-        """Handle plate not empty event - objects detected on build plate before print."""
+        """Handle plate not empty event - objects detected on build plate before print.
+
+        ``reason`` (SwapMod gate reason key) is appended to the message so a camera/AI
+        failure can be told apart from a plain "plate not empty".
+        """
         providers = await self._get_providers_for_event(db, "on_plate_not_empty", printer_id)
         if not providers:
             return
@@ -2046,6 +2051,8 @@ class NotificationService:
         }
 
         title, message = await self._build_message_from_template(db, "plate_not_empty", variables)
+        if reason:
+            message = f"{message}\n[{reason}]"
         await self._send_to_providers(
             providers,
             title,

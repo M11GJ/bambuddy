@@ -289,6 +289,7 @@ async def test_camera_fail_holds_printer(case_factory):
     assert lib is not None
     ctx.apply_after_commit.assert_called_with(ctx.printer_id)
     ctx.on_plate_not_empty.assert_awaited_once()
+    assert ctx.on_plate_not_empty.call_args.kwargs["reason"] == "swap.gate.noPlate"
     sent = cv2.imdecode(np.frombuffer(ctx.on_plate_not_empty.call_args.kwargs["image_data"], np.uint8), 1)
     assert max(sent.shape[:2]) == 768  # the plate crop, not the 2000px frame
 

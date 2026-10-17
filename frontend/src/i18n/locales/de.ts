@@ -7997,6 +7997,7 @@ export default {
       modeEnforce: "Erzwingen (bei Objekt anhalten)",
       url: "Ollama-URL",
       urlHint: "Leer = die KI wird nicht aufgerufen.",
+      enforceNeedsUrl: "Enforce braucht eine Ollama-URL; ohne sie wird nicht gespeichert.",
       model: "Modell",
       timeout: "Antwort-Timeout (s)",
       maxWait: "Maximale Wartezeit (s)",

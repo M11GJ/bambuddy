@@ -8046,6 +8046,7 @@ errors: {
       modeEnforce: "Tvinga (stoppa vid föremål)",
       url: "Ollama-URL",
       urlHint: "Tomt = AI:n anropas inte.",
+      enforceNeedsUrl: "Enforce kräver en Ollama-URL; sparning nekas utan.",
       model: "Modell",
       timeout: "Svarstimeout (s)",
       maxWait: "Maximal väntetid (s)",

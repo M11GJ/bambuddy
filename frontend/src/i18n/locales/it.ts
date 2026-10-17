@@ -7982,6 +7982,7 @@ export default {
       modeEnforce: "Applica (blocca se c'è un oggetto)",
       url: "URL di Ollama",
       urlHint: "Vuoto = l'IA non viene chiamata.",
+      enforceNeedsUrl: "Enforce richiede un URL Ollama; senza non si salva.",
       model: "Modello",
       timeout: "Timeout risposta (s)",
       maxWait: "Attesa massima (s)",

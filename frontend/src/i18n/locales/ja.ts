@@ -7996,6 +7996,7 @@ export default {
       modeEnforce: "強制（物があれば停止）",
       url: "Ollama の URL",
       urlHint: "空欄 = AI を呼び出しません。",
+      enforceNeedsUrl: "強制モードには Ollama URL が必要です。空のままでは保存できません。",
       model: "モデル",
       timeout: "回答タイムアウト（秒）",
       maxWait: "最大待ち時間（秒）",

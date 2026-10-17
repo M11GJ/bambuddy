@@ -7980,6 +7980,7 @@ export default {
       modeEnforce: "強制（有物體則暫停）",
       url: "Ollama 位址",
       urlHint: "留空 = 不呼叫 AI。",
+      enforceNeedsUrl: "強制模式需要 Ollama URL，未填無法儲存。",
       model: "模型",
       timeout: "回答逾時（秒）",
       maxWait: "最長等待（秒）",

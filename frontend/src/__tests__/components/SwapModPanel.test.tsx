@@ -188,6 +188,16 @@ describe('SwapRecords', () => {
     expect(await screen.findByText('No records yet')).toBeInTheDocument();
   });
 
+  it('shows record times as UTC converted to local, not shifted', async () => {
+    server.use(
+      http.get('*/api/v1/printers/1/swap', () => HttpResponse.json(status({ enabled: false, config: {} }))),
+      http.get('*/api/v1/printers/1/swap/records', () => HttpResponse.json([{ ...rec, has_image: false }])),
+    );
+    render(<SwapModSettings printerId={1} />);
+    const expected = new Date('2026-10-17T01:02:03Z').toLocaleString();
+    expect(await screen.findByText(new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))).toBeInTheDocument();
+  });
+
   it('is hidden without printers:update', async () => {
     perms.clear();
     server.use(http.get('*/api/v1/printers/1/swap', () => HttpResponse.json(status({ enabled: false, config: {} }))));

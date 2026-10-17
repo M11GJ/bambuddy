@@ -8048,6 +8048,7 @@ export default {
       modeEnforce: "Enforce (hold on object)",
       url: "Ollama URL",
       urlHint: "Empty = the AI is not called.",
+      enforceNeedsUrl: "Enforce needs an Ollama URL; saving is refused without one.",
       model: "Model",
       timeout: "Answer timeout (s)",
       maxWait: "Max wait (s)",

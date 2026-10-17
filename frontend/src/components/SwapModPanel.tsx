@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { parseUTCDate } from '../utils/date';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Loader2, Trash2 } from 'lucide-react';
@@ -230,7 +231,7 @@ export function SwapRecords({ printerId }: { printerId: number }) {
             {r.has_image ? <RecordImage printerId={printerId} recordId={r.id} /> : <div className="w-16 h-10 shrink-0" />}
             <div className="min-w-0">
               <div className="text-white">
-                {new Date(r.created_at).toLocaleString()} · {t(`swap.records.outcome.${r.outcome}`)}
+                {parseUTCDate(r.created_at)?.toLocaleString()} · {t(`swap.records.outcome.${r.outcome}`)}
               </div>
               <div className="truncate">
                 {aiAnswer(r, t)}

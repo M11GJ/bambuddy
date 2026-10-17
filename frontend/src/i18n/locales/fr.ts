@@ -7983,6 +7983,7 @@ export default {
       modeEnforce: "Application (bloquer si objet)",
       url: "URL d'Ollama",
       urlHint: "Vide = l'IA n'est pas appelée.",
+      enforceNeedsUrl: "Enforce exige une URL Ollama ; l'enregistrement est refusé sans elle.",
       model: "Modèle",
       timeout: "Délai de réponse (s)",
       maxWait: "Attente maximale (s)",

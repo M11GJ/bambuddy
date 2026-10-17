@@ -378,6 +378,13 @@ async def update_settings(
                     detail="Cannot disable local login: your account has no OIDC link, so you would lock yourself out.",
                 )
 
+    # Enforce mode without an AI URL would hold every swap print; refuse it (stored value counts if only one is sent).
+    if "swap_ai_mode" in update_data or "swap_ai_url" in update_data:
+        mode = update_data.get("swap_ai_mode") or await get_setting(db, "swap_ai_mode")
+        url = update_data["swap_ai_url"] if "swap_ai_url" in update_data else await get_setting(db, "swap_ai_url")
+        if mode == "enforce" and not (url or "").strip():
+            raise HTTPException(status_code=422, detail="swap_ai_url is required when swap_ai_mode is 'enforce'")
+
     # Check if any MQTT settings are being updated
     mqtt_keys = {
         "mqtt_enabled",

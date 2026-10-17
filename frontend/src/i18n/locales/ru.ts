@@ -7598,6 +7598,7 @@ export default {
       modeEnforce: "Принудительно (стоп при предмете)",
       url: "URL Ollama",
       urlHint: "Пусто = ИИ не вызывается.",
+      enforceNeedsUrl: "Для Enforce нужен URL Ollama; без него сохранить нельзя.",
       model: "Модель",
       timeout: "Тайм-аут ответа (с)",
       maxWait: "Макс. ожидание (с)",

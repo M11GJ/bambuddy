@@ -7616,6 +7616,7 @@ export default {
       modeEnforce: "강제 (물체가 있으면 중지)",
       url: "Ollama 주소",
       urlHint: "비워 두면 AI를 호출하지 않습니다.",
+      enforceNeedsUrl: "강제 모드에는 Ollama URL이 필요하며, 비어 있으면 저장되지 않습니다.",
       model: "모델",
       timeout: "응답 제한 시간(초)",
       maxWait: "최대 대기 시간(초)",
