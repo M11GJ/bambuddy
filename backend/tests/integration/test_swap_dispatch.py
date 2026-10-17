@@ -467,7 +467,6 @@ async def test_override_skips_ai_once_and_is_consumed_on_dispatch(case_factory):
     assert item.status == "printing"
     assert printer.swap_ai_override is None
     # Next dispatch: the AI runs again.
-    await _set_override(ctx, None)
     async with ctx.session_maker() as db:
         await db.execute(update(PrintQueueItem).where(PrintQueueItem.id == ctx.item_id).values(status="pending"))
         await db.commit()
@@ -488,3 +487,17 @@ async def test_override_cleared_when_clip_fails(case_factory):
     _, printer, _, _ = await _run(ctx, CameraGateResult("fail", "swap.gate.noPlate", clip_percent=0.5))
     assert printer.swap_hold_reason == "swap.gate.noPlate"
     assert printer.swap_ai_override is None
+
+
+async def test_override_consumed_even_if_guard_fails_afterwards(case_factory):
+    ctx = await case_factory(gcode=NO_MARKER_GCODE)
+    await _set_override(ctx)
+    item, printer, _, gate = await _run(ctx)
+    assert gate.call_args.kwargs["ai_override"] is True
+    assert item.status == "failed"
+    assert printer.swap_ai_override is None
+    async with ctx.session_maker() as db:
+        await db.execute(update(PrintQueueItem).where(PrintQueueItem.id == ctx.item_id).values(status="pending"))
+        await db.commit()
+    _, _, _, gate2 = await _run(ctx)
+    assert gate2.call_args.kwargs["ai_override"] is False
