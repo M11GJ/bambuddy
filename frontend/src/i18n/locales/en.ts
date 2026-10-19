@@ -8090,7 +8090,7 @@ export default {
       aiPending: "Waiting for the plate check AI",
     },
     guard: {
-      unreadable: "The print file could not be read",
+      unreadable: "The print file could not be read. Upload an STL or unsliced 3MF and slice it with the swapper pipeline",
       noMarker: "Not sliced for the plate swapper (no swap block) — slice with the swapper pipeline",
       multipleMarkers: "The swap block appears more than once",
       excludedArea: "Part of the print is in the swapper's no-print zone",
