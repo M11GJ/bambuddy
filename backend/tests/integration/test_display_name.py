@@ -79,7 +79,9 @@ async def test_library_and_users_show_label(async_client: AsyncClient, db_sessio
     db_session.add_all([named, plain])
     await db_session.flush()
     files = [
-        LibraryFile(filename=f"{u.username}.3mf", file_path=f"/t/{u.username}", file_size=1, file_type="3mf", created_by_id=u.id)
+        LibraryFile(
+            filename=f"{u.username}.3mf", file_path=f"/t/{u.username}", file_size=1, file_type="3mf", created_by_id=u.id
+        )
         for u in (named, plain)
     ]
     db_session.add_all(files)
@@ -89,5 +91,24 @@ async def test_library_and_users_show_label(async_client: AsyncClient, db_sessio
         resp = await async_client.get(f"/api/v1/library/files/{f.id}")
         assert resp.json()["created_by_username"] == expected
 
-    users = (await async_client.get("/api/v1/users/slim")).json()
-    assert {u["username"] for u in users} >= {"山田太郎", "plainuser"}
+    users = {u["username"]: u["display_name"] for u in (await async_client.get("/api/v1/users/slim")).json()}
+    assert users["yamada_t"] == "山田太郎"
+    assert users["plainuser"] is None
+
+
+@pytest.mark.asyncio
+@pytest.mark.integration
+async def test_print_log_user_filter_matches_login_id_or_real_name(async_client: AsyncClient, db_session):
+    from backend.app.models.print_log import PrintLogEntry
+
+    user = User(username="yamada_t", display_name="山田太郎", password_hash="x", role="user")
+    other = User(username="other", password_hash="x", role="user")
+    db_session.add_all([user, other])
+    await db_session.flush()
+    for name, uid, uname in [("old", user.id, "yamada_t"), ("new", user.id, "山田太郎"), ("theirs", other.id, "other")]:
+        db_session.add(PrintLogEntry(print_name=name, status="completed", created_by_id=uid, created_by_username=uname))
+    await db_session.commit()
+
+    for value in ("yamada_t", "山田太郎"):
+        resp = await async_client.get("/api/v1/print-log/", params={"created_by_username": value})
+        assert {i["print_name"] for i in resp.json()["items"]} == {"old", "new"}

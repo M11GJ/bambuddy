@@ -602,7 +602,7 @@ export function FinancePage() {
   const usersById = useMemo(() => {
     const map = new Map<number, string>();
     for (const entry of sortedUsers) {
-      map.set(entry.id, entry.username);
+      map.set(entry.id, entry.display_name || entry.username);
     }
     return map;
   }, [sortedUsers]);
@@ -651,7 +651,7 @@ export function FinancePage() {
     if (ownerUserId == null) return t('finance.personal', 'Personal');
     const ownerName = usersById.get(ownerUserId);
     if (ownerName) return ownerName;
-    if (user?.id === ownerUserId && user.username) return user.username;
+    if (user?.id === ownerUserId && user.username) return user.display_name || user.username;
     return t('finance.userWithId', 'User #{{id}}', { id: ownerUserId });
   };
 
@@ -836,7 +836,7 @@ export function FinancePage() {
                   className={fieldClass}
                 >
                   {(sortedUsers || []).map((u) => (
-                    <option key={u.id} value={u.id}>{u.username}</option>
+                    <option key={u.id} value={u.id}>{u.display_name || u.username}</option>
                   ))}
                 </select>
               </div>
@@ -927,7 +927,7 @@ export function FinancePage() {
                 >
                   <option value="">{t('finance.selectUser', 'Select user')}</option>
                   {availableUsersForCenter.map((u) => (
-                    <option key={u.id} value={u.id}>{u.username}</option>
+                    <option key={u.id} value={u.id}>{u.display_name || u.username}</option>
                   ))}
                 </select>
               </div>
@@ -966,7 +966,7 @@ export function FinancePage() {
                     const user = sortedUsers.find((u) => u.id === member.user_id);
                     return (
                       <tr key={member.id} className="border-b border-bambu-dark-tertiary/60 text-white">
-                        <td className={tableCellClass}>{user?.username || `User ${member.user_id}`}</td>
+                        <td className={tableCellClass}>{user?.display_name || user?.username || `User ${member.user_id}`}</td>
                         <td className={tableCellClass}>{member.can_print ? t('common.yes', 'Yes') : t('common.no', 'No')}</td>
                         <td className={tableCellClass}>
                           <Button
@@ -1334,7 +1334,7 @@ export function FinancePage() {
                 >
                   <option value="">{t('finance.selectUser', 'Select user...')}</option>
                   {sortedUsers.map((u) => (
-                    <option key={u.id} value={u.id}>{u.username}</option>
+                    <option key={u.id} value={u.id}>{u.display_name || u.username}</option>
                   ))}
                 </select>
               </div>
@@ -1410,7 +1410,7 @@ export function FinancePage() {
                 >
                   <option value="">{t('finance.selectUser', 'Select user...')}</option>
                   {sortedUsers.map((u) => (
-                    <option key={u.id} value={u.id}>{u.username}</option>
+                    <option key={u.id} value={u.id}>{u.display_name || u.username}</option>
                   ))}
                 </select>
               </div>

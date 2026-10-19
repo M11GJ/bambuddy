@@ -4425,7 +4425,8 @@ export interface UserResponse {
  */
 export interface UserSlim {
   id: number;
-  username: string;
+  username: string;  // login ID
+  display_name?: string | null;  // real name; show `display_name || username`
 }
 
 export interface UserCreate {

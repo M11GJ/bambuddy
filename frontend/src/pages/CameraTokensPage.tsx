@@ -473,7 +473,7 @@ export function CameraTokensSection() {
         // with the numeric user_id as fallback.
         try {
           const users = await api.getUsersSlim();
-          setUserIdToName(new Map(users.map((u) => [u.id, u.username])));
+          setUserIdToName(new Map(users.map((u) => [u.id, u.display_name || u.username])));
         } catch {
           setUserIdToName(new Map());
         }

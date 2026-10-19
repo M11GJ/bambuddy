@@ -3155,7 +3155,7 @@ export function FileManagerPage() {
                   )}
                   <datalist id="usernames-list">
                     {users?.map((user) => (
-                      <option key={user.id} value={user.username} />
+                      <option key={user.id} value={user.display_name || user.username} />
                     ))}
                   </datalist>
                 </div>

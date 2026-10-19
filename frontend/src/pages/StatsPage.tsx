@@ -1099,7 +1099,8 @@ export function StatsPage() {
   const selectedUserLabel = useMemo(() => {
     if (selectedUserId === null) return t('stats.allUsers', 'All Users');
     if (selectedUserId === -1) return t('stats.noUser', 'No User (System)');
-    return users?.find(u => u.id === selectedUserId)?.username ?? '?';
+    const picked = users?.find(u => u.id === selectedUserId);
+    return picked?.display_name || picked?.username || '?';
   }, [selectedUserId, users, t]);
 
   const handleExport = async (format: 'csv' | 'xlsx') => {
@@ -1362,7 +1363,7 @@ export function StatsPage() {
                         }`}
                         onClick={() => { setSelectedUserId(u.id); setShowUserPicker(false); }}
                       >
-                        {u.username}
+                        {u.display_name || u.username}
                       </button>
                     ))}
                   </div>

@@ -3,7 +3,7 @@ from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import FileResponse
-from sqlalchemy import delete, func, nullslast, select
+from sqlalchemy import delete, func, nullslast, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.app.core.auth import (
@@ -79,8 +79,17 @@ async def get_print_log(
         query = query.where(PrintLogEntry.printer_id == printer_id)
         count_query = count_query.where(PrintLogEntry.printer_id == printer_id)
     if created_by_username:
-        query = query.where(PrintLogEntry.created_by_username == created_by_username)
-        count_query = count_query.where(PrintLogEntry.created_by_username == created_by_username)
+        # Rows store whichever name was current at completion (login ID or real name);
+        # also match by user id so both old and new rows are found.
+        match_ids = select(User.id).where(
+            or_(User.username == created_by_username, User.display_name == created_by_username)
+        )
+        by_user = or_(
+            PrintLogEntry.created_by_username == created_by_username,
+            PrintLogEntry.created_by_id.in_(match_ids),
+        )
+        query = query.where(by_user)
+        count_query = count_query.where(by_user)
     if status:
         query = query.where(PrintLogEntry.status == status)
         count_query = count_query.where(PrintLogEntry.status == status)

@@ -72,7 +72,7 @@ async def test_slim_returns_only_id_and_username(async_client: AsyncClient, db_s
     rows = response.json()
     assert rows, "expected at least the admin created by setup"
     for row in rows:
-        assert set(row) == {"id", "username"}
+        assert set(row) == {"id", "username", "display_name"}
     assert "bob" in [row["username"] for row in rows]
 
 

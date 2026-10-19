@@ -224,8 +224,7 @@ async def list_users_slim(
     and answer 422.
     """
     result = await db.execute(select(User.id, User.username, User.display_name).order_by(User.username))
-    # `username` carries the human label so it matches the names stored on queue/print-log rows.
-    return [UserSlim(id=row.id, username=row.display_name or row.username) for row in result.all()]
+    return [UserSlim(id=row.id, username=row.username, display_name=row.display_name) for row in result.all()]
 
 
 @router.get("/{user_id}", response_model=UserResponse)

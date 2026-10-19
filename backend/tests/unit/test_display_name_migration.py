@@ -33,7 +33,9 @@ async def test_display_name_added_to_existing_users_table(tmp_path):
             # Rebuild users in its pre-feature shape, with a real row.
             await conn.execute(text("ALTER TABLE users DROP COLUMN display_name"))
             await conn.execute(
-                text("INSERT INTO users (username, email, role, auth_source, is_active) VALUES ('yamada_t','y@x.jp','user','oidc',1)")
+                text(
+                    "INSERT INTO users (username, email, role, auth_source, is_active) VALUES ('yamada_t','y@x.jp','user','oidc',1)"
+                )
             )
             cols = {r[1] for r in (await conn.execute(text("PRAGMA table_info(users)"))).all()}
             assert "display_name" not in cols

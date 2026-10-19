@@ -105,6 +105,7 @@ class UserSlim(BaseModel):
 
     id: int
     username: str
+    display_name: str | None = None
 
     class Config:
         from_attributes = True

@@ -4426,7 +4426,7 @@ export function ArchivesPage() {
                 >
                   <option value="">{t('archives.log.allUsers')}</option>
                   {users?.map((u) => (
-                    <option key={u.id} value={u.username}>{u.username}</option>
+                    <option key={u.id} value={u.username}>{u.display_name || u.username}</option>
                   ))}
                 </select>
                 {/* Status filter */}
