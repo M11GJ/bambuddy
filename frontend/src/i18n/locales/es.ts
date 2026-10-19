@@ -8035,6 +8035,7 @@ export default {
       platesUnknown: "Introduce el número de placas de repuesto",
       printNotConfirmed: "La última impresión no terminó con normalidad — revisa la placa y reanuda",
       configInvalid: "La configuración del cambiador de placas no es válida",
+      notHomed: "La impresora no tiene origen — retira las placas de repuesto, haz el homing y reanuda",
     },
     gate: {
       noPlate: "No se detecta ninguna placa en la cama",

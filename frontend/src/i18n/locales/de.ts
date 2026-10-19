@@ -8027,6 +8027,7 @@ export default {
       platesUnknown: "Anzahl der Ersatzplatten eingeben",
       printNotConfirmed: "Der letzte Druck wurde nicht normal beendet — Platte prüfen, dann fortsetzen",
       configInvalid: "Die Einstellungen des Plattenwechslers sind ungültig",
+      notHomed: "Drucker ist nicht referenziert — Ersatzplatten entnehmen, referenzieren, dann fortsetzen",
     },
     gate: {
       noPlate: "Keine Platte auf dem Druckbett erkannt",
