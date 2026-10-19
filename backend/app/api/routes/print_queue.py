@@ -1306,7 +1306,9 @@ async def bulk_update_queue_items(
             continue
 
         item_update_data = update_data.copy()
-        if "printer_id" in update_data or "plate_id" in update_data:
+        if item_update_data.get("printer_id", item.printer_id) != item.printer_id or (
+            item_update_data.get("plate_id", item.plate_id) != item.plate_id
+        ):
             await enqueue_swap_guard(
                 db,
                 item_update_data.get("printer_id", item.printer_id),
@@ -1712,7 +1714,9 @@ async def list_batches(
     creator_ids = {b.created_by_id for b in batches if b.created_by_id is not None}
     usernames: dict[int, str] = {}
     if creator_ids:
-        rows = await db.execute(select(User.id, func.coalesce(User.display_name, User.username)).where(User.id.in_(creator_ids)))
+        rows = await db.execute(
+            select(User.id, func.coalesce(User.display_name, User.username)).where(User.id.in_(creator_ids))
+        )
         usernames = {row[0]: row[1] for row in rows.all()}
 
     return [await _build_batch_response(db, batch, usernames=usernames) for batch in batches]
@@ -2004,7 +2008,9 @@ async def update_queue_item(
                 f"File was sliced for {sliced_for} and cannot be dispatched to {update_data['target_model']} printers",
             )
 
-    if "printer_id" in update_data or "plate_id" in update_data:
+    if update_data.get("printer_id", item.printer_id) != item.printer_id or (
+        update_data.get("plate_id", item.plate_id) != item.plate_id
+    ):
         await enqueue_swap_guard(
             db, new_printer_id, await _resolve_source_path(db, item), update_data.get("plate_id", item.plate_id)
         )

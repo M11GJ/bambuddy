@@ -5321,6 +5321,8 @@ export default {
     insufficientBudget: '予算が不足しています',
     unlimitedNoBudget: '無制限 – 予算上限は設定されていません。',
     noPrintableCostCenters: '印刷に利用できる有効なコストセンターがありません。管理者に印刷アクセスの付与を依頼してください。',
+    submitFailed: '失敗しました: {{error}}',
+    partialFailed: '{{success}}件成功、{{failed}}件失敗: {{error}}',
     askForOutcome: '結果を確認する',
     askForOutcomeTitle: '完了後に印刷の仕上がりを尋ねます',
   },

@@ -5364,6 +5364,8 @@ errors: {
     insufficientBudget: 'Otillräcklig budget',
     unlimitedNoBudget: 'Obgränsad – ingen budgetgräns är inställd.',
     noPrintableCostCenters: 'Inget aktivt kostnadsställe är tillgängligt för utskrift. Be en administratör att ge dig utskriftsåtkomst.',
+    submitFailed: 'Misslyckades: {{error}}',
+    partialFailed: '{{success}} lyckades, {{failed}} misslyckades: {{error}}',
     askForOutcome: 'Fråga efter resultat',
     askForOutcomeTitle: 'Fråga hur utskriften blev när den är klar',
   },

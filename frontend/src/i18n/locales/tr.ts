@@ -5296,6 +5296,8 @@ export default {
     insufficientBudget: 'Yetersiz bütçe',
     unlimitedNoBudget: 'Sınırsız – bütçe limiti belirlenmemiş.',
     noPrintableCostCenters: 'Yazdırma için kullanılabilir etkin bir masraf merkezi yok. Bir yöneticiden yazdırma erişimi vermesini isteyin.',
+    submitFailed: 'Başarısız: {{error}}',
+    partialFailed: '{{success}} başarılı, {{failed}} başarısız: {{error}}',
     askForOutcome: 'Sonucu sor',
     askForOutcomeTitle: 'Tamamlandığında baskının nasıl çıktığını sor',
   },

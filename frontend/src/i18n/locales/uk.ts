@@ -5361,6 +5361,8 @@ export default {
     insufficientBudget: "Недостатньо бюджету",
     unlimitedNoBudget: "Без обмежень — ліміт бюджету не встановлено.",
     noPrintableCostCenters: "Немає активного центру витрат, доступного для друку. Попросіть адміністратора надати вам доступ до друку.",
+    submitFailed: 'Помилка: {{error}}',
+    partialFailed: 'Успішно: {{success}}, з помилкою: {{failed}}: {{error}}',
     askForOutcome: 'Запитати про результат',
     askForOutcomeTitle: 'Після завершення запитати, як вийшов друк',
   },

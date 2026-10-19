@@ -5089,6 +5089,8 @@ export default {
     insufficientBudget: '예산 부족',
     unlimitedNoBudget: '무제한 – 예산 한도가 설정되지 않았습니다.',
     noPrintableCostCenters: '인쇄에 사용할 수 있는 활성 비용 센터가 없습니다. 관리자에게 인쇄 권한을 요청하세요.',
+    submitFailed: '실패: {{error}}',
+    partialFailed: '{{success}}개 성공, {{failed}}개 실패: {{error}}',
     askForOutcome: '결과 묻기',
     askForOutcomeTitle: '완료 후 출력 결과가 어땠는지 물어보기',
   },

@@ -1956,7 +1956,8 @@ export function QueuePage() {
       setShowBulkEditModal(false);
       showToast(result.message);
     },
-    onError: () => showToast(t('queue.toast.updateFailed'), 'error'),
+    onError: (err: Error) =>
+      showToast(translateErrorMessage(err.message, t).text || t('queue.toast.updateFailed'), 'error'),
   });
 
   const bulkCancelMutation = useMutation({

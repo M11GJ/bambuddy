@@ -5307,6 +5307,8 @@ export default {
     insufficientBudget: 'Budget insufficiente',
     unlimitedNoBudget: 'Illimitato – non è impostato alcun limite di budget.',
     noPrintableCostCenters: 'Non è disponibile alcun centro di costo attivo per la stampa. Chiedi a un amministratore di concederti l’accesso alla stampa.',
+    submitFailed: 'Non riuscito: {{error}}',
+    partialFailed: '{{success}} riusciti, {{failed}} non riusciti: {{error}}',
     askForOutcome: 'Chiedi l’esito',
     askForOutcomeTitle: 'Chiedi com’è venuta la stampa una volta completata',
   },

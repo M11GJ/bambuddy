@@ -5307,6 +5307,8 @@ export default {
     insufficientBudget: '预算不足',
     unlimitedNoBudget: '无限制 – 未设置预算上限。',
     noPrintableCostCenters: '没有可用于打印的有效成本中心。请联系管理员授予你打印权限。',
+    submitFailed: '失败：{{error}}',
+    partialFailed: '{{success}} 个成功，{{failed}} 个失败：{{error}}',
     askForOutcome: '询问打印结果',
     askForOutcomeTitle: '打印完成后询问打印效果如何',
   },

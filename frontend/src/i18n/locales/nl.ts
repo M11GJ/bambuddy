@@ -5366,6 +5366,8 @@ export default {
     insufficientBudget: 'Onvoldoende budget',
     unlimitedNoBudget: 'Onbeperkt – er is geen budgetlimiet ingesteld.',
     noPrintableCostCenters: 'Er is geen actieve kostenplaats beschikbaar voor afdrukken. Vraag een beheerder om je afdruktoegang te geven.',
+    submitFailed: 'Mislukt: {{error}}',
+    partialFailed: '{{success}} geslaagd, {{failed}} mislukt: {{error}}',
     askForOutcome: 'Vragen naar resultaat',
     askForOutcomeTitle: 'Na afloop vragen hoe de print is geworden',
   },

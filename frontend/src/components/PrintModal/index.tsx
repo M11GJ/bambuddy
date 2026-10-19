@@ -1453,9 +1453,16 @@ export function PrintModal({
       onSuccess?.();
       onClose();
     } else if (results.success === 0) {
-      showToast(`Failed: ${translateErrorMessage(results.errors[0], t).text}`, 'error');
+      showToast(t('printModal.submitFailed', { error: translateErrorMessage(results.errors[0], t).text }), 'error');
     } else {
-      showToast(`${results.success} succeeded, ${results.failed} failed`, 'error');
+      showToast(
+        t('printModal.partialFailed', {
+          success: results.success,
+          failed: results.failed,
+          error: translateErrorMessage(results.errors[0], t).text,
+        }),
+        'error',
+      );
       queryClient.invalidateQueries({ queryKey: ['queue'] });
     }
   };

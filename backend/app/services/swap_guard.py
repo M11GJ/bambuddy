@@ -97,21 +97,13 @@ def check_swap_job(threemf_path: Path, plate_id: int, config: SwapConfig) -> Swa
     return SwapGuardResult(ok=True)
 
 
-def _has_gcode(path: Path) -> bool:
-    try:
-        with zipfile.ZipFile(path) as z:
-            return any(n.endswith(".gcode") for n in z.namelist())
-    except Exception:
-        return False
-
-
 async def enqueue_swap_guard(
     db: AsyncSession, printer_id: int | None, file_path: Path | None, plate_id: int | None
 ) -> None:
     """Reject at enqueue time a file a swap printer's dispatch guard would refuse.
 
-    No-op for no printer, a non-swap printer, or a file that carries no G-code
-    (unsliced inputs cannot be printed at all; the dispatch guard still runs).
+    No-op for no printer or a non-swap printer. For a swap printer a missing or
+    unreadable file (including unsliced ones) fails closed as swap.guard.unreadable.
     """
     if printer_id is None:
         return
@@ -122,8 +114,8 @@ async def enqueue_swap_guard(
         cfg = parse_swap_config(printer.swap_config)
     except ValueError as e:
         raise HTTPException(422, detail=f"[swap.hold.configInvalid] Swap printer configuration is invalid: {e}") from e
-    if file_path is None or not await asyncio.to_thread(_has_gcode, file_path):
-        return
+    if file_path is None:
+        raise HTTPException(422, detail="[swap.guard.unreadable] Print file rejected for the swap printer: no file")
     from backend.app.services.print_scheduler import _effective_plate_id  # lazy: scheduler imports this module
 
     def _check() -> SwapGuardResult:

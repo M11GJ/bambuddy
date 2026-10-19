@@ -95,9 +95,33 @@ async def test_non_swap_printer_and_no_printer_unchanged(async_client, ctx):
 
 @pytest.mark.asyncio
 @pytest.mark.integration
-async def test_unsliced_file_left_alone(async_client, ctx):
+async def test_unsliced_missing_and_raw_gcode_fail_closed(async_client, db_session, archive_factory, ctx):
     swap, _plain, files = ctx
-    r = await async_client.post("/api/v1/queue/", json={"printer_id": swap.id, "archive_id": files["unsliced"][0].id})
+    swap_id = swap.id
+    r = await async_client.post("/api/v1/queue/", json={"printer_id": swap_id, "archive_id": files["unsliced"][0].id})
+    assert r.status_code == 422 and r.json()["detail"].startswith("[swap.guard.unreadable]")
+    missing = await archive_factory(swap_id, file_path="archive/enqueue_guard/nope.gcode.3mf")
+    r = await async_client.post("/api/v1/queue/", json={"printer_id": swap_id, "archive_id": missing.id})
+    assert r.status_code == 422 and r.json()["detail"].startswith("[swap.guard.unreadable]")
+    raw_rel = "archive/enqueue_guard/raw.gcode.3mf"
+    (Path(app_settings.base_dir) / raw_rel).write_text(GOOD)
+    raw = await archive_factory(swap_id, file_path=raw_rel)
+    r = await async_client.post("/api/v1/queue/", json={"printer_id": swap_id, "archive_id": raw.id})
+    (Path(app_settings.base_dir) / raw_rel).unlink()
+    assert r.status_code == 422 and r.json()["detail"].startswith("[swap.guard.unreadable]")
+
+
+@pytest.mark.asyncio
+@pytest.mark.integration
+async def test_schedule_only_patch_of_legacy_item_allowed(async_client, db_session, ctx):
+    swap, _plain, files = ctx
+    item = PrintQueueItem(printer_id=swap.id, archive_id=files["stock"][0].id, position=1, status="pending")
+    db_session.add(item)
+    await db_session.commit()
+    await db_session.refresh(item)
+    r = await async_client.patch(f"/api/v1/queue/{item.id}", json={"require_previous_success": True})
+    assert r.status_code == 200, r.text
+    r = await async_client.patch(f"/api/v1/queue/{item.id}", json={"printer_id": swap.id})
     assert r.status_code == 200, r.text
 
 

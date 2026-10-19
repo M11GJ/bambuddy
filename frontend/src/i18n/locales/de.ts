@@ -5321,6 +5321,8 @@ export default {
     insufficientBudget: 'Budget nicht ausreichend',
     unlimitedNoBudget: 'Unbegrenzt – es ist kein Budgetlimit festgelegt.',
     noPrintableCostCenters: 'Es ist keine aktive Kostenstelle zum Drucken verfügbar. Bitte einen Administrator, dir Druckzugriff zu gewähren.',
+    submitFailed: 'Fehlgeschlagen: {{error}}',
+    partialFailed: '{{success}} erfolgreich, {{failed}} fehlgeschlagen: {{error}}',
     askForOutcome: 'Nach Ergebnis fragen',
     askForOutcomeTitle: 'Nach Abschluss fragen, wie der Druck geworden ist',
   },
