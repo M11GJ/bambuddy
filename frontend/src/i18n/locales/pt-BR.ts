@@ -8030,6 +8030,7 @@ export default {
       multipleMarkers: "O bloco de troca aparece mais de uma vez",
       excludedArea: "Parte da impressão está na zona proibida do trocador",
       injectionNotAllowed: "A injeção de G-code não pode ser usada com o trocador de placas",
+      staleProfile: "Fatiado com um perfil antigo do trocador (faz homing atrás) — fatie novamente",
     },
     control: {
       motionBlocked: "Homing e movimentação manual estão desativados em impressoras com trocador de placas",

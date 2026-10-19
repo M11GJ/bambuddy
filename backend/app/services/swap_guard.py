@@ -60,6 +60,13 @@ def check_swap_job(threemf_path: Path, plate_id: int, config: SwapConfig) -> Swa
         return _fail("swap.guard.noMarker")
     if count > 1:
         return _fail("swap.guard.multipleMarkers", f"{count} swap blocks")
+    # Sliced before the swapper profile dropped the XY home: `G28 X` homes XY
+    # on Bambu (the rear Y home pulls a spare plate out of the holder) and `M18`
+    # releases the motors so the next print would have to home again.
+    for line in executed.splitlines():
+        cmd = line.split(";", 1)[0].strip().upper()
+        if cmd.startswith("G28 X") or cmd == "M18" or cmd.startswith("M18 "):
+            return _fail("swap.guard.staleProfile", cmd)
 
     if not isinstance(plate_meta, dict):
         return _fail("swap.guard.unreadable", "plate metadata is not an object")

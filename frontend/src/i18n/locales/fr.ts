@@ -8031,6 +8031,7 @@ export default {
       multipleMarkers: "Le bloc de changement apparaît plusieurs fois",
       excludedArea: "Une partie de l'impression se trouve dans la zone interdite du changeur",
       injectionNotAllowed: "L'injection de G-code est impossible avec le changeur de plateaux",
+      staleProfile: "Tranché avec un ancien profil de changeur (homing à l'arrière) — retranchez",
     },
     control: {
       motionBlocked: "La mise à l'origine et le déplacement manuel sont désactivés sur les imprimantes avec changeur de plateaux",

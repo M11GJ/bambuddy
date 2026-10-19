@@ -7970,6 +7970,7 @@ export default {
       multipleMarkers: "Değişim bloğu birden fazla kez geçiyor",
       excludedArea: "Baskının bir kısmı değiştiricinin yasak bölgesinde",
       injectionNotAllowed: "Plaka değiştiriciyle G-code ekleme kullanılamaz",
+      staleProfile: "Eski plaka değiştirici profiliyle dilimlenmiş (arkada sıfırlar) — yeniden dilimleyin",
     },
     control: {
       motionBlocked: "Plaka değiştiricili yazıcılarda eksen sıfırlama ve elle hareket devre dışıdır",

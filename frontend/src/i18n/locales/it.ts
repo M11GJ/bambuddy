@@ -8030,6 +8030,7 @@ export default {
       multipleMarkers: "Il blocco di cambio compare più di una volta",
       excludedArea: "Parte della stampa è nella zona vietata del cambiapiatti",
       injectionNotAllowed: "L'iniezione di G-code non può essere usata con il cambiapiatti",
+      staleProfile: "Slice con un vecchio profilo cambiapiatti (fa l'homing sul retro) — rifai lo slice",
     },
     control: {
       motionBlocked: "Homing e movimento manuale sono disattivati sulle stampanti con cambiapiatti",

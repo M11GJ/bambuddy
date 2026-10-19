@@ -8094,6 +8094,7 @@ errors: {
       multipleMarkers: "Växlingsblocket förekommer mer än en gång",
       excludedArea: "En del av utskriften ligger i växlarens förbjudna zon",
       injectionNotAllowed: "G-kodsinjektion kan inte användas med plattväxlaren",
+      staleProfile: "Slicad med en gammal plattväxlarprofil (nollställer baktill) — slica igen",
     },
     control: {
       motionBlocked: "Hemkörning och manuell förflyttning är inaktiverade på skrivare med plattväxlare",

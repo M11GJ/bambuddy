@@ -8096,6 +8096,7 @@ export default {
       multipleMarkers: "The swap block appears more than once",
       excludedArea: "Part of the print is in the swapper's no-print zone",
       injectionNotAllowed: "G-code injection cannot be used with the plate swapper",
+      staleProfile: "Sliced with an old swapper profile (it homes the printer at the back) — slice it again",
     },
     control: {
       motionBlocked: "Homing and jogging are disabled on plate swapper printers",

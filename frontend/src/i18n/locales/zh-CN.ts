@@ -8028,6 +8028,7 @@ export default {
       multipleMarkers: "换板段出现了不止一次",
       excludedArea: "部分打印内容位于换板器的禁止打印区",
       injectionNotAllowed: "使用换板器的打印机不能使用 G-code 注入",
+      staleProfile: "使用旧的换板配置切片（会在后方回零）— 请重新切片",
     },
     control: {
       motionBlocked: "使用换板器的打印机已禁用归零和轴移动",

@@ -8045,6 +8045,7 @@ export default {
       multipleMarkers: "Der Wechselblock kommt mehrfach vor",
       excludedArea: "Ein Teil des Drucks liegt in der Sperrzone des Wechslers",
       injectionNotAllowed: "G-Code-Injektion ist mit dem Plattenwechsler nicht möglich",
+      staleProfile: "Mit einem alten Plattenwechsler-Profil gesliced (referenziert hinten) — bitte neu slicen",
     },
     control: {
       motionBlocked: "Referenzfahrt und Verfahren sind bei Druckern mit Plattenwechsler deaktiviert",

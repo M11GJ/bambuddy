@@ -7664,6 +7664,7 @@ export default {
       multipleMarkers: "교환 블록이 두 번 이상 들어 있습니다",
       excludedArea: "출력물 일부가 교환기의 출력 금지 구역에 있습니다",
       injectionNotAllowed: "플레이트 교환기를 쓰는 프린터에서는 G-code 삽입을 사용할 수 없습니다",
+      staleProfile: "예전 교환 프로필로 슬라이스된 데이터입니다(뒤쪽에서 원점 복귀) — 다시 슬라이스하세요",
     },
     control: {
       motionBlocked: "플레이트 교환기를 쓰는 프린터에서는 원점 복귀와 축 이동이 비활성화됩니다",

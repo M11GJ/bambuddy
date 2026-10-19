@@ -8028,6 +8028,7 @@ export default {
       multipleMarkers: "換板段出現了不只一次",
       excludedArea: "部分列印內容位於換板器的禁止列印區",
       injectionNotAllowed: "使用換板器的印表機不能使用 G-code 注入",
+      staleProfile: "使用舊的換板設定切片（會在後方歸零）— 請重新切片",
     },
     control: {
       motionBlocked: "使用換板器的印表機已停用歸零和軸移動",
