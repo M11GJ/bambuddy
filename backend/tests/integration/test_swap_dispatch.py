@@ -119,7 +119,7 @@ async def case_factory(tmp_path):
         await engine.dispose()
 
 
-async def _run(ctx, gate: CameraGateResult | None = None, status=None):
+async def _run(ctx, gate: CameraGateResult | None = None):
     scheduler = PrintScheduler()
     gate_mock = AsyncMock(return_value=gate or CameraGateResult("pass", clip_percent=10.0, diff_percent=0.1))
 
@@ -145,7 +145,7 @@ async def _run(ctx, gate: CameraGateResult | None = None, status=None):
         patch.object(scheduler_module.settings, "archive_dir", ctx.base_dir / "archive"),
         patch("backend.app.services.archive.ArchiveService.archive_print", new=archive_print),
         patch("backend.app.services.print_scheduler.printer_manager.is_connected", MagicMock(return_value=True)),
-        patch("backend.app.services.print_scheduler.printer_manager.get_status", MagicMock(return_value=status)),
+        patch("backend.app.services.print_scheduler.printer_manager.get_status", MagicMock(return_value=None)),
         patch("backend.app.services.print_scheduler.printer_manager.start_print", ctx.start_print),
         patch("backend.app.services.print_scheduler.printer_manager.set_awaiting_plate_clear", MagicMock()),
         patch(
@@ -270,23 +270,6 @@ async def test_invalid_config_holds_printer(case_factory):
     gate.assert_not_called()
     ctx.upload.assert_not_called()
     ctx.apply_after_commit.assert_called_with(ctx.printer_id)
-
-
-async def test_not_homed_holds_printer(case_factory):
-    ctx = await case_factory()
-    item, printer, _, gate = await _run(ctx, status=SimpleNamespace(state="FINISH", home_flag=847201680))
-    assert item.status == "pending"
-    assert printer.swap_hold_reason == "swap.hold.notHomed"
-    gate.assert_not_called()
-    ctx.upload.assert_not_called()
-
-
-async def test_homed_printer_passes_home_check(case_factory):
-    ctx = await case_factory()
-    _, printer, _, gate = await _run(ctx, status=SimpleNamespace(state="FINISH", home_flag=847201687))
-    assert printer.swap_hold_reason is None
-    gate.assert_called_once()
-    ctx.upload.assert_called_once()
 
 
 async def test_camera_fail_holds_printer(case_factory):

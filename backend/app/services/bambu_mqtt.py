@@ -907,7 +907,6 @@ class PrinterState:
     # simply doesn't publish the field (#2780).
     sdcard_reported: bool = False
     store_to_sdcard: bool = False  # Store sent files on SD card (home_flag bit 11)
-    home_flag: int | None = None  # Raw home_flag; bits 0/1/2 = X/Y/Z homed
     # Scheme+path of a `project_file` dispatch seen on the request topic, from
     # whoever sent it (the slicer or us). Bambu states where the sliced file
     # went: `ftp://<name>` is external storage, which FTPS serves, while
@@ -5018,7 +5017,6 @@ class BambuMQTTClient:
             home_flag = data["home_flag"]
             if home_flag < 0:
                 home_flag = home_flag & 0xFFFFFFFF
-            self.state.home_flag = home_flag
 
         # SD card presence: the only remaining consumer is the firmware-update
         # precondition check (firmware_update.py). Use the top-level `sdcard`

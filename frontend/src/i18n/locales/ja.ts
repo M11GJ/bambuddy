@@ -8026,7 +8026,6 @@ export default {
       platesUnknown: "予備プレートの枚数を入力してください",
       printNotConfirmed: "前の印刷が正常に終わっていません。プレートを確認してから再開してください",
       configInvalid: "プレート交換の設定が正しくありません",
-      notHomed: "原点が取れていません — 予備プレートを抜いてから原点出しをして、再開してください",
     },
     gate: {
       noPlate: "ベッドにプレートが見つかりません",

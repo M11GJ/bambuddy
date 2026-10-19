@@ -8012,7 +8012,6 @@ export default {
       platesUnknown: "Inserisci il numero di piatti di scorta",
       printNotConfirmed: "L'ultima stampa non è terminata normalmente — controlla il piatto, poi riprendi",
       configInvalid: "Le impostazioni del cambiapiatti non sono valide",
-      notHomed: "Stampante non azzerata — rimuovi i piatti di riserva, esegui l'homing e riprendi",
     },
     gate: {
       noPlate: "Nessun piatto rilevato sul letto",

@@ -7646,7 +7646,6 @@ export default {
       platesUnknown: "예비 플레이트 수를 입력하세요",
       printNotConfirmed: "이전 출력이 정상적으로 끝나지 않았습니다 — 플레이트를 확인한 뒤 재개하세요",
       configInvalid: "플레이트 교환기 설정이 올바르지 않습니다",
-      notHomed: "원점이 잡혀 있지 않습니다 — 예비 플레이트를 빼고 원점 복귀 후 재개하세요",
     },
     gate: {
       noPlate: "베드에서 플레이트가 감지되지 않음",

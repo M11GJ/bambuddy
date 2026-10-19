@@ -8010,7 +8010,6 @@ export default {
       platesUnknown: "请输入备用板数量",
       printNotConfirmed: "上一次打印未正常结束 — 请检查打印板后继续",
       configInvalid: "换板器设置无效",
-      notHomed: "打印机未回零 — 取出备用板，回零后再继续",
     },
     gate: {
       noPlate: "热床上未检测到打印板",

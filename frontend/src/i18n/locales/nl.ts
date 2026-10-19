@@ -8078,7 +8078,6 @@ export default {
       platesUnknown: "Voer het aantal reserveplaten in",
       printNotConfirmed: "De vorige print is niet normaal geëindigd — controleer de plaat en hervat daarna",
       configInvalid: "De instellingen van de plaatwisselaar zijn ongeldig",
-      notHomed: "Printer is niet gehomed — verwijder de reserveplaten, home de printer en ga verder",
     },
     gate: {
       noPlate: "Geen plaat op het printbed gedetecteerd",

@@ -8012,7 +8012,6 @@ export default {
       platesUnknown: "Informe a quantidade de placas reserva",
       printNotConfirmed: "A última impressão não terminou normalmente — verifique a placa e depois retome",
       configInvalid: "As configurações do trocador de placas são inválidas",
-      notHomed: "A impressora não está referenciada — retire as placas reserva, faça o homing e retome",
     },
     gate: {
       noPlate: "Nenhuma placa detectada na mesa",
