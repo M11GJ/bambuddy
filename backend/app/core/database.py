@@ -3523,6 +3523,9 @@ async def run_migrations(conn):
     await _safe_execute(conn, "ALTER TABLE printers ADD COLUMN swap_config TEXT")
     await _safe_execute(conn, "ALTER TABLE printers ADD COLUMN swap_ai_override TEXT")
 
+    # Migration: members' real names from the OIDC name claim
+    await _safe_execute(conn, "ALTER TABLE users ADD COLUMN display_name VARCHAR(100)")
+
     # Migration: Add REST/Webhook smart plug fields
     await _safe_execute(conn, "ALTER TABLE smart_plugs ADD COLUMN rest_on_url VARCHAR(500)")
     await _safe_execute(conn, "ALTER TABLE smart_plugs ADD COLUMN rest_on_body TEXT")

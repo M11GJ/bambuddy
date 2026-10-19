@@ -387,7 +387,7 @@ def archive_to_response(
         "created_at": archive.created_at,
         # User tracking (Issue #206)
         "created_by_id": archive.created_by_id,
-        "created_by_username": archive.created_by.username if archive.created_by else None,
+        "created_by_username": archive.created_by.label if archive.created_by else None,
     }
 
     # Add computed time accuracy fields. ``run_aggregate`` lets

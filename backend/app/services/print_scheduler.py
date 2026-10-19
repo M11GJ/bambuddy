@@ -7328,7 +7328,7 @@ class PrintScheduler:
 
         owner = await db.get(User, item.created_by_id)
         if owner:
-            printer_manager.set_current_print_user(item.printer_id, owner.id, owner.username)
+            printer_manager.set_current_print_user(item.printer_id, owner.id, owner.label)
 
     async def _start_print(self, db: AsyncSession, item: PrintQueueItem):
         """Upload file and start print for a queue item.

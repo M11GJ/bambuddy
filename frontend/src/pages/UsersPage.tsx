@@ -338,7 +338,7 @@ export function UsersPage() {
                 {users.map((user) => (
                   <tr key={user.id} className="hover:bg-bambu-dark-tertiary/50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
-                      {user.username}
+                      {user.display_name ? `${user.display_name} (${user.username})` : user.username}
                     </td>
                     <td className="px-6 py-4 text-sm">
                       <div className="flex flex-wrap gap-1">

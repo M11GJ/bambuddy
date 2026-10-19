@@ -118,7 +118,7 @@ async def list_trash(
     total = int(total_result.scalar() or 0)
 
     rows_result = await db.execute(
-        select(LibraryFile, LibraryFolder.name, User.username)
+        select(LibraryFile, LibraryFolder.name, func.coalesce(User.display_name, User.username))
         .outerjoin(LibraryFolder, LibraryFile.folder_id == LibraryFolder.id)
         .outerjoin(User, LibraryFile.created_by_id == User.id)
         .where(*base_conditions)

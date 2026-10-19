@@ -104,6 +104,7 @@ async def _trigger_oidc_callback(
     *,
     sub: str,
     email: str,
+    extra_claims: dict | None = None,
 ) -> str:
     """Run a full mocked OIDC callback and return the resulting access token."""
     nonce = secrets.token_urlsafe(16)
@@ -121,6 +122,7 @@ async def _trigger_oidc_callback(
             "email_verified": True,
             "iat": now,
             "exp": now + 300,
+            **(extra_claims or {}),
         },
         private_pem,
         algorithm="RS256",

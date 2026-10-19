@@ -26,6 +26,8 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     username: Mapped[str] = mapped_column(String(100), unique=True, index=True)
     email: Mapped[str | None] = mapped_column(String(255), unique=True, index=True, nullable=True)
+    # Real name from the OIDC `name` claim; username stays the (ASCII) login ID.
+    display_name: Mapped[str | None] = mapped_column(String(100), nullable=True)
     password_hash: Mapped[str | None] = mapped_column(String(255), nullable=True)
     role: Mapped[str] = mapped_column(
         String(20), default="user"
@@ -138,6 +140,11 @@ class User(Base):
             return True
         user_permissions = self.get_permissions()
         return any(p in user_permissions for p in permissions)
+
+    @property
+    def label(self) -> str:
+        """Human-facing name: real name when known, else the login ID."""
+        return self.display_name or self.username
 
     def __repr__(self) -> str:
         return f"<User {self.username}>"

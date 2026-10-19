@@ -62,6 +62,7 @@ def _user_to_response(user: User) -> UserResponse:
     return UserResponse(
         id=user.id,
         username=user.username,
+        display_name=user.display_name,
         email=user.email,
         role=user.role,
         is_active=user.is_active,
@@ -222,8 +223,9 @@ async def list_users_slim(
     order, and the reverse order would parse "slim" as the int path parameter
     and answer 422.
     """
-    result = await db.execute(select(User.id, User.username).order_by(User.username))
-    return [UserSlim(id=row.id, username=row.username) for row in result.all()]
+    result = await db.execute(select(User.id, User.username, User.display_name).order_by(User.username))
+    # `username` carries the human label so it matches the names stored on queue/print-log rows.
+    return [UserSlim(id=row.id, username=row.display_name or row.username) for row in result.all()]
 
 
 @router.get("/{user_id}", response_model=UserResponse)

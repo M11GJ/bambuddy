@@ -6852,7 +6852,7 @@ export function SettingsPage() {
                     <CardContent>
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-white font-medium text-lg">{user.username}</p>
+                          <p className="text-white font-medium text-lg">{user.display_name ? `${user.display_name} (${user.username})` : user.username}</p>
                           <div className="flex flex-wrap gap-1 mt-2">
                             {user.is_admin && (
                               <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300">

@@ -4406,6 +4406,7 @@ export interface LoginResponse {
 export interface UserResponse {
   id: number;
   username: string;
+  display_name?: string | null;  // Real name from DCC Login; username stays the login ID
   email?: string;
   role: string;  // Deprecated, kept for backward compatibility
   is_active: boolean;

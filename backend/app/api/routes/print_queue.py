@@ -484,7 +484,7 @@ def _enrich_response(item: PrintQueueItem) -> PrintQueueItemResponse:
         "created_at": item.created_at,
         # User tracking (Issue #206)
         "created_by_id": item.created_by_id,
-        "created_by_username": item.created_by.username if item.created_by else None,
+        "created_by_username": item.created_by.label if item.created_by else None,
         # Batch grouping
         "batch_id": item.batch_id,
         "batch_name": item.batch.name if item.batch else None,
@@ -1712,7 +1712,7 @@ async def list_batches(
     creator_ids = {b.created_by_id for b in batches if b.created_by_id is not None}
     usernames: dict[int, str] = {}
     if creator_ids:
-        rows = await db.execute(select(User.id, User.username).where(User.id.in_(creator_ids)))
+        rows = await db.execute(select(User.id, func.coalesce(User.display_name, User.username)).where(User.id.in_(creator_ids)))
         usernames = {row[0]: row[1] for row in rows.all()}
 
     return [await _build_batch_response(db, batch, usernames=usernames) for batch in batches]
@@ -1805,7 +1805,7 @@ async def _build_batch_response(
             result = await db.execute(select(User).where(User.id == batch.created_by_id))
             user = result.scalar_one_or_none()
             if user:
-                created_by_username = user.username
+                created_by_username = user.label
 
     return PrintBatchResponse(
         id=batch.id,

@@ -197,6 +197,7 @@ def _user_to_response(user: User) -> UserResponse:
     return UserResponse(
         id=user.id,
         username=user.username,
+        display_name=user.display_name,
         email=user.email,
         role=user.role,
         is_active=user.is_active,
@@ -2105,6 +2106,20 @@ async def oidc_callback(
 
             if not user or not user.is_active:
                 return RedirectResponse(url=f"{frontend_error_url}account_inactive", status_code=302)
+
+            # Real name from the IdP `name` claim, refreshed on every login. Never
+            # touches username; a failure is logged and must not block login.
+            _real_name = claims.get("name")
+            if isinstance(_real_name, str) and _real_name.strip():
+                _real_name = _real_name.strip()[:100]
+                if _real_name != user.display_name:
+                    try:
+                        user.display_name = _real_name
+                        await db.commit()
+                    except Exception as name_exc:
+                        logger.warning("OIDC display_name update failed for provider %d: %s", provider_id, name_exc)
+                        await db.rollback()
+                        await db.refresh(user)
 
             # #3107 — apply the provider's group mapping on every login, not
             # just at account creation. Same managed-slice contract as the

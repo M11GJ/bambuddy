@@ -80,6 +80,7 @@ class UserUpdate(BaseModel):
 class UserResponse(BaseModel):
     id: int
     username: str
+    display_name: str | None = None
     email: str | None = None
     role: str  # Deprecated, kept for backward compatibility
     is_active: bool
