@@ -8090,12 +8090,12 @@ export default {
       aiPending: "Waiting for the plate check AI",
     },
     guard: {
-      unreadable: "The print file could not be read. Upload an STL or unsliced 3MF and slice it with the swapper pipeline",
-      noMarker: "Not sliced for the plate swapper (no swap block) — slice with the swapper pipeline",
-      multipleMarkers: "The swap block appears more than once",
+      unreadable: "Incompatible slice data (unreadable or not sliced yet) — upload an STL or unsliced 3MF and slice it with the swapper profile",
+      noMarker: "Incompatible slice data (not sliced for the plate swapper) — slice it again with the swapper profile",
+      multipleMarkers: "Incompatible slice data (the swap block appears more than once) — slice it again",
       excludedArea: "Part of the print is in the swapper's no-print zone",
       injectionNotAllowed: "G-code injection cannot be used with the plate swapper",
-      staleProfile: "Sliced with an old swapper profile (it homes the printer at the back) — slice it again",
+      staleProfile: "The slice is out of date — slice it again with the current swapper profile",
     },
     control: {
       motionBlocked: "Homing and jogging are disabled on plate swapper printers",
