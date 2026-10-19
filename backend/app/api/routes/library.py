@@ -88,6 +88,7 @@ from backend.app.services.slice_output_check import (
     unresolved_filament_slots,
 )
 from backend.app.services.stl_thumbnail import MIN_USABLE_STL_BYTES, generate_stl_thumbnail
+from backend.app.services.swap_guard import enqueue_swap_guard
 from backend.app.utils.filename import (
     MAX_FILENAME_BYTES,
     InvalidFilenameError,
@@ -3151,6 +3152,12 @@ async def add_files_to_queue(
                 else:
                     inferred = resolve_variant_model(lib_file)
                     item_target_model = inferred if inferred in active_models else None
+
+            try:
+                await enqueue_swap_guard(db, item_printer_id, file_path, None)
+            except HTTPException as e:
+                errors.append(AddToQueueError(file_id=file_id, filename=lib_file.filename, error=str(e.detail)))
+                continue
 
             # Filament the scheduler must match before handing a model-based
             # item to hardware. Without it the item goes to whichever printer

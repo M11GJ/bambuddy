@@ -5,13 +5,19 @@ swap block has to run exactly once (in the executed part of the file) and no
 geometry may sit in the zones the swapper's clips and hooks occupy.
 """
 
+import asyncio
 import json
 import math
 import zipfile
 from dataclasses import dataclass
 from pathlib import Path
 
-from backend.app.services.swap_config import SwapConfig
+from fastapi import HTTPException
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from backend.app.models.printer import Printer
+from backend.app.services.swap_config import SwapConfig, parse_swap_config
 from backend.app.utils.threemf_tools import select_plate_gcode_name
 
 # Everything after this line is slicer config echoed as comments, not executed.
@@ -89,3 +95,44 @@ def check_swap_job(threemf_path: Path, plate_id: int, config: SwapConfig) -> Swa
                 "swap.guard.excludedArea", f"{name}: Y {y0:.1f}-{y1:.1f} mm (allowed {front:g}-{back_limit:g})"
             )
     return SwapGuardResult(ok=True)
+
+
+def _has_gcode(path: Path) -> bool:
+    try:
+        with zipfile.ZipFile(path) as z:
+            return any(n.endswith(".gcode") for n in z.namelist())
+    except Exception:
+        return False
+
+
+async def enqueue_swap_guard(
+    db: AsyncSession, printer_id: int | None, file_path: Path | None, plate_id: int | None
+) -> None:
+    """Reject at enqueue time a file a swap printer's dispatch guard would refuse.
+
+    No-op for no printer, a non-swap printer, or a file that carries no G-code
+    (unsliced inputs cannot be printed at all; the dispatch guard still runs).
+    """
+    if printer_id is None:
+        return
+    printer = (await db.execute(select(Printer).where(Printer.id == printer_id))).scalar_one_or_none()
+    if printer is None or not printer.swap_enabled:
+        return
+    try:
+        cfg = parse_swap_config(printer.swap_config)
+    except ValueError as e:
+        raise HTTPException(422, detail=f"[swap.hold.configInvalid] Swap printer configuration is invalid: {e}") from e
+    if file_path is None or not await asyncio.to_thread(_has_gcode, file_path):
+        return
+    from backend.app.services.print_scheduler import _effective_plate_id  # lazy: scheduler imports this module
+
+    def _check() -> SwapGuardResult:
+        return check_swap_job(file_path, _effective_plate_id(plate_id, file_path), cfg)
+
+    guard = await asyncio.to_thread(_check)
+    if not guard.ok:
+        raise HTTPException(
+            422,
+            detail=f"[{guard.reason_key}] Print file rejected for the swap printer"
+            + (f": {guard.detail}" if guard.detail else ""),
+        )

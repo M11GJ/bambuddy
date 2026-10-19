@@ -41,6 +41,7 @@ import type {
 } from './types';
 import { DEFAULT_PRINT_OPTIONS, DEFAULT_SCHEDULE_OPTIONS } from './types';
 import { NumberInput } from '../NumberInput';
+import { translateErrorMessage } from '../../utils/translateErrorMessage';
 
 /** Same filament: type ignoring case, colour as RRGGBB ignoring `#`, case and alpha. */
 function isSameFilament(a: { type: string; color: string }, b: { type: string; color: string }): boolean {
@@ -890,7 +891,7 @@ export function PrintModal({
       onClose();
     },
     onError: (error: Error) => {
-      showToast(error.message || 'Failed to update queue item', 'error');
+      showToast(translateErrorMessage(error.message, t).text || 'Failed to update queue item', 'error');
     },
   });
 
@@ -1181,7 +1182,7 @@ export function PrintModal({
         onSuccess?.();
         onClose();
       } catch (error) {
-        showToast(error instanceof Error ? error.message : String(error), 'error');
+        showToast(translateErrorMessage(error instanceof Error ? error.message : String(error), t).text, 'error');
       } finally {
         setIsSubmitting(false);
       }
@@ -1452,7 +1453,7 @@ export function PrintModal({
       onSuccess?.();
       onClose();
     } else if (results.success === 0) {
-      showToast(`Failed: ${results.errors[0]}`, 'error');
+      showToast(`Failed: ${translateErrorMessage(results.errors[0], t).text}`, 'error');
     } else {
       showToast(`${results.success} succeeded, ${results.failed} failed`, 'error');
       queryClient.invalidateQueries({ queryKey: ['queue'] });

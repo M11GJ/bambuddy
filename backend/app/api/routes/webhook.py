@@ -6,6 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.app.core.auth import check_printer_access, check_webhook_permission, get_api_key
+from backend.app.core.config import settings
 from backend.app.core.database import get_db
 from backend.app.models.api_key import APIKey
 from backend.app.models.archive import PrintArchive
@@ -15,6 +16,7 @@ from backend.app.schemas.printer import HMSErrorResponse, hms_error_responses
 from backend.app.services.print_confirmation import confirm_outcome_for_new_queue_item
 from backend.app.services.printer_manager import printer_manager
 from backend.app.services.queue_position import next_queue_position
+from backend.app.services.swap_guard import enqueue_swap_guard
 
 logger = logging.getLogger(__name__)
 
@@ -114,6 +116,8 @@ async def webhook_add_to_queue(
     printer = result.scalar_one_or_none()
     if not printer:
         raise HTTPException(status_code=404, detail="Printer not found")
+
+    await enqueue_swap_guard(db, data.printer_id, settings.base_dir / archive.file_path, None)
 
     # Append to the end of the queue: positions are one sequence across all
     # pending items, not one per printer (#3200).

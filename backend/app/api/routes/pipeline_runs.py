@@ -62,6 +62,7 @@ from backend.app.services.pipeline_eligibility import (
     check_pipeline_eligibility,
 )
 from backend.app.services.print_confirmation import confirm_outcome_for_new_queue_item
+from backend.app.services.swap_guard import enqueue_swap_guard
 
 logger = logging.getLogger(__name__)
 
@@ -574,6 +575,24 @@ def _make_orchestration_callable(
 
             # No per-job ask-for-outcome toggle on a pipeline run either (#1898).
             confirm_outcome = await confirm_outcome_for_new_queue_item(session)
+
+            sliced = (
+                await session.execute(select(LibraryFile).where(LibraryFile.id == slice_response.library_file_id))
+            ).scalar_one_or_none()
+            sliced_path = Path(app_settings.base_dir) / sliced.file_path if sliced else None
+            try:
+                for pid in {pid for pid, _model in assignments if pid is not None}:
+                    await enqueue_swap_guard(session, pid, sliced_path, None)
+            except HTTPException as exc:
+                run.status = "failed"
+                run.error_message = f"Swap printer rejected the sliced file: {exc.detail}"
+                run.completed_at = datetime.now(timezone.utc)
+                for job in jobs:
+                    job.status = "cancelled"
+                    job.completed_at = datetime.now(timezone.utc)
+                await session.commit()
+                await _publish_run_event(session, run)
+                raise
 
             for job, (printer_id, target_model) in zip(jobs, assignments, strict=False):
                 queue_item = PrintQueueItem(

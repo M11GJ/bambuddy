@@ -55,6 +55,7 @@ from backend.app.services.print_batch import (
 )
 from backend.app.services.print_cost_estimate import estimate_queue_source_cost
 from backend.app.services.queue_position import lock_queue_positions, max_queue_position
+from backend.app.services.swap_guard import enqueue_swap_guard
 from backend.app.utils.printer_models import (
     is_gcode_compatible,
 )
@@ -948,6 +949,8 @@ async def add_to_queue(
                 all_types = existing_types | set(override_types)
                 required_filament_types = json.dumps(sorted(all_types))
 
+    await enqueue_swap_guard(db, data.printer_id, file_path, data.plate_id)
+
     # Validate quantity
     quantity = max(1, data.quantity)
 
@@ -1303,6 +1306,13 @@ async def bulk_update_queue_items(
             continue
 
         item_update_data = update_data.copy()
+        if "printer_id" in update_data or "plate_id" in update_data:
+            await enqueue_swap_guard(
+                db,
+                item_update_data.get("printer_id", item.printer_id),
+                await _resolve_source_path(db, item),
+                item_update_data.get("plate_id", item.plate_id),
+            )
         if validates_billing_fields:
             trusted_estimated_cost = await _trusted_item_estimated_cost(
                 db,
@@ -1993,6 +2003,11 @@ async def update_queue_item(
                 400,
                 f"File was sliced for {sliced_for} and cannot be dispatched to {update_data['target_model']} printers",
             )
+
+    if "printer_id" in update_data or "plate_id" in update_data:
+        await enqueue_swap_guard(
+            db, new_printer_id, await _resolve_source_path(db, item), update_data.get("plate_id", item.plate_id)
+        )
 
     # Serialize ams_mapping to JSON for TEXT column storage
     if "ams_mapping" in update_data:
