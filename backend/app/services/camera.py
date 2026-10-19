@@ -452,6 +452,7 @@ async def read_chamber_image_frame(
     ip_address: str,
     access_code: str,
     timeout: float = 10.0,
+    skip_frames: int = 0,
 ) -> bytes | None:
     """Read a single JPEG frame from the chamber image protocol.
 
@@ -461,6 +462,8 @@ async def read_chamber_image_frame(
         ip_address: Printer IP address
         access_code: Printer access code
         timeout: Connection timeout in seconds
+        skip_frames: Frames to read and drop first (about 2 s each), for callers
+            that need the auto exposure to settle
 
     Returns:
         JPEG image data or None if failed
@@ -481,24 +484,25 @@ async def read_chamber_image_frame(
             writer.write(auth_payload)
             await writer.drain()
 
-            # Read the 16-byte header
-            header = await asyncio.wait_for(reader.readexactly(16), timeout=timeout)
-            if len(header) < 16:
-                logger.error("Chamber image: incomplete header received")
-                return None
+            for _ in range(skip_frames + 1):
+                # Read the 16-byte header
+                header = await asyncio.wait_for(reader.readexactly(16), timeout=timeout)
+                if len(header) < 16:
+                    logger.error("Chamber image: incomplete header received")
+                    return None
 
-            # Parse payload size from header (little-endian uint32 at offset 0)
-            payload_size = struct.unpack("<I", header[0:4])[0]
+                # Parse payload size from header (little-endian uint32 at offset 0)
+                payload_size = struct.unpack("<I", header[0:4])[0]
 
-            if payload_size == 0 or payload_size > 10_000_000:  # Sanity check: max 10MB
-                logger.error("Chamber image: invalid payload size %s", payload_size)
-                return None
+                if payload_size == 0 or payload_size > 10_000_000:  # Sanity check: max 10MB
+                    logger.error("Chamber image: invalid payload size %s", payload_size)
+                    return None
 
-            # Read the JPEG data
-            jpeg_data = await asyncio.wait_for(
-                reader.readexactly(payload_size),
-                timeout=timeout,
-            )
+                # Read the JPEG data
+                jpeg_data = await asyncio.wait_for(
+                    reader.readexactly(payload_size),
+                    timeout=timeout,
+                )
 
             # Validate JPEG markers
             if not jpeg_data.startswith(JPEG_START):
@@ -745,6 +749,25 @@ async def capture_camera_frame_bytes(
     # snapshot is routine) doesn't take the capture down with it — the
     # followers already waiting on it still get their frame.
     return await asyncio.shield(task)
+
+
+async def capture_settled_frame_bytes(
+    ip_address: str,
+    access_code: str,
+    model: str | None,
+    timeout: int = 15,
+    skip_frames: int = 2,
+) -> bytes | None:
+    """Like capture_camera_frame_bytes, but drops the first frames of a fresh connection.
+
+    An A1 camera that has been idle returns washed-out (overexposed) frames for the
+    first seconds after it wakes, which the swap gate read as "no plate". RTSP models,
+    or a capture already in flight (the firmware allows one connection), fall back to
+    the normal coalesced capture.
+    """
+    if not is_chamber_image_model(model) or capture_in_flight(ip_address):
+        return await capture_camera_frame_bytes(ip_address, access_code, model, timeout=timeout)
+    return await read_chamber_image_frame(ip_address, access_code, timeout=float(timeout), skip_frames=skip_frames)
 
 
 async def _capture_camera_frame_bytes_uncoalesced(

@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from typing import Literal
 
 from backend.app.api.routes.camera import get_buffered_frame_with_time, is_stream_active
-from backend.app.services.camera import capture_camera_frame_bytes
+from backend.app.services.camera import capture_settled_frame_bytes
 from backend.app.services.plate_detection import PlateDetector, is_plate_detection_available
 from backend.app.services.printer_manager import printer_manager
 from backend.app.services.swap_ai import AiVerdict, SwapAiSettings, ask_plate_empty, crop_plate
@@ -283,8 +283,10 @@ async def _run_camera_gate(
                     return CameraGateResult("busy", "swap.gate.cameraBusy")
                 await asyncio.sleep(_STREAM_POLL_S)
         else:
-            # Coalesced capture: joining one started before the light settled can return a pre-light (dark) frame, which fails closed via the clip check.
-            image = await capture_camera_frame_bytes(printer.ip_address, printer.access_code, printer.model, timeout=10)
+            # Drops the first frames so an idle camera's washed-out wake-up frames do not read as "no plate".
+            image = await capture_settled_frame_bytes(
+                printer.ip_address, printer.access_code, printer.model, timeout=10
+            )
         if not image:
             return CameraGateResult("fail", "swap.gate.cameraUnavailable")
         try:

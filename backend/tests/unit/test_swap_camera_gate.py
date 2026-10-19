@@ -51,7 +51,7 @@ def patched(monkeypatch):
     async def capture(ip, code, model, timeout=10):
         return state["frame"]
 
-    monkeypatch.setattr(gate, "capture_camera_frame_bytes", capture)
+    monkeypatch.setattr(gate, "capture_settled_frame_bytes", capture)
     monkeypatch.setattr(gate, "is_stream_active", lambda pid: state["stream"])
     monkeypatch.setattr(gate, "get_buffered_frame_with_time", lambda pid: state["buffered"])
     monkeypatch.setattr(gate, "is_plate_detection_available", lambda: True)
