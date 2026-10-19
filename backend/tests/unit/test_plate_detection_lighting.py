@@ -1,10 +1,12 @@
 """Swap gate compares plates under changing room light: the z-score option must
 ignore a lighting gradient but still see an object."""
 
+import importlib
+
 import cv2
 import numpy as np
 
-from backend.app.services.plate_detection import PlateDetector
+from backend.app.services import plate_detection
 
 
 def _plate(gain: float, gradient: float, obj: bool = False) -> np.ndarray:
@@ -17,12 +19,14 @@ def _plate(gain: float, gradient: float, obj: bool = False) -> np.ndarray:
     return cv2.cvtColor(np.clip(base, 0, 255).astype(np.uint8), cv2.COLOR_GRAY2BGR)
 
 
-def _diff(det: PlateDetector, a: np.ndarray, b: np.ndarray) -> float:
+def _diff(det, a: np.ndarray, b: np.ndarray) -> float:
     pa, pb = det._preprocess_for_comparison(a), det._preprocess_for_comparison(b)
     return float(np.mean(cv2.absdiff(pa, pb)) / 255 * 100)
 
 
 def test_zscore_ignores_lighting_gradient_but_sees_object():
+    # test_plate_detection.py reloads this module against mocked cv2/numpy and leaves it that way.
+    PlateDetector = importlib.reload(plate_detection).PlateDetector
     day, night, night_obj = _plate(1.0, 0.0), _plate(0.45, 0.05), _plate(0.45, 0.05, obj=True)
     plain = PlateDetector()
     lit = PlateDetector(normalize_lighting=True)

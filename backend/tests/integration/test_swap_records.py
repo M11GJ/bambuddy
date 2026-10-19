@@ -157,7 +157,7 @@ def real_gate(monkeypatch, printer_factory):
         def analyze_frame(self, image, printer_id):
             return _Result(state["empty"])
 
-    monkeypatch.setattr(gate, "capture_camera_frame_bytes", capture)
+    monkeypatch.setattr(gate, "capture_settled_frame_bytes", capture)
     monkeypatch.setattr(gate, "is_stream_active", lambda pid: False)
     monkeypatch.setattr(gate, "is_plate_detection_available", lambda: True)
     monkeypatch.setattr(gate, "_set_light", lambda *a: None)
