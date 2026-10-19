@@ -12,7 +12,7 @@ from backend.app.models.library import LibraryFile
 from backend.app.models.print_queue import PrintQueueItem
 
 MARK = "; --- AUTO-CLEAR START ---"
-GOOD = f"G28\n{MARK}\nG1 Y265\n; EXECUTABLE_BLOCK_END\n"
+GOOD = f"G28 Z P0\n{MARK}\nG1 Y265\n; EXECUTABLE_BLOCK_END\n"
 STOCK = "G28\n; EXECUTABLE_BLOCK_END\n"
 
 

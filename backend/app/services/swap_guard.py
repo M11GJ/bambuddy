@@ -61,11 +61,14 @@ def check_swap_job(threemf_path: Path, plate_id: int, config: SwapConfig) -> Swa
     if count > 1:
         return _fail("swap.guard.multipleMarkers", f"{count} swap blocks")
     # Sliced before the swapper profile dropped the XY home: `G28 X` homes XY
-    # on Bambu (the rear Y home pulls a spare plate out of the holder) and `M18`
+    # on Bambu (the rear Y home pulls a spare plate out of the holder), a bare
+    # `G28` runs when bed levelling is off, and `M18`
     # releases the motors so the next print would have to home again.
     for line in executed.splitlines():
         cmd = line.split(";", 1)[0].strip().upper()
-        if cmd.startswith("G28 X") or cmd == "M18" or cmd.startswith("M18 "):
+        # Only a Z-only home is safe; G28, G28 X and G28 Y all home Y at the back.
+        homes_xy = (cmd == "G28" or cmd.startswith("G28 ")) and not cmd.startswith("G28 Z")
+        if homes_xy or cmd == "M18" or cmd.startswith("M18 "):
             return _fail("swap.guard.staleProfile", cmd)
 
     if not isinstance(plate_meta, dict):

@@ -20,7 +20,7 @@ def _make(tmp_path: Path, *, gcode: str, bbox_all=(118, 118, 138, 138), objects=
     return p
 
 
-GOOD = f"G28\nG1 X10\n{MARK}\nG1 Y265\n; EXECUTABLE_BLOCK_END\n; machine_end_gcode = ...{MARK}...\n"
+GOOD = f"G28 Z P0 T140\nG1 X10\n{MARK}\nG1 Y265\n; EXECUTABLE_BLOCK_END\n; machine_end_gcode = ...{MARK}...\n"
 
 
 def test_good_job_passes(tmp_path):
@@ -113,14 +113,14 @@ def test_malformed_metadata_is_unreadable(tmp_path, plate_json):
 
 def test_no_executable_block_end_counts_whole_file(tmp_path):
     ok_json = '{"bbox_all": [10, 30, 50, 100], "bbox_objects": []}'
-    assert check_swap_job(_raw(tmp_path, ok_json, gcode=f"G28\n{MARK}\nG1\n"), 1, DEFAULT_SWAP_CONFIG).ok
+    assert check_swap_job(_raw(tmp_path, ok_json, gcode=f"G28 Z P0\n{MARK}\nG1\n"), 1, DEFAULT_SWAP_CONFIG).ok
 
 
-@pytest.mark.parametrize("line", ["G28 X", "M18", "M18 X Y Z", "g28 x ; re-home"])
+@pytest.mark.parametrize("line", ["G28", "G28 X", "G28 Y", "M18", "M18 X Y Z", "g28 x ; re-home"])
 def test_stale_profile_rejected(tmp_path, line):
     r = check_swap_job(_make(tmp_path, gcode=f"{line}\n" + GOOD), 1, DEFAULT_SWAP_CONFIG)
     assert r.reason_key == "swap.guard.staleProfile"
 
 
 def test_commented_home_is_fine(tmp_path):
-    assert check_swap_job(_make(tmp_path, gcode=";G28 X\n;M18 \n" + GOOD), 1, DEFAULT_SWAP_CONFIG).ok
+    assert check_swap_job(_make(tmp_path, gcode=";G28 X\n;M18 \nG28 Z P0 T300\n" + GOOD), 1, DEFAULT_SWAP_CONFIG).ok

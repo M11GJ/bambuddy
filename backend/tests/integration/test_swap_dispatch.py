@@ -29,7 +29,7 @@ from backend.app.services.swap_camera_gate import CameraGateResult
 from backend.tests._fixtures.background_tasks import discarding_spawn_patch
 
 MARK = "; --- AUTO-CLEAR START ---"
-GOOD_GCODE = f"G28\n{MARK}\nG1 Y265\n; EXECUTABLE_BLOCK_END\n"
+GOOD_GCODE = f"G28 Z P0\n{MARK}\nG1 Y265\n; EXECUTABLE_BLOCK_END\n"
 NO_MARKER_GCODE = "G28\n; EXECUTABLE_BLOCK_END\n"
 
 
