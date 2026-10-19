@@ -96,6 +96,45 @@ describe('Layout', () => {
     });
   });
 
+  describe('account buttons inside the Hub', () => {
+    let priorToken: string | null = null;
+    const signedIn = () => {
+      server.use(
+        http.get('/api/v1/auth/status', () => HttpResponse.json({ auth_enabled: true, requires_setup: false })),
+        http.get('/api/v1/auth/me', () =>
+          HttpResponse.json({
+            id: 3, username: 'member', role: 'user', is_active: true, is_admin: false,
+            groups: [{ id: 3, name: 'Members' }], permissions: ['printers:read'], created_at: '2026-01-01T00:00:00Z',
+          }),
+        ),
+      );
+      priorToken = getAuthToken();
+      setAuthToken('test-token', 'session');
+    };
+    afterEach(() => {
+      setAuthToken(priorToken, 'session');
+      priorToken = null;
+      vi.restoreAllMocks();
+    });
+
+    it('shows password change and logout when opened directly', async () => {
+      signedIn();
+      render(<Layout />);
+      await waitFor(() => expect(screen.getAllByTitle('Logout').length).toBeGreaterThan(0));
+      expect(screen.getAllByTitle('Change Password').length).toBeGreaterThan(0);
+    });
+
+    it('hides password change and logout inside an iframe', async () => {
+      signedIn();
+      vi.spyOn(window, 'top', 'get').mockReturnValue({} as Window);
+      render(<Layout />);
+      await waitFor(() => expect(document.querySelector('aside')).toBeInTheDocument());
+      await new Promise((r) => setTimeout(r, 50));
+      expect(screen.queryByTitle('Logout')).not.toBeInTheDocument();
+      expect(screen.queryByTitle('Change Password')).not.toBeInTheDocument();
+    });
+  });
+
   describe('rendering', () => {
     it('renders the sidebar', async () => {
       render(<Layout />);

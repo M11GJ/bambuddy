@@ -844,7 +844,9 @@ export function Layout() {
                 >
                   <ThemeIcon className="w-5 h-5" />
                 </button>
-                {authEnabled && user && (
+                {/* DCC: inside the Hub, members sign in through DCC Login (no local password) and are
+                    re-signed-in automatically, so password change and logout only confuse them. */}
+                {authEnabled && user && !embedded && (
                   <>
                     <button
                       onClick={() => setShowChangePasswordModal(true)}
@@ -968,7 +970,9 @@ export function Layout() {
               >
                 <ThemeIcon className="w-5 h-5" />
               </button>
-              {authEnabled && user && (
+              {/* DCC: inside the Hub, members sign in through DCC Login (no local password) and are
+                    re-signed-in automatically, so password change and logout only confuse them. */}
+                {authEnabled && user && !embedded && (
                 <>
                   <button
                     onClick={() => setShowChangePasswordModal(true)}
