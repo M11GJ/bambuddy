@@ -64,7 +64,11 @@ def check_swap_job(threemf_path: Path, plate_id: int, config: SwapConfig) -> Swa
     # on Bambu (the rear Y home pulls a spare plate out of the holder), a bare
     # `G28` runs when bed levelling is off, and `M18`
     # releases the motors so the next print would have to home again.
+    # The swap block itself may home XY: the bed is empty there and the rear
+    # home doubles as picking up the next plate.
     for line in executed.splitlines():
+        if line.strip().startswith(marker):
+            break
         cmd = line.split(";", 1)[0].strip().upper()
         # Only a Z-only home is safe; G28, G28 X and G28 Y all home Y at the back.
         homes_xy = (cmd == "G28" or cmd.startswith("G28 ")) and not cmd.startswith("G28 Z")

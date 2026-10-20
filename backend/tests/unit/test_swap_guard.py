@@ -124,3 +124,8 @@ def test_stale_profile_rejected(tmp_path, line):
 
 def test_commented_home_is_fine(tmp_path):
     assert check_swap_job(_make(tmp_path, gcode=";G28 X\n;M18 \nG28 Z P0 T300\n" + GOOD), 1, DEFAULT_SWAP_CONFIG).ok
+
+
+def test_xy_home_inside_swap_block_is_fine(tmp_path):
+    gcode = f"G28 Z P0 T140\n{MARK}\nG1 Y262.5\nG28 X\nG1 Y95\n; EXECUTABLE_BLOCK_END\n"
+    assert check_swap_job(_make(tmp_path, gcode=gcode), 1, DEFAULT_SWAP_CONFIG).ok
