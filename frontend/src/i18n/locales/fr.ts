@@ -8013,6 +8013,7 @@ export default {
       platesUnknown: "Saisissez le nombre de plateaux de rechange",
       printNotConfirmed: "La dernière impression ne s'est pas terminée normalement — vérifiez le plateau, puis reprenez",
       configInvalid: "Les réglages du changeur de plateaux sont invalides",
+      notHomed: "L'imprimante n'est pas référencée — retirez les plateaux de rechange, faites le homing puis reprenez",
     },
     gate: {
       noPlate: "Aucun plateau détecté sur le lit",

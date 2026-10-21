@@ -7488,6 +7488,16 @@ class PrintScheduler:
                 printer_manager.apply_swap_state_after_commit(printer.id)
                 logger.warning("Queue item %s: swap printer %s has invalid swap_config: %s", item.id, printer.id, e)
                 return
+            # The swapper start G-code skips the XY home (a rear Y home pulls a
+            # spare plate out of the holder), so it relies on the printer still
+            # being homed. After a power cycle or motor release it is not.
+            home_flag = getattr(printer_manager.get_status(item.printer_id), "home_flag", None)
+            if isinstance(home_flag, int) and home_flag & 0b11 != 0b11:
+                await printer_manager.set_swap_hold(db, printer.id, "swap.hold.notHomed", f"home_flag={home_flag}")
+                await db.commit()
+                printer_manager.apply_swap_state_after_commit(printer.id)
+                logger.warning("Queue item %s: swap printer %s is not XY homed (%s)", item.id, printer.id, home_flag)
+                return
             override = bool(printer.swap_ai_override)
             gate = await run_camera_gate(
                 printer,

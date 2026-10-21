@@ -8076,6 +8076,7 @@ errors: {
       platesUnknown: "Ange antalet reservplattor",
       printNotConfirmed: "Den senaste utskriften avslutades inte normalt — kontrollera plattan och återuppta sedan",
       configInvalid: "Plattväxlarens inställningar är ogiltiga",
+      notHomed: "Skrivaren är inte nollställd — ta ur reservplattorna, nollställ och återuppta",
     },
     gate: {
       noPlate: "Ingen platta hittades på bädden",

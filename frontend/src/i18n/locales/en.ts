@@ -8078,6 +8078,7 @@ export default {
       platesUnknown: "Enter the number of spare plates",
       printNotConfirmed: "The last print did not finish normally — check the plate, then resume",
       configInvalid: "Plate swapper settings are invalid",
+      notHomed: "Printer is not homed — remove the spare plates, home it, then resume",
     },
     gate: {
       noPlate: "No plate detected on the bed",

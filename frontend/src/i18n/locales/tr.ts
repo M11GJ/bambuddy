@@ -7952,6 +7952,7 @@ export default {
       platesUnknown: "Yedek plaka sayısını girin",
       printNotConfirmed: "Son baskı normal şekilde bitmedi — plakayı kontrol edip devam edin",
       configInvalid: "Plaka değiştirici ayarları geçersiz",
+      notHomed: "Yazıcı sıfırlanmadı — yedek plakaları çıkarın, sıfırlayın ve devam edin",
     },
     gate: {
       noPlate: "Tablada plaka algılanmadı",
